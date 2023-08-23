@@ -16,4 +16,5 @@ public interface CService {  // 매퍼에서 가져온 다음에 가공 주로 �
 	List<lisc002DTO> lisc002list();
 	List<lisc002DTO> codetype(String type);
 	List<lisc003DTO> code(String type);
+	List<lisc001DTO> searchval(String searchval);
 }

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import egovframework.b.mapper.BMapper;
 import egovframework.b.model.QcResultDTO;
+import egovframework.b.model.QcResultDateDTO;
+import egovframework.b.model.QcResultRequestDTO;
 import egovframework.b.model.UserBDTO;
 import egovframework.b.model.QcCodeDTO;
 import egovframework.b.service.BService;
@@ -42,13 +44,14 @@ public class BServiceImpl implements BService {
 
 	
 	@Override
-	public List<String> qcResultDate() {
-		return bMapper.qcResultDate();
+	public List<String> qcResultDate(QcResultDateDTO qcResultDateDTO) {
+		List<String> list = bMapper.qcResultDate(qcResultDateDTO);
+		return list;
 	}
 
 	@Override
-	public List<Map<String, Object>> qcResultFindHashMap(List<String> dateList) {
-		return bMapper.qcResultFindHashMap(dateList);
+	public List<Map<String, Object>> qcResultFindHashMap(QcResultRequestDTO qcResultDTO) {
+		return bMapper.qcResultFindHashMap(qcResultDTO);
 	}
 
 	@Override
@@ -73,6 +76,46 @@ public class BServiceImpl implements BService {
 	public List<QcCodeDTO> qcCodeList() {
 		// TODO Auto-generated method stub
 		return bMapper.qcCodeFindAll();
+	}
+
+	@Override
+	public int save(List<Map<String, Object>> list) {
+		int result = 0;
+		int updateRow = 0, deleteRow = 0;
+		System.out.println(list);
+		System.out.println(list.size());
+		
+		 // 데이터 처리 로직
+		System.out.println("=======================");
+        for (Map<String, Object> map : list) {
+        	 
+        	String qcCode = bMapper.findQcCode(map.get("QC물질명").toString());
+        	List<String> testCode = bMapper.findTestCode(String.valueOf(map.get("검사명")));
+        	System.out.println(testCode);
+        	map.put("qcCode", qcCode);
+        	map.put("testCode", testCode);
+  
+        	System.out.println("=======================");
+        	for (String key : map.keySet()) {
+            	System.out.println(key + " : " + map.get(key));    
+            }
+        	System.out.println("=======================");
+        	switch((String)map.get("flag")) {
+	        	case "U":
+	        		updateRow = bMapper.update(map);
+	        		break;
+	        	case "D":
+	        		deleteRow = bMapper.delete(map);
+	        		break;
+	        	default :
+	        }
+        	result = result + updateRow + deleteRow;
+        	
+        	
+        	
+        }
+		
+		return result;
 	}
 
 }
