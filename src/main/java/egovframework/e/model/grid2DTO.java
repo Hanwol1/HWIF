@@ -20,7 +20,8 @@ public class grid2DTO {
     private String id2Date;// 실장확인일자
     private String id3Date;// 과장확인일자
     private String comments;// 코멘트
-    
+    private String includeExpired;// 사용종료 포함여부
+
     public String getSysDate() {
 		return sysDate;
 	}
@@ -164,9 +165,12 @@ public class grid2DTO {
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
-	
-	
-  
-   
-   
+
+	public String getIncludeExpired() {
+		return includeExpired;
+	}
+    
+	public void setIncludeExpired(String includeExpired) {
+		this.includeExpired = includeExpired;
+	}
 }
