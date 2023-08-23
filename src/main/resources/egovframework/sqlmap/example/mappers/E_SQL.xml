@@ -49,9 +49,6 @@
 		  <if test="code != null and !code.equals('')">
 		  and b.code = #{code} 
 		  </if>
-		  <if test="includeExpired.equals('false')"> <!-- 사용종료를 체크 안했을 때 -->
-		  and b.file_enddt is null
-		  </if>
 	  </where>
 	</select>
 	

@@ -129,37 +129,35 @@
 								name: 'code_type', index: 'code_type', width: '60', align: 'center', hidden: true //문서타입
 							},
 							{
-								name: 'code', index: 'code', width: '60', align: "center",hidden: false, editable : true //문서코드
+								name: 'code', index: 'code', width: '60', align: "center",hidden: false //문서코드
 							},
 							{
-								name: 'item1', index: 'item1', width: '60', align: "center", editable : true //문서명
+								name: 'item1', index: 'item1', width: '60', align: "center" //문서명
 							},
 							{
 								name: 'item2', index: 'item2', width: '50', align: "center", //최종문서 체크박스
-								formatter: "checkbox", formatoptions: { disabled: false },editable : true, edittype: 'checkbox', 
-								editoptions: { value: "Y:N", defaultValue :"Y"} 								
+								formatter: "checkbox", formatoptions: { disabled: true },
 							},
 							{
-								name: 'item3', index: 'item3', width: '60', align: "center", editable : true //담당자
+								name: 'item3', index: 'item3', width: '60', align: "center" //담당자
 							},
 							{
-								name: 'item4', index: 'item4', width: '60', align: "center", editable : true //실장
+								name: 'item4', index: 'item4', width: '60', align: "center" //실장
 							},
 							{
-								name: 'item5', index: 'item5', width: '60', align: "center", editable : true //과장
+								name: 'item5', index: 'item5', width: '60', align: "center" //과장
 							},
 							{
-								name: 'remark1', index: 'remark1', width: '60', align: "center", editable : true //문서형식
+								name: 'remark1', index: 'remark1', width: '60', align: "center" //문서형식
 							},
 							{
-								name: 'remark2', index: 'remark2', width: '60', align: "center", editable : true //비고란
+								name: 'remark2', index: 'remark2', width: '60', align: "center" //비고란
 							},
 							{
-								name: 'comments', index: 'comments', width: '60', align: "center", hidden: true, editable : true //코멘트
+								name: 'comments', index: 'comments', width: '60', align: "center", hidden: true //코멘트
 							}
 						],
 			
-			multiselect: true,			
 			autowidth   : true, //그리드 너비 자동설정
 			shrinkToFit : true, //컬럼 너비 그리드에 맞게 조절
 			height      : "auto", // 테이블의 세로 크기, Grid의 높이
@@ -168,22 +166,18 @@
 			rowNum      : -1, //한 번에 보여줄 행의 개수를 지정, -1=모든행을 보여줌
 			rownumbers  : true, //각 행에 번호를 부여하는 표시옵션
 			gridview    : true, // 그리드 랜더링시 성능을 향상시키는 옵션
-			cellEdit: true,
-            cellsubmit: 'clientArray',
 			loadComplete: function (data) {
 				//console.log("loadComplete >>>");
 			}, // loadComplete END
 			gridComplete : function (data) {
 				console.log("gridComplete >>>");
-				$("#list1").jqGrid('setSelection', "1", true); // 그리드 생성 및 촉화 후 호출되는 함수 정의 + 그리드1의 첫번째 행을 디폴트로 선택하는 이벤트 
+				$("#list1").jqGrid('setSelection', "1", true); // 그리드 생성 및 촉화 후 호출되는 함수 정의 + 그리드1의 첫번째 행을 디폴트로 선택하는 이벤트
 			},
-			
 			//그리드1 선택행으로 그리드2 화면 갱신 로직
 			onSelectRow: function (rowid) {
 				var params = {} //피라미터를 담을 객체생성
 				params.isSearch2 = "true"; // 검색여부를 true로 세팅
 				params.code = $('#list1').getRowData(rowid).code; // 선택행의 값을 params.code 에 설정 -> 그리드1의 선택값을 그리드2에서 사용하기위함
-				params.includeExpired = $('#includeExpired').is(':checked');
 				selGrid1Row = $('#list1').getRowData(rowid).code; // 전역변수인 selGrid1Row에도 선택된 행의 코드값을 저장
 				
 				$("#list2").clearGridData();//그리드2의 데이터 초기화 -> 선택행에따라 새로운 데이터로 갱신
@@ -197,9 +191,7 @@
 				}).trigger("reloadGrid");
 			}
 		});
-		
-		
-		
+
 		/**
 		그리드1,2 조회('조회'버튼)
 		*/
@@ -216,7 +208,6 @@
 			setAddRows();
 		});
 		
-	
 		//setAddRows 함수 정의
 		function setAddRows(){
 			var data = {code:'', item1:"", item2:"", item3:"", item4:'', item5:'', remark1:'', remark2:''};
@@ -282,7 +273,16 @@
 	        })
 		}
 		
-	
+		
+		// '사용종료 포함' 체크박스 변경 이벤트 리스너 등록
+		$("#includeExpired").change(function() {
+		    var includeExpired = $(this).prop("checked"); // 체크박스의 체크 여부 가져오기
+
+		    // 그리드2 데이터 필터링 및 다시 로드
+		    filterAndReloadGrid2(includeExpired);
+		});
+			
+		
 		/**
 		그리드1 검색('찾기'버튼)
 		*/
@@ -438,8 +438,7 @@
 		params.isSearch2 = "true"; // 검색여부를 true로 세팅
 		params.searchInput2 = $('#searchInput2').val(); // 검색어를 파라미터 searchInput2에 할당, 검색어=searchInput2 ID 를 가진 입력란의 값
 		params.code = selGrid1Row;
-		params.includeExpired = $('#includeExpired').is(':checked');
-		
+
 		console.log("getGridList2 >>>" + JSON.stringify(params));
 
 		$("#list2").clearGridData(); //그리드2 데이터 초기화
@@ -536,29 +535,6 @@
 	        });
 	    }
 	});
-	
-	
-	/*'사용종료 포함'체크박스 */
-	$("#includeExpired").click(function() {
-		var params = {} //피라미터를 담을 객체생성
-		var rowid   = $('#list1').getGridParam('selrow');  // 선택한 그리드에서 선택된 행의 인덱스 가져오기
-
-		params.isSearch2 = "true"; // 검색여부를 true로 세팅
-		params.code = $('#list1').getRowData(rowid).code; // 선택행의 값을 params.code 에 설정 -> 그리드1의 선택값을 그리드2에서 사용하기위함
-		params.includeExpired = $('#includeExpired').is(':checked');
-		selGrid1Row = $('#list1').getRowData(rowid).code; // 전역변수인 selGrid1Row에도 선택된 행의 코드값을 저장
-		
-		$("#list2").clearGridData();//그리드2의 데이터 초기화 -> 선택행에따라 새로운 데이터로 갱신
-		
-		//그리드2 파라미터 설정 , reloadGrid 이벤트를 트리거해서 그리드를 다시 로드
-		$("#list2").setGridParam({
-			datatype : "json",
-			postData : params ,
-			loadComplete:  //그리드2 데이터 로딩 완료후 실행되는 함수(빈 상태)
-			function(postData){} 
-		}).trigger("reloadGrid");
-	});
-	
 
 
     // 탭 버튼 클릭 시 활성화 클래스 추가 및 제거

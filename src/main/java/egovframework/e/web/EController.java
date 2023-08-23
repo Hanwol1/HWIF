@@ -204,11 +204,9 @@ public class EController {
 		    	if(!"".equals(map.get("code"))) {
 		    		grid2DTO.setCode((String)map.get("code"));
 		    	}
-	    		grid2DTO.setIncludeExpired((String)map.get("includeExpired"));
-		    	
-	    		System.out.println("grid2DTO >>>" + grid2DTO);
 		    	
 		  
+				System.out.println("grid2DTO >>>" + grid2DTO);
 		    	List<grid2DTO> data = eService.grid2(grid2DTO);
 		    	
 			    JSONArray rowsArray = new JSONArray();
@@ -259,7 +257,7 @@ public class EController {
 	        updateMap.put("file_date", formattedDate);
 
 	        // eService에서 종료일자 삭제하는 메서드 호출
-//	        eService.clearDcListFileEndDate(updateMap); 
+	        eService.clearDcListFileEndDate(updateMap); 
 
 	        int result = eService.updateGrid2Row(updateMap); 
 
