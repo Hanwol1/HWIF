@@ -162,9 +162,40 @@ body {
 
 /*  아래.오른쪽.아래  */
 .down-right-btn2 {
-
     display: flex;
     border-bottom: 1px solid #CCC;
     background: #5584AC;
     padding: 8px 15px;
+}
+
+
+/* 모달 */
+.modal{
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 100px;
+	z-index: 1000; /* 원하는 값으로 조정 */
+}
+.box{
+	display: flex;
+	flex-direction: column;
+	border: 1px solid #CCC;
+    background: #F1F1F1;
+	width: 350px;
+	padding: 20px;
+}
+.modalText{
+	height: 23px;
+	display: flex;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+.modalInput{
+	display: flex;
+    width: 200px;
+    align-items: center;
+}
+.modalall{
+	position: relative;
 }

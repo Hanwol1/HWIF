@@ -29,6 +29,7 @@ public class CController {
 	
 	@Resource(name = "CService")  // 서비스 선언
 	CService cService;
+	private String dto;
 	
 	@RequestMapping(value = "/loginC.do")
 	public String startPage(Model model) throws Exception {
@@ -85,32 +86,52 @@ public class CController {
 		
 		return json;
 	}
-	
+	/*
+			 * // search input 시 화면 if("true".equals(map.get("isSearch"))) { // 검색여부 boolean
+			 * 값이 true 일 때만 DB 조회[처음 화면 로딩 시 화면 조회 안함] lisc001DTO dto = new lisc001DTO();
+			 * //데이터베이스 조회에 사용할 DTO 객체 생성 //검색어가 비어있지 않다면 DTO 객체에 할당
+			 * if(!"".equals(map.get("search"))) { dto.setItem1((String)map.get("search"));
+			 * } } //데이터베이스 조회결과를 담을 리스트객체 선언 List<lisc001DTO> data = null; data =
+			 * CService.lisc001DTO(dto);
+			 */
 	@RequestMapping(value = "/oneGridC.do", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject lisc001DTO(@RequestParam Map<String, Object> map, HttpSession session, HttpServletRequest request,
 	HttpServletResponse response, Model model) throws Exception {
-		
-		// search input 시 화면
-		
-		
-		
-		// 기본 화면
 		System.out.println(map);
+		String searchval = (String) map.get("searchval");
+		System.out.println(map.get("searchval"));
 		JSONObject json = new JSONObject();
 		try {
-			List<lisc001DTO> data = cService.lisc001list();
-		    System.out.println(data);
-		    JSONArray rowsArray = new JSONArray();
-		    for (lisc001DTO item : data) {
-		        JSONObject row = new JSONObject();
-		        row.put("CODE_TYPE", item.getCodeType());
-		        row.put("CODE_TYPE_NAME", item.getCodeTypeName());
-		        row.put("COMMENTS", item.getComments());
-		        // 필요한 다른 필드 추가
-		        rowsArray.add(row);
-		    }
-		    json.put("rows", rowsArray);
+			if("true".equals(map.get("isSearch"))) {
+				List<lisc001DTO> data = cService.searchval(searchval); // dto: 변수명
+			    System.out.println(data);
+			    JSONArray rowsArray = new JSONArray();
+			    for (lisc001DTO item : data) { // 검색 결과 데이터를 순회하면서 JSON 객체로 변환하여 배열에 추가
+			        JSONObject row = new JSONObject();
+			        row.put("CODE_TYPE", item.getCodeType());
+			        row.put("CODE_TYPE_NAME", item.getCodeTypeName());
+			        row.put("COMMENTS", item.getComments());
+			        // 필요한 다른 필드 추가
+			        rowsArray.add(row);
+			    }
+			    json.put("rows", rowsArray);
+			}
+			else {
+				// 기본 화면
+				List<lisc001DTO> data = cService.lisc001list();
+			    System.out.println(data);
+			    JSONArray rowsArray = new JSONArray();
+			    for (lisc001DTO item : data) {
+			        JSONObject row = new JSONObject();
+			        row.put("CODE_TYPE", item.getCodeType());
+			        row.put("CODE_TYPE_NAME", item.getCodeTypeName());
+			        row.put("COMMENTS", item.getComments());
+			        // 필요한 다른 필드 추가
+			        rowsArray.add(row);
+			    }
+			    json.put("rows", rowsArray);
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

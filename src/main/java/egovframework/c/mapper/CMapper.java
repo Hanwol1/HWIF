@@ -18,4 +18,5 @@ public interface CMapper {
 	List<lisc002DTO> lisc002list();
 	List<lisc002DTO> codetype(String type);
 	List<lisc003DTO> code(String type);
+	List<lisc001DTO> searchval(String searchval);
 }

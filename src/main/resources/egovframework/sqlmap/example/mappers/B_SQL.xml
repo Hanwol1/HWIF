@@ -34,14 +34,20 @@
 		WHERE ID = #{id}
 	</select>
 	
-	<select id="qcResultDate" resultType="string">
-		<![CDATA[
-			select distinct final_date
-			from lisq200 a
-			where 1=1
-			and final_date <= "2016-12-16"
-			order by 1;
-		]]>
+	<select id="qcResultDate" parameterType="egovframework.b.model.QcResultDateDTO" resultType="string">
+		
+			
+		    select distinct final_date
+		    from lisq200 a
+		    where 1=1
+		    <if test="fromDate != null and fromDate != ''">
+		    and final_date &gt;= #{fromDate}
+		   	</if>
+		    <if test="toDate != null and toDate != ''">
+		    and final_date &lt;= #{toDate}
+		    </if>
+		    order by 1
+		
 	</select>
 	
 	<select id="gumsapartFindAll" resultType="string">
@@ -79,14 +85,16 @@
 	
 	
 	
-	<select id="qcResultFindHashMap" parameterType="java.util.List" resultType="java.util.LinkedHashMap">
+	<select id="qcResultFindHashMap" parameterType="egovframework.b.model.QcResultRequestDTO" resultType="java.util.LinkedHashMap">
 		
 			select c.qc_name as 'QC물질명', gumsa_name1 as '검사명', a.qc_level as 'Level', a.lot_no as 'LotNo', max(a.mean_value) as 'FixedMean', max(a.sd_value) as 'FixedSD', max(a.cv_value) as 'FixedCV',  ROUND(AVG(test_result), 2) as 'CumMean',  ROUND(STDDEV(test_result), 2) AS 'CumSD',  ROUND(STDDEV(test_result)/AVG(test_result)*100, 2) as 'CumCV', 
-			d.item1 as '장비명',
+			d.item1 as '장비명'
+			<if test="dateList != null and dateList.size() > 0">
+			,
 		  <foreach collection="dateList" item="i" separator="," index="index">    
              MAX(CASE WHEN final_date = #{i} THEN test_result ELSE null END) AS '${i}'
    		  </foreach>    
-			<![CDATA[
+   		  	</if>
 			from lisq200 a
 			left join lisc100 b
 			on a.test_code = b.test_code
@@ -103,9 +111,26 @@
             on a.jangbi_code = d.code
 			where 1=1
 			and qc_name is not null
+			<if test="qcInOut != null and qcInOut.length() > 0">
+			and a.qc_in_out = #{qcInOut}
+			</if>
+			<if test="ruleResult != null and ruleResult.length() > 0">
+			and a.rule_result = #{ruleResult}
+			</if>
+			<if test="jundalPart != null and jundalPart.length() > 0">
+			and a.jundal_part = #{jundalPart}
+			</if>
+			<if test="lotNo != null and lotNo.length() > 0">
+			and a.lot_no like CONCAT('%',#{lotNo},'%')
+			</if>
+			<if test="level != null and level.length() > 0">
+			and a.qc_level = #{level}
+			</if>
+			<if test="jangbi != null and jangbi.length() > 0">
+			and d.item1 = #{jangbi}
+			</if>
 			group by c.qc_name, gumsa_name1, a.qc_level, a.lot_no, 장비명
 			order by 1,2,3,4
-		]]>
 	</select>
 	<insert id="joinUser" parameterType="egovframework.b.model.UserBDTO">
 		INSERT INTO USER(
@@ -117,4 +142,53 @@
 			#{password}
 		)
 	</insert>
+	
+	<select id="findTestCode" parameterType="String" resultType="String">
+		select a.test_code
+        from lisc100 a
+        left join lisq200 b 
+        on a.test_code = b.test_code
+        and a.start_date = b.fk_start_date
+        and a.specimen_code = b.specimen_ser
+        where gumsa_name1 = #{gumsaName};
+	</select>
+	<select id="findQcCode" parameterType="String" resultType="String">
+		select MAX(a.qc_code)
+        from lisq100 a
+        left join lisq200 b
+        on a.qc_code = b.qc_code
+        and a.qc_level = b.qc_level
+        and a.lot_no = b.lot_no
+        and a.start_date = b.fk_start_date
+        where qc_name = #{qcName};
+	</select>
+	
+	
+	<update id="update" parameterType="hashMap">
+		UPDATE lisq200 
+		SET 
+			MEAN_VALUE = #{FixedMean},
+			SD_VALUE = #{FixedSD},
+			CV_VALUE = SD_VALUE / MEAN_VALUE * 100	 
+		WHERE 1=1
+		AND QC_CODE = #{qcCode}
+		AND QC_LEVEL = #{Level}
+		AND LOT_NO = #{LotNo}
+		AND TEST_CODE IN
+        <foreach collection="testCode" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+	</update>
+	<delete id="delete" parameterType="hashMap">
+		delete
+		from lisq200
+		where 1=1
+		AND QC_CODE = #{qcCode}
+		AND QC_LEVEL = #{Level}
+		AND LOT_NO = #{LotNo}
+		AND TEST_CODE IN
+        <foreach collection="testCode" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+	</delete>
 </mapper>

@@ -29,16 +29,18 @@
 	<select id="codetype" parameterType="String" resultType="egovframework.c.model.lisc002DTO">
 		select * from lisc002
 		where CODE_TYPE = #{type}
+		order by CODE
 	</select>
 	<select id="code" parameterType="String" resultType="egovframework.c.model.lisc003DTO">
 		select * from lisc003
 		where CODE = #{type}
 	</select>
-	<select id="searchlist" parameterType="String" resultType="egovframework.c.model.lisc001DTO">
+	<select id="searchval" parameterType="String" resultType="egovframework.c.model.lisc001DTO">
 		select * from lisc001
 		<if test="CODE_TYPE != null and !CODE_TYPE.equals('')">
-		where CODE_TYPE like CONCAT('%',#{type},'%') 
+		where CODE_TYPE like CONCAT('%',#{searchval},'%') 
 		</if>
+		order by CODE_TYPE
 	</select>
 
 </mapper>
