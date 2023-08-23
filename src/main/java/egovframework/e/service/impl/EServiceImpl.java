@@ -1,5 +1,6 @@
 package egovframework.e.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -107,6 +108,56 @@ public class EServiceImpl implements EService {
 		
 	}
 	
-	
+	  @Override
+	    public int updateGrid2Row(Map<String, Object> updateMap) {
+	        try {
+	            String code = (String) updateMap.get("code");
+	            String codeNo = (String) updateMap.get("codeNo");
+	            String fileDate = (String) updateMap.get("file_date");
 
-}
+	            Map<String, Object> params = new HashMap<>();
+	            params.put("code", code);
+	            params.put("codeNo", codeNo);
+	            params.put("fileDate", fileDate);
+
+	            int result = eMapper.updateGrid2Row(params);
+	            return result;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return 0;
+	        }
+	    }
+
+	    @Override
+	    public void clearDcListFileEndDate(Map<String, Object> deleteMap) {
+	        try {
+	            // 종료일자 컬럼값 비우기
+	            eMapper.clearDcListFileEndDate(deleteMap);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+		@Override
+		public int deleteGrid2Row(Map<String, Object> updateMap) {
+			try {
+	            String code = (String) updateMap.get("code");
+	            String codeNo = (String) updateMap.get("codeNo");
+	            String fileEnddt = (String) updateMap.get("file_enddt");
+
+	            Map<String, Object> params = new HashMap<>();
+	            params.put("code", code);
+	            params.put("codeNo", codeNo);
+	            params.put("fileEnddt", fileEnddt);
+
+	            int result = eMapper.deleteGrid2Row(params);
+	            return result;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return 0;
+	        }
+		}
+	}
+
+		
+

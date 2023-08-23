@@ -25,7 +25,16 @@ public interface EMapper {
 	public List<grid2DTO> grid2(grid2DTO grid2DTO);
 
 	public int setDcListInfoDelete(Map<String, Object> params);
+	
+	int setDcListFileDelete(Map<String, Object> params);
 
-	public int setDcListFileDelete(Map<String, Object> params);
+    int updateGrid2Row(Map<String, Object> updateMap);
+
+	void clearDcListFileEndDate(Map<String, Object> deleteMap);
+
+	int deleteGrid2Row(Map<String, Object> params);
+
+	
+
 
 }

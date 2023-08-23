@@ -1,6 +1,8 @@
 package egovframework.e.web;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,14 +136,14 @@ public class EController {
 			    JSONArray rowsArray = new JSONArray();
 			    for (grid1DTO item : data) {
 			        JSONObject row = new JSONObject();
-			        row.put("code", item.getCode());
-			        row.put("item1", item.getItem1());
-			        row.put("item2", item.getItem2());
-			        row.put("item3", item.getItem3());
-			        row.put("item4", item.getItem4());
-			        row.put("item5", item.getItem5());
-			        row.put("remark1", item.getReMark1());
-			        row.put("remark2", item.getReMark2());
+			        row.put("code", item.getCode()); //문서코드
+			        row.put("item1", item.getItem1()); //문서명
+			        row.put("item2", item.getItem2()); //최종문서체크
+			        row.put("item3", item.getItem3()); //담당자
+			        row.put("item4", item.getItem4()); //실장
+			        row.put("item5", item.getItem5()); //과장
+			        row.put("remark1", item.getReMark1()); //문서형식
+			        row.put("remark2", item.getReMark2()); //비고
 			        // 필요한 다른 필드 추가
 			        rowsArray.add(row);
 			    }
@@ -210,15 +212,15 @@ public class EController {
 			    JSONArray rowsArray = new JSONArray();
 			    for (grid2DTO item : data) {
 			        JSONObject row = new JSONObject();
-			        row.put("code", item.getCode());
-			        row.put("code_no", item.getCodeNo());
-			        row.put("file_name", item.getFileName());
-			        row.put("file_date", item.getFileDate());
-			        row.put("file_user", item.getFileUser());
-			        row.put("file_enddt", item.getFileEnddt());
-			        row.put("id1", item.getId1());
-			        row.put("id2", item.getId2());
-			        row.put("id3", item.getId3());
+			        row.put("code", item.getCode()); //문서코드
+			        row.put("code_no", item.getCodeNo()); //문서번호
+			        row.put("file_name", item.getFileName()); //파일명
+			        row.put("file_date", item.getFileDate()); //등록일
+			        row.put("file_user", item.getFileUser()); //등록자
+			        row.put("file_enddt", item.getFileEnddt()); //사용종료일
+			        row.put("id1", item.getId1()); //담당
+			        row.put("id2", item.getId2()); //실장
+			        row.put("id3", item.getId3()); //과장
 			        // 필요한 다른 필드 추가
 			        rowsArray.add(row);
 			    }
@@ -232,6 +234,83 @@ public class EController {
 		//System.out.println("========rows==================");
 	    return json;
 	}
+	
+	
+	//grid2 사용등록
+	@RequestMapping(value = "/updateGrid2Row.do", method = RequestMethod.POST)
+	@ResponseBody
+	public JSONObject updateGrid2Row(@RequestParam Map<String, Object> map) {
+	    JSONObject json = new JSONObject();
+
+	    String code = (String) map.get("code");
+	    String codeNo = (String) map.get("codeNo");
+
+	    Map<String, Object> updateMap = new HashMap<>();
+	    updateMap.put("code", code);
+	    updateMap.put("codeNo", codeNo);
+
+	    try {
+	        // 등록일자 업데이트를 위한 코드 추가
+	        Date currentDate = new Date();
+	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	        String formattedDate = dateFormat.format(currentDate);
+	        updateMap.put("file_date", formattedDate);
+
+	        // eService에서 종료일자 삭제하는 메서드 호출
+	        eService.clearDcListFileEndDate(updateMap); 
+
+	        int result = eService.updateGrid2Row(updateMap); 
+
+	        if (result > 0) {
+	            json.put("result", "success");
+	        } else {
+	            json.put("result", "fail");
+	        }
+	    } catch (Exception e) {
+	        json.put("result", "fail");
+	    }
+
+	    return json;
+	}
+	
+	
+	//grid2 사용종료
+		@RequestMapping(value = "/deleteGrid2Row.do", method = RequestMethod.POST)
+		@ResponseBody
+		public JSONObject deleteGrid2Row(@RequestParam Map<String, Object> map) {
+		    JSONObject json = new JSONObject();
+
+		    String code = (String) map.get("code");
+		    String codeNo = (String) map.get("codeNo");
+
+		    Map<String, Object> updateMap = new HashMap<>();
+		    updateMap.put("code", code);
+		    updateMap.put("codeNo", codeNo);
+
+		    try {
+		        // 종료일자 업데이트를 위한 코드 추가
+		        Date currentDate = new Date();
+		        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		        String formattedDate = dateFormat.format(currentDate);
+		        updateMap.put("file_enddt", formattedDate);
+
+		        // eService에서 종료일자를 업데이트하는 메서드 호출	
+		        
+		        int result = eService.deleteGrid2Row(updateMap); 
+
+		        if (result > 0) {
+		            json.put("result", "success");
+		        } 
+		    } catch (Exception e) {
+		        json.put("result", "fail");
+		    }
+
+		    return json;
+		}
+
+
+
+
 	
 	
 

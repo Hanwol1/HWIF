@@ -57,13 +57,37 @@
         WHERE code = #{code}
 	</delete>
 
-	<delete id="setDcListFileDelete" parameterType="java.util.Map" >
-      DELETE FROM `HWIF`.`LISC960`
-        WHERE code = #{code}
-        <if test="codeNo != null and !codeNo.equals('')">
-          AND codeNo = #{codeNo}
-        </if>
-	</delete>
+	<update id="updateGrid2Row" parameterType="java.util.Map">
+		<!-- 사용등록시 등록일 컬럼값을 현재날짜로 변경해주는 쿼리 -->
+	    UPDATE `HWIF`.`LISC960`
+	    SET file_date = sysdate() -- 등록일 현재날짜
+	      , file_enddt = null       -- 종료일은 null
+	    WHERE code = #{code}
+	    AND code_no = #{codeNo} <!-- 수정: 파라미터명을 codeNo로 변경 -->
+	</update>
+
+	<update id="clearDcListFileEndDate" parameterType="java.util.Map">
+	    <!-- 사용종료일 컬럼값을 비우는 쿼리 <사용안함> -->
+	    UPDATE `HWIF`.`LISC960`
+	    SET file_enddt = null
+	    WHERE code = #{code}
+	    <if test="code_no != null"> 
+	        AND code_no = #{code_no} 
+	    </if>
+	</update>
+	
+	<update id="deleteGrid2Row" parameterType="java.util.Map">
+		<!-- 사용종료시 종료일 컬럼값을 현재날짜로 변경해주는 쿼리 -->
+	    UPDATE `HWIF`.`LISC960`
+	    SET file_enddt = sysdate() -- 등록일 현재날짜	
+	    WHERE code = #{code}
+	    AND code_no = #{codeNo} <!-- 수정: 파라미터명을 codeNo로 변경 -->
+	</update>
+
+
+
+
+	
 	
 	
 	

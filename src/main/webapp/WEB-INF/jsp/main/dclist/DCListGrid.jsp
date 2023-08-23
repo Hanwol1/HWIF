@@ -117,25 +117,25 @@
 			colNames : ['일자', '사용자계정', '최종수정일', '문서타입', '문서코드', '문서명', '최종문서체크', '담당자', '실장', '과장','문서형식','비고','코멘트'], // 컬럼명
 			colModel : [
 							{
-								name: 'sys_date', index: 'sys_date', width: '60', align: "center",hidden: true
+								name: 'sys_date', index: 'sys_date', width: '60', align: "center",hidden: true //일자
 							},
 							{
-								name: 'user_id', index: 'user_id', width: '60', align: 'center', hidden: true
+								name: 'user_id', index: 'user_id', width: '60', align: 'center', hidden: true //사용자계정
 							},
 							{
-								name: 'upd_date', index: 'upd_date', width: '60', align: 'center', hidden: true
+								name: 'upd_date', index: 'upd_date', width: '60', align: 'center', hidden: true //최종수정일
 							},
 							{
-								name: 'code_type', index: 'code_type', width: '60', align: 'center', hidden: true
+								name: 'code_type', index: 'code_type', width: '60', align: 'center', hidden: true //문서타입
 							},
 							{
-								name: 'code', index: 'code', width: '60', align: "center",hidden: false
+								name: 'code', index: 'code', width: '60', align: "center",hidden: false //문서코드
 							},
 							{
 								name: 'item1', index: 'item1', width: '60', align: "center" //문서명
 							},
 							{
-								name: 'item2', index: 'item2', width: '60', align: "center", //최종문서 체크박스
+								name: 'item2', index: 'item2', width: '50', align: "center", //최종문서 체크박스
 								formatter: "checkbox", formatoptions: { disabled: true },
 							},
 							{
@@ -199,6 +199,90 @@
 			getGridList();
 		});
 		
+		
+		/**
+		그리드 행추가(grid1/'입력'버튼)
+		*/	
+		//입력버튼 클릭시 함수호출
+		$("#addRow").click(function(){
+			setAddRows();
+		});
+		
+		//setAddRows 함수 정의
+		function setAddRows(){
+			var data = {code:'', item1:"", item2:"", item3:"", item4:'', item5:'', remark1:'', remark2:''};
+			rowId    = $("#list1").getGridParam("reccount"); // 현재 그리드의 행 개수를 가져와 rowId 변수에 할당
+			$("#list1").jqGrid("addRowData", rowId+1, data, 'last'); // list1에 새로운 행 데이터 data 추가 , rowId+1=새로운 행의 iD , last = 새 행을 마지막 위치에 추가
+		}
+		
+		
+		/**
+		그리드 '삭제' 버튼 클릭
+		*/
+		$("#deleteGrid1Row").click(function(){
+			var params   = {} // 파라미터를 담을 변수 선언
+			var isAll    = this.id == 'deleteGrid1Row' ? 'true' : 'false'; // deleteGrid1Row를 누르면 isAll(상하위 전부삭제) , 그렇지않은 경우 false(하위만 삭제)
+			var gridObj  = isAll == 'true' ? 'list1' : 'list2'; // isAll 인경우 list1 할당 , 아닌경우 list2 할당
+			var selIdx   = $('#'+gridObj).getGridParam('selrow');  // 선택한 그리드에서 선택된 행의 인덱스 가져오기
+			
+			if(selIdx == null){
+				alert("그리드에서 삭제할 행을 선택해주세요");
+			}else{
+				var code = $('#'+gridObj).getRowData(selIdx).code; // 선택한 그리드의 선택된 행에서 code 값 가져옴
+				var code_no  = $('#'+gridObj).getRowData(selIdx).code_no; // 선택한 그리드의 선택된 행에서 code_no 값 가져옴
+		
+				params.isAll    = isAll; // 상위테이블 여부 파라미터 세팅[true일 경우 상위/하위 테이블의 데이터를 가팅 삭제 / false일 경우 하위 테입르의 데이터만 삭제]
+				params.code = code;  // code 파라미터 세팅
+				params.code_no  = code_no; // code_no 파라미터 세팅
+		
+				setDeleteData(params); // ajax 삭제 함수 호출
+			}
+		});
+
+		/**
+		    선택한 그리드 데이터 삭제
+		*/
+		function setDeleteData(params){
+			$.ajax({
+	            type: "post",
+	            url : "/dcListDelete.do",
+	            data: {
+	            	  isAll : params.isAll
+	            	, code : params.code
+	            	, code_no : params.code_no
+	            },
+	            dataType : "json",
+	            error: function(data){
+	                console.log('error');
+	                alert("error");
+	            },
+	            success: function(data){
+	            	//console.log("data >>>" + JSON.stringify(data));
+	                if(data.result == '1'){
+	                    alert('데이터를 삭제 하였습니다.');
+	                    if(params.isAll = 'true'){
+	                    	getGridList(); // 그리드1 조회
+	                    	getGridList2(); // 그리드2 조회
+	                    }else{
+	                    	getGridList2();  // 그리드2 조회
+	                    }
+	                } else {
+	                    alert('삭제중 오류가 발생하였습니다.');
+	                }
+	            }
+	        })
+		}
+		
+		
+		// '사용종료 포함' 체크박스 변경 이벤트 리스너 등록
+		$("#includeExpired").change(function() {
+		    var includeExpired = $(this).prop("checked"); // 체크박스의 체크 여부 가져오기
+
+		    // 그리드2 데이터 필터링 및 다시 로드
+		    filterAndReloadGrid2(includeExpired);
+		});
+			
+		
 		/**
 		그리드1 검색('찾기'버튼)
 		*/
@@ -231,20 +315,7 @@
 			}).trigger("reloadGrid");
 		}
 		
-		/**
-		그리드 행추가(grid1)
-		*/	
-		//입력버튼 클릭시 함수호출
-		$("#addRow").click(function(){
-			setAddRows();
-		});
 		
-		//setAddRows 함수 정의
-		function setAddRows(){
-			var data = {code:'', item1:"", item2:"", item3:"", item4:'', item5:'', remark1:'', remark2:''};
-			rowId    = $("#list1").getGridParam("reccount"); // 현재 그리드의 행 개수를 가져와 rowId 변수에 할당
-			$("#list1").jqGrid("addRowData", rowId+1, data, 'last'); // list1에 새로운 행 데이터 data 추가 , rowId+1=새로운 행의 iD , last = 새 행을 마지막 위치에 추가
-		}
 
 	$('#list2').jqGrid({
 		url            : "/dcListGrid200.do", // 서버주소(데이터 요청)
@@ -259,47 +330,47 @@
 		['일자', '사용자계정', '최종수정일', '문서타입', '문서코드','문서번호','파일명','등록일','등록자','종료일','파일서버경로','담당','실장','과장','담당확인일자','실장확인일자','과장확인일자','코멘트'], // 컬럼명
 		colModel : [
 						{
-							name: 'sys_date', index: 'sys_date', width: '60', align: "center",hidden: true
+							name: 'sys_date', index: 'sys_date', width: '60', align: "center",hidden: true //일자
 						},
 						{
-							name: 'user_id', index: 'user_id', width: '60', align: 'center', hidden: true
+							name: 'user_id', index: 'user_id', width: '60', align: 'center', hidden: true //사용자계정
 						},
 						{
-							name: 'upd_date', index: 'upd_date', width: '60', align: 'center', hidden: true
+							name: 'upd_date', index: 'upd_date', width: '60', align: 'center', hidden: true //최종수정일
 						},
 						{
-							name: 'code_type', index: 'code_type', width: '60', align: 'center', hidden: true
+							name: 'code_type', index: 'code_type', width: '60', align: 'center', hidden: true //문서타입
 						},
 						{
-							name: 'code', index: 'code', width: '60', align: "center",hidden: true
+							name: 'code', index: 'code', width: '60', align: "center",hidden: true //문서코드
 						},
 						{
-							name: 'code_no', index: 'code_no', width: '60', align: "center",hidden: false
+							name: 'code_no', index: 'code_no', width: '120', align: "center",hidden: false //문서번호
 						},
 						{
-							name: 'file_name', index: 'file_name', width: '60', align: "center"
+							name: 'file_name', index: 'file_name', width: '130', align: "center" //파일명
 						},					
 						{
-							name: 'file_date', index: 'file_date', width: '60', align: "center",
+							name: 'file_date', index: 'file_date', width: '110', align: "center", //등록일
 							formatter: 'date', // 날짜 포맷터 사용
 					        formatoptions: {
-					            srcformat: 'Y-m-d', // 입력된 날짜 형식
-					            newformat: 'Y-m-d'  // 출력할 날짜 형식
+					            srcformat: 'Y-m-d H:i:s', // 입력된 날짜 형식
+					            newformat: 'Y-m-d H:i:s'  // 출력할 날짜 형식
 					        }
 						},
 						{
-							name: 'file_user', index: 'file_user', width: '60', align: "center"
+							name: 'file_user', index: 'file_user', width: '60', align: "center" //등록자
 						},
 						{
-							name: 'file_enddt', index: 'file_enddt', width: '60', align: "center",
+							name: 'file_enddt', index: 'file_enddt', width: '110', align: "center", //종료일자
 							formatter: 'date', // 날짜 포맷터 사용
 					        formatoptions: {
-					            srcformat: 'Y-m-d', // 입력된 날짜 형식
-					            newformat: 'Y-m-d'  // 출력할 날짜 형식
+					            srcformat: 'Y-m-d H:i:s', // 입력된 날짜 형식
+					            newformat: 'Y-m-d H:i:s'  // 출력할 날짜 형식
 					        }
 						},
 						{
-							name: 'file_path', index: 'file_path', width: '60', align: "center", hidden: true
+							name: 'file_path', index: 'file_path', width: '60', align: "center", hidden: true //파일서버경로
 						},
 						{
 							name: 'id1', index: 'id1', width: '60', align: "center" //담당
@@ -311,7 +382,7 @@
 							name: 'id3', index: 'id3', width: '60', align: "center" //과장
 						},
 						{
-							name: 'id1_date', index: 'id1_date', width: '60', align: "center", hidden: true,
+							name: 'id1_date', index: 'id1_date', width: '60', align: "center", hidden: true, //담당확인일자
 							formatter: 'date',
 					        formatoptions: {
 					            srcformat: 'Y-m-d',
@@ -319,7 +390,7 @@
 					        }
 						},
 						{
-							name: 'id2_date', index: 'id2_date', width: '60', align: "center", hidden: true,
+							name: 'id2_date', index: 'id2_date', width: '60', align: "center", hidden: true, //실장확인일자
 							formatter: 'date',
 					        formatoptions: {
 					            srcformat: 'Y-m-d',
@@ -327,7 +398,7 @@
 					        }
 						},
 						{
-							name: 'id3_date', index: 'id3_date', width: '60', align: "center", hidden: true,
+							name: 'id3_date', index: 'id3_date', width: '60', align: "center", hidden: true, //과장확인일자
 							formatter: 'date', // 날짜 포맷터 사용
 					        formatoptions: {
 					            srcformat: 'Y-m-d', // 입력된 날짜 형식
@@ -365,7 +436,8 @@
 	function getGridList2(){
 		var params = {}
 		params.isSearch2 = "true"; // 검색여부를 true로 세팅
-		params.searchInput2 = $('#searchInput2').val(); // 검색어를 파라미터 searchInput2에 할당, 검색어=searchInput2 ID 를 가진 입력란의 값 
+		params.searchInput2 = $('#searchInput2').val(); // 검색어를 파라미터 searchInput2에 할당, 검색어=searchInput2 ID 를 가진 입력란의 값
+		params.code = selGrid1Row;
 
 		console.log("getGridList2 >>>" + JSON.stringify(params));
 
@@ -378,105 +450,93 @@
 		}).trigger("reloadGrid"); //그리드1 파라미터 업데이트 & 그리드 재조회
 	}
 	
+	
 	/**
-	그리드 사용등록 버튼(grid2 / 클릭시 등록일자 오늘날짜로 변경 & 종료일자가 있다면 종료일자는 제거)
-	*/	
+	 * 그리드 사용등록 버튼 클릭(grid2 / 클릭시 등록일자 오늘날짜로 변경 & 종료일자가 있다면 종료일자는 비우기)
+	 */
 	$("#updateGrid2Row").click(function() {
 	    var selIdx = $('#list2').getGridParam('selrow'); // 선택한 행의 인덱스 가져오기
 	    
 	    if (selIdx == null) {
-	        alert("그리드에서 사용등록할 행을 선택해주세요");
+	        alert("사용등록할 파일을 선택해주세요");
 	    } else {
 	        var currentDate = new Date().toISOString().split('T')[0]; // 현재 날짜를 YYYY-MM-DD 형식으로 가져옴
 	        var gridObj = $('#list2');
 	        var rowData = gridObj.getRowData(selIdx); // 선택한 행의 데이터 가져오기
 
 	        $.ajax({
-	            url: "/updateGrid2Row.do", // 실제 엔드포인트로 변경
+	            url: "/updateGrid2Row.do", // 사용등록 엔드포인트로 변경
 	            method: "POST",
 	            data: {
 	                code: rowData.code,
-	                code_no: rowData.code_no,
-	                file_date: currentDate,
-	                file_user: rowData.file_user, // 기존 사용자 정보 유지
-	                file_enddt: rowData.file_enddt // 기존 종료일자 정보 유지
+	                codeNo: rowData.code_no
 	            },
+	            dataType : "json", // 서버에서 리턴 받는 데이터 타입
 	            success: function(response) {
+	            	console.log("response >>>" + JSON.stringify(response));
+	            	//alert("response >>>" + response.result);
 	                if (response.result === "success") {
 	                    rowData.file_date = currentDate;
+	                    if (rowData.file_enddt) {
+	                        // 종료일자가 있다면 종료일자 데이터를 비움
+	                        rowData.file_enddt = ''; 
+	                    }
 	                    gridObj.setRowData(selIdx, rowData);
-	                    alert("데이터가 성공적으로 업데이트되었습니다.");
+	                    alert("사용등록이 완료되었습니다");
+	                    getGridList2();
 	                } else {
-	                    alert("데이터 업데이트 실패");
+	                    alert("사용등록 실패");
 	                }
 	            },
 	            error: function() {
-	                alert("데이터 업데이트 실패");
+	                alert("사용등록 실패");
+	            }
+	        });
+	    }
+	});
+	
+	
+	/**
+	 * 그리드 사용종료 버튼 클릭(grid2 / 클릭시 종료일자 현재날짜로 변경)
+	 */
+	$("#deleteGrid2Row").click(function() {
+	    var selIdx = $('#list2').getGridParam('selrow'); // 선택한 행의 인덱스 가져오기
+	    
+	    if (selIdx == null) {
+	        alert("사용종료할 파일을 선택해주세요");
+	    } else {
+	        var currentDate = new Date().toISOString().split('T')[0]; // 현재 날짜를 YYYY-MM-DD 형식으로 가져옴
+	        var gridObj = $('#list2');
+	        var rowData = gridObj.getRowData(selIdx); // 선택한 행의 데이터 가져오기
+
+	        $.ajax({
+	            url: "/deleteGrid2Row.do", // 사용종료 엔드포인트로 변경
+	            method: "POST",
+	            data: {
+	                code: rowData.code,
+	                codeNo: rowData.code_no
+	            },
+	            dataType : "json", // 서버에서 리턴 받는 데이터 타입
+	            success: function(response) {
+	            	console.log("response >>>" + JSON.stringify(response));
+	            	//alert("response >>>" + response.result);
+	                if (response.result === "success") {
+	                    rowData.file_date = currentDate;	                    
+	                    gridObj.setRowData(selIdx, rowData);
+	                    alert("사용종료가 완료되었습니다");
+	                    getGridList2();
+	                } else {
+	                    alert("사용종료 실패");
+	                }
+	            },
+	            error: function() {
+	                alert("사용종료 실패");
 	            }
 	        });
 	    }
 	});
 
 
-
-
-	/**
-	그리드 '삭제' 버튼 클릭
-	*/
-	$("#deleteGrid1Row").click(function(){
-		var params   = {} // 파라미터를 담을 변수 선언
-		var isAll    = this.id == 'deleteGrid1Row' ? 'true' : 'false'; // deleteGrid1Row를 누르면 isAll(상하위 전부삭제) , 그렇지않은 경우 false(하위만 삭제)
-		var gridObj  = isAll == 'true' ? 'list1' : 'list2'; // isAll 인경우 list1 할당 , 아닌경우 list2 할당
-		var selIdx   = $('#'+gridObj).getGridParam('selrow');  // 선택한 그리드에서 선택된 행의 인덱스 가져오기
-		
-		if(selIdx == null){
-			alert("그리드에서 삭제할 행을 선택해주세요");
-		}else{
-			var code = $('#'+gridObj).getRowData(selIdx).code; // 선택한 그리드의 선택된 행에서 code 값 가져옴
-			var code_no  = $('#'+gridObj).getRowData(selIdx).code_no; // 선택한 그리드의 선택된 행에서 code_no 값 가져옴
-	
-			params.isAll    = isAll; // 상위테이블 여부 파라미터 세팅[true일 경우 상위/하위 테이블의 데이터를 가팅 삭제 / false일 경우 하위 테입르의 데이터만 삭제]
-			params.code = code;  // DOC_CODE 파라미터 세팅
-			params.code_no  = code_no; // DOC_NUM 파라미터 세팅
-	
-			setDeleteData(params); // ajax 삭제 함수 호출
-		}
-	});
-
-	/**
-	    선택한 그리드 데이터 삭제
-	*/
-	function setDeleteData(params){
-		$.ajax({
-            type: "post",
-            url : "/dcListDelete.do",
-            data: {
-            	  isAll : params.isAll
-            	, code : params.code
-            	, code_no : params.code_no
-            },
-            dataType : "json",
-            error: function(data){
-                console.log('error');
-                alert("error");
-            },
-            success: function(data){
-            	//console.log("data >>>" + JSON.stringify(data));
-                if(data.result == '1'){
-                    alert('데이터를 삭제 하였습니다.');
-                    if(params.isAll = 'true'){
-                    	getGridList(); // 그리드1 조회
-                    	getGridList2(); // 그리드2 조회
-                    }else{
-                    	getGridList2();  // 그리드2 조회
-                    }
-                } else {
-                    alert('삭제중 오류가 발생하였습니다.');
-                }
-            }
-        })
-	}
-	
     // 탭 버튼 클릭 시 활성화 클래스 추가 및 제거
     document.addEventListener("DOMContentLoaded", function() {
         const tabs = document.querySelectorAll(".tab");
