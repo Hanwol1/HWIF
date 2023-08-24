@@ -103,7 +103,7 @@
 	<!--grid1 -->
 	<script type="text/javascript">
 		var selGrid1Row = 0;
-		
+		var firstBlur = 0;
 		//html -> japGrid 로 변환 및 그리드 설정 정의
 		$('#list1').jqGrid({ 
 			url            : "/dcListGrid100.do", // 서버주소
@@ -129,35 +129,37 @@
 								name: 'code_type', index: 'code_type', width: '60', align: 'center', hidden: true //문서타입
 							},
 							{
-								name: 'code', index: 'code', width: '60', align: "center",hidden: false //문서코드
+								name: 'code', index: 'code', width: '60', align: "center",hidden: false, editable : false //문서코드
 							},
 							{
-								name: 'item1', index: 'item1', width: '60', align: "center" //문서명
+								name: 'item1', index: 'item1', width: '60', align: "center", editable : false //문서명
 							},
 							{
 								name: 'item2', index: 'item2', width: '50', align: "center", //최종문서 체크박스
-								formatter: "checkbox", formatoptions: { disabled: true },
+								formatter: "checkbox", formatoptions: { disabled: false },editable : true, edittype: 'checkbox', 
+								editoptions: { value: "Y:N", defaultValue :"Y"} 
 							},
 							{
-								name: 'item3', index: 'item3', width: '60', align: "center" //담당자
+								name: 'item3', index: 'item3', width: '60', align: "center", editable : false //담당자
 							},
 							{
-								name: 'item4', index: 'item4', width: '60', align: "center" //실장
+								name: 'item4', index: 'item4', width: '60', align: "center", editable : false //실장
 							},
 							{
-								name: 'item5', index: 'item5', width: '60', align: "center" //과장
+								name: 'item5', index: 'item5', width: '60', align: "center", editable : false //과장
 							},
 							{
-								name: 'remark1', index: 'remark1', width: '60', align: "center" //문서형식
+								name: 'remark1', index: 'remark1', width: '60', align: "center", editable : false //문서형식
 							},
 							{
-								name: 'remark2', index: 'remark2', width: '60', align: "center" //비고란
+								name: 'remark2', index: 'remark2', width: '60', align: "center", editable : false //비고란
 							},
 							{
-								name: 'comments', index: 'comments', width: '60', align: "center", hidden: true //코멘트
+								name: 'comments', index: 'comments', width: '60', align: "center", hidden: true, editable : false //코멘트
 							}
 						],
-			
+						
+			multiselect: true,
 			autowidth   : true, //그리드 너비 자동설정
 			shrinkToFit : true, //컬럼 너비 그리드에 맞게 조절
 			height      : "auto", // 테이블의 세로 크기, Grid의 높이
@@ -166,18 +168,58 @@
 			rowNum      : -1, //한 번에 보여줄 행의 개수를 지정, -1=모든행을 보여줌
 			rownumbers  : true, //각 행에 번호를 부여하는 표시옵션
 			gridview    : true, // 그리드 랜더링시 성능을 향상시키는 옵션
+			cellEdit: true,
+            cellsubmit: 'clientArray',        
 			loadComplete: function (data) {
 				//console.log("loadComplete >>>");
 			}, // loadComplete END
 			gridComplete : function (data) {
 				console.log("gridComplete >>>");
 				$("#list1").jqGrid('setSelection', "1", true); // 그리드 생성 및 촉화 후 호출되는 함수 정의 + 그리드1의 첫번째 행을 디폴트로 선택하는 이벤트
+				$('#list1').jqGrid('setSelection', '1').prop('checkbox', false); // 1번째 체크박스 선택 해제
 			},
+			
+			 // 그리드1 cellEdit 설정
+	        ondblClickRow: function (rowid, iRow, iCol, e) {
+	        	console.log('ondblClickRow');
+	            var $target = $(e.target);
+	            var colName = $target.closest('td').attr('aria-describedby'); // 더블클릭한 컬럼의 이름을 가져옴
+
+	            // 더블클릭한 컬럼이 특정 컬럼인 경우에만 에디터 모드로 변경
+	            if (colName !== undefined && colName !== null) {
+	                var colIndex = iCol; // 더블클릭한 컬럼의 인덱스
+	                var colModel = $("#list1").jqGrid('getGridParam', 'colModel');
+	                
+	                // 모든 컬럼을 일단 비활성화
+	               /*  for (var i = 0; i < colModel.length; i++) {
+	                    $("#list1").jqGrid('setColProp', colModel[i].name, { editable: false });
+	                }
+	                 */
+	                // 클릭한 컬럼만 에디터 모드로 변경
+	                $("#list1").jqGrid('setColProp', colModel[colIndex].name, { editable: true });
+	                $("#list1").jqGrid('editRow', rowid, { keys: true });
+	                
+	            }
+	           
+               $("input", e.target).focus().blur(function() {
+                	console.log("firstBlur >>>" + firstBlur);
+                	if(firstBlur > 0){
+                		console.log("focus out 000000000000000000000000");
+                		$("#list1").jqGrid('restoreRow', iRow);
+                	}else{
+                		firstBlur = firstBlur+1 ;
+                		
+                		console.log('first blur !!!' + firstBlur)  
+                		
+                	}
+                });
+	        },
 			//그리드1 선택행으로 그리드2 화면 갱신 로직
 			onSelectRow: function (rowid) {
 				var params = {} //피라미터를 담을 객체생성
 				params.isSearch2 = "true"; // 검색여부를 true로 세팅
 				params.code = $('#list1').getRowData(rowid).code; // 선택행의 값을 params.code 에 설정 -> 그리드1의 선택값을 그리드2에서 사용하기위함
+				params.includeExpired = $('#includeExpired').is(':checked');
 				selGrid1Row = $('#list1').getRowData(rowid).code; // 전역변수인 selGrid1Row에도 선택된 행의 코드값을 저장
 				
 				$("#list2").clearGridData();//그리드2의 데이터 초기화 -> 선택행에따라 새로운 데이터로 갱신
@@ -189,8 +231,32 @@
 					loadComplete:  //그리드2 데이터 로딩 완료후 실행되는 함수(빈 상태)
 					function(postData){} 
 				}).trigger("reloadGrid");
+			},
+			
+			onCellSelect: function (rowid) {
+				var params = {} //피라미터를 담을 객체생성
+				params.isSearch2 = "true"; // 검색여부를 true로 세팅
+				params.code = $('#list1').getRowData(rowid).code; // 선택행의 값을 params.code 에 설정 -> 그리드1의 선택값을 그리드2에서 사용하기위함
+				params.includeExpired = $('#includeExpired').is(':checked');
+				selGrid1Row = $('#list1').getRowData(rowid).code; // 전역변수인 selGrid1Row에도 선택된 행의 코드값을 저장
+				
+				$("#list2").clearGridData();//그리드2의 데이터 초기화 -> 선택행에따라 새로운 데이터로 갱신
+				
+				//그리드2 파라미터 설정 , reloadGrid 이벤트를 트리거해서 그리드를 다시 로드
+				$("#list2").setGridParam({
+					datatype : "json",
+					postData : params ,
+					loadComplete:  //그리드2 데이터 로딩 완료후 실행되는 함수(빈 상태)
+					function(postData){} 
+				}).trigger("reloadGrid");
+			},
+			afterEditCell: function(id,name,val,iRow,iCol){
+				console.log('afterEditCell');
+				
 			}
 		});
+		
+		
 
 		/**
 		그리드1,2 조회('조회'버튼)
@@ -273,16 +339,7 @@
 	        })
 		}
 		
-		
-		// '사용종료 포함' 체크박스 변경 이벤트 리스너 등록
-		$("#includeExpired").change(function() {
-		    var includeExpired = $(this).prop("checked"); // 체크박스의 체크 여부 가져오기
-
-		    // 그리드2 데이터 필터링 및 다시 로드
-		    filterAndReloadGrid2(includeExpired);
-		});
-			
-		
+	
 		/**
 		그리드1 검색('찾기'버튼)
 		*/
@@ -409,7 +466,7 @@
 							name: 'comments', index: 'comments', width: '60', align: "center", hidden: true //코멘트
 						}
 					],
-		
+		multiselect: true,
 		autowidth   : true, //컬럼 너비 자동 조정
 		shrinkToFit : true, //그리드 전체가 너비보다 작을 경우 컬럼을 축소
 		height      : "auto", // 테이블의 세로 크기, Grid의 높이
@@ -418,13 +475,39 @@
 		rowNum      : -1,
 		rownumbers  : true, //각 행 앞에 순번을 표시
 		gridview    : true, // 그리드 뷰 활성화
+		cellEdit: true,
+        cellsubmit: 'clientArray', 
 		loadComplete: function (data) {
 		
 		}, // 데이터 로딩이 완료된 후 실행할 함수설정
 		onSelectRow: function (rowid) {
 			//행이 선택될 떄 실행할 함수를 설정
-		}
+		},
+		
+		// 그리드2 cellEdit 설정
+        ondblClickRow: function (rowid, iRow, iCol, e) {
+            var $target = $(e.target);
+            var colName = $target.closest('td').attr('aria-describedby'); // 더블클릭한 컬럼의 이름을 가져옴
+
+            // 더블클릭한 컬럼이 특정 컬럼인 경우에만 에디터 모드로 변경
+            if (colName !== undefined && colName !== null) {
+                var colIndex = iCol; // 더블클릭한 컬럼의 인덱스
+                var colModel = $("#list2").jqGrid('getGridParam', 'colModel');
+                
+                // 모든 컬럼을 일단 비활성화
+                for (var i = 0; i < colModel.length; i++) {
+                    $("#list2").jqGrid('setColProp', colModel[i].name, { editable: false });
+                }
+                
+                // 클릭한 컬럼만 에디터 모드로 변경
+                $("#list2").jqGrid('setColProp', colModel[colIndex].name, { editable: true });
+                $("#list2").jqGrid('editRow', rowid, { keys: true });
+            }
+        }
+		
 		});
+	
+		
 	
 	/**
 	그리드 찾기 버튼 클릭(grid2)
@@ -438,6 +521,8 @@
 		params.isSearch2 = "true"; // 검색여부를 true로 세팅
 		params.searchInput2 = $('#searchInput2').val(); // 검색어를 파라미터 searchInput2에 할당, 검색어=searchInput2 ID 를 가진 입력란의 값
 		params.code = selGrid1Row;
+		
+		params.includeExpired = $('#includeExpired').is(':checked');
 
 		console.log("getGridList2 >>>" + JSON.stringify(params));
 
@@ -535,6 +620,27 @@
 	        });
 	    }
 	});
+	
+	/*'사용종료 포함'체크박스 */
+	$("#includeExpired").click(function() {
+		var params = {} //피라미터를 담을 객체생성
+		var rowid   = $('#list1').getGridParam('selrow');  // 선택한 그리드에서 선택된 행의 인덱스 가져오기
+
+		params.isSearch2 = "true"; // 검색여부를 true로 세팅
+		params.code = $('#list1').getRowData(rowid).code; // 선택행의 값을 params.code 에 설정 -> 그리드1의 선택값을 그리드2에서 사용하기위함
+		params.includeExpired = $('#includeExpired').is(':checked');
+		selGrid1Row = $('#list1').getRowData(rowid).code; // 전역변수인 selGrid1Row에도 선택된 행의 코드값을 저장
+		
+		$("#list2").clearGridData();//그리드2의 데이터 초기화 -> 선택행에따라 새로운 데이터로 갱신
+		
+		//그리드2 파라미터 설정 , reloadGrid 이벤트를 트리거해서 그리드를 다시 로드
+		$("#list2").setGridParam({
+			datatype : "json",
+			postData : params ,
+			loadComplete:  //그리드2 데이터 로딩 완료후 실행되는 함수(빈 상태)
+			function(postData){} 
+		}).trigger("reloadGrid");
+	});
 
 
     // 탭 버튼 클릭 시 활성화 클래스 추가 및 제거
@@ -553,6 +659,8 @@
     window.onload = function(){
     	getGridList("true"); // 그리드1 데이터 조회
     }
+    
+ 
 </script>
 
 
