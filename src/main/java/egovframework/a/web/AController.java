@@ -161,6 +161,10 @@ public class AController {
 	public JSONObject reagentA(@RequestParam Map<String, Object> map, HttpSession session, HttpServletRequest request,
 			HttpServletResponse response, Model model) throws Exception {
 		
+		System.out.print("ㅎㅇㅎㅇㅎㅇ");
+		for(String key : map.keySet()) {
+			System.out.println(key + ":" + map.get(key));
+		}
 		JSONObject json = new JSONObject();
 		
 		List<lisc500DTO> data = aService.lisc500();
@@ -186,7 +190,7 @@ public class AController {
 			map1.put("keepName", data.get(i).getKeepName());
 			map1.put("keepOpenName", data.get(i).getKeepOpenName());
 			map1.put("supplierName", data.get(i).getSupplierName());
-			map1.put("jejoCode", data.get(i).getJejoCode());
+			map1.put("jejoName", data.get(i).getJejoName());
 			map1.put("barcode", data.get(i).getBarcode());
 			map1.put("danga", data.get(i).getDanga());
 			map1.put("lotNo", data.get(i).getLotNo());

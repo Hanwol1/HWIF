@@ -23,16 +23,27 @@
 		WHERE id=#{id} AND password=#{password};
 	</select>
 	
-	<select id="lisq100" resultType="egovframework.d.model.lisq100DTO">
+	<select id="lisq100" parameterType="java.util.Map" resultType="egovframework.d.model.lisq100DTO">
 		SELECT QC_CODE, QC_NAME, LOT_NO, QC_LEVEL, C.ITEM1, START_DATE, END_DATE, QC_SPECIMEN_SER
 		FROM lisq100 AS Q
 		JOIN lisc002 AS C
 		ON C.CODE_TYPE = 'JUNDAL_PART' AND Q.JUNDAL_PART = C.CODE
+		WHERE
+    		(#{endDate} = 'all' OR (#{endDate} = 'use' AND STR_TO_DATE(END_DATE, '%Y-%m-%d') >= CURDATE()) OR (#{endDate} = 'useNot' AND CURDATE() > STR_TO_DATE(END_DATE, '%Y-%m-%d')))
+    		AND
+    		(#{qcInOut} = 'all' OR QC_IN_OUT = #{qcInOut})
+    		AND
+    		(#{jundalPart} = 'all' OR Q.JUNDAL_PART = #{jundalPart})
+    		AND
+    		(#{qcName} = 'all' OR QC_NAME = #{qcName})
 		ORDER BY QC_CODE, QC_NAME, QC_LEVEL, START_DATE;
 	</select>
 	
 	<select id="lisq110" parameterType="String" resultType="egovframework.d.model.lisq110DTO">
-		SELECT Q.TEST_CODE, C1.GUMSA_NAME1, C2.ITEM1, MEAN_VALUE, SD_VALUE, CV_VALUE, LOW_VALUE, HIGH_VALUE, SUSUL_VALUE, DANUI, Q.START_DATE, Q.END_DATE, RULE_1_2S, GUBUN_1_2S, RULE_1_3S, GUBUN_1_3S, RULE_2_2S, GUBUN_2_2S, RULE_R_4S, GUBUN_R_4S, RULE_4_1S, GUBUN_4_1S, RULE_10X, GUBUN_10X, TEST_CODE_SEQ, GRAPH_YN
+		SELECT Q.TEST_CODE, C1.GUMSA_NAME1, C2.ITEM1, MEAN_VALUE, SD_VALUE, CV_VALUE, LOW_VALUE, HIGH_VALUE, SUSUL_VALUE, 
+			DANUI, Q.START_DATE, Q.END_DATE, RULE_1_2S, GUBUN_1_2S, RULE_1_3S, GUBUN_1_3S, RULE_2_2S, GUBUN_2_2S, 
+			RULE_R_4S, GUBUN_R_4S, RULE_4_1S, GUBUN_4_1S, RULE_10X, GUBUN_10X, TEST_CODE_SEQ, GRAPH_YN,
+			QC_CODE, QC_LEVEL, LOT_NO, FK_START_DATE, FK_QC_START_DATE
 		FROM lisq110 AS Q
 		JOIN lisc100 AS C1
 		ON Q.TEST_CODE = C1.TEST_CODE
@@ -42,9 +53,76 @@
 		ORDER BY Q.QC_CODE, Q.TEST_CODE, C1.GUMSA_NAME1, Q.START_DATE;
 	</select>
 	
-	<select id="lisc100" resultType="egovframework.d.model.lisc100DTO">
-		SELECT TEST_CODE, GUMSA_NAME1
-		FROM lisc100
+	<select id="lisc100" parameterType="String" resultType="egovframework.d.model.lisc100DTO">
+		SELECT TEST_CODE, GUMSA_NAME1, RESULT_DANUI, ITEM1
+		FROM lisc100 AS C1
+		JOIN lisc002 AS C2
+		ON C2.CODE_TYPE = 'JUNDAL_PART' AND C1.JUNDAL_PART = C2.CODE
+		WHERE (#{jundalPart} = 'all' OR JUNDAL_PART = #{jundalPart}) 
 		ORDER BY TEST_CODE, GUMSA_NAME1;
 	</select>
+	
+	<select id="testPartList" resultType="egovframework.d.model.testPartListDTO">
+		SELECT CODE, ITEM1
+		FROM lisc002
+		WHERE CODE_TYPE = 'JUNDAL_PART' AND ITEM4 = 'Y';
+	</select>
+	
+	<select id="qcNameFindAll" resultType="String">
+		SELECT DISTINCT QC_NAME
+		FROM lisq100;
+	</select>
+	
+	<select id="qcNameListByTestPart" parameterType="String" resultType="String">
+		SELECT DISTINCT QC_NAME
+		FROM lisq100
+		WHERE JUNDAL_PART = #{jundalPart}; 
+	</select>
+	
+	<insert id="addData" parameterType="egovframework.d.model.lisq110DTO">
+		INSERT INTO USER (
+			id, 
+			password
+		) VALUES (
+			#{id},
+			#{password}
+		);
+    </insert>
+    
+    <update id="updateData" parameterType="egovframework.d.model.lisq110DTO">
+    	<!-- 		Q.TEST_CODE, C1.GUMSA_NAME1, C2.ITEM1, MEAN_VALUE, SD_VALUE, CV_VALUE, LOW_VALUE, HIGH_VALUE, SUSUL_VALUE, DANUI, Q.START_DATE, Q.END_DATE, RULE_1_2S, GUBUN_1_2S, RULE_1_3S, GUBUN_1_3S, RULE_2_2S, GUBUN_2_2S, RULE_R_4S, GUBUN_R_4S, RULE_4_1S, GUBUN_4_1S, RULE_10X, GUBUN_10X, TEST_CODE_SEQ, GRAPH_YN -->
+        UPDATE lisq110
+        SET TEST_CODE = #{testCode},
+            JUNDAL_PART = #{item1},
+            MEAN_VALUE = #{meanValue},
+            SD_VALUE = #{sdValue},
+            CV_VALUE = #{cvValue}, 
+            LOW_VALUE = #{lowValue}, 
+            HIGH_VALUE = #{highValue}, 
+            SUSUL_VALUE = #{susulValue}, 
+            DANUI = #{danui}, 
+            START_DATE = #{startDate}, 
+            END_DATE = #{endDate}, 
+            RULE_1_2S = #{rule12S}, 
+            GUBUN_1_2S = #{gubun12S}, 
+            RULE_1_3S = #{rule13S}, 
+            GUBUN_1_3S = #{gubun13S}, 
+            RULE_2_2S = #{rule22S}, 
+            GUBUN_2_2S = #{gubun22S}, 
+            RULE_R_4S = #{ruleR4S}, 
+            GUBUN_R_4S = #{gubunR4S}, 
+            RULE_4_1S = #{rule41S}, 
+            GUBUN_4_1S = #{gubun41S}, 
+            RULE_10X = #{rule10X}, 
+            GUBUN_10X = #{gubun10X}, 
+            TEST_CODE_SEQ = #{testCodeSeq}, 
+            GRAPH_YN = #{graphYN}
+        WHERE QC_CODE = #{qcCode} AND QC_LEVEL = #{qcLevel} AND LOT_NO = #{lotNo} AND TEST_CODE = #{testCode} AND FK_START_DATE = #{fkStartDate} AND FK_QC_START_DATE = #{fkQcStartDate}
+    </update>
+    
+    <select id="getJundalPart" parameterType="String" resultType="String">
+    	SELECT CODE
+    	FROM lisc002
+    	WHERE ITEM1 = #{jundalPart};
+    </select>
 </mapper>
