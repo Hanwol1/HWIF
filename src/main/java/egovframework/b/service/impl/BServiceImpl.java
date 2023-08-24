@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import egovframework.b.mapper.BMapper;
 import egovframework.b.model.QcResultDTO;
 import egovframework.b.model.QcResultDateDTO;
+import egovframework.b.model.QcResultGumsaResponseDTO;
 import egovframework.b.model.QcResultRequestDTO;
 import egovframework.b.model.UserBDTO;
 import egovframework.b.model.QcCodeDTO;
@@ -73,9 +74,9 @@ public class BServiceImpl implements BService {
 	}
 
 	@Override
-	public List<QcCodeDTO> qcCodeList() {
+	public List<QcCodeDTO> qcCodeList(String data) {
 		// TODO Auto-generated method stub
-		return bMapper.qcCodeFindAll();
+		return bMapper.qcCodeFindAll(data);
 	}
 
 	@Override
@@ -116,6 +117,18 @@ public class BServiceImpl implements BService {
         }
 		
 		return result;
+	}
+
+	@Override
+	public String qcCodeFindOne(String data) {
+		// TODO Auto-generated method stub
+		return bMapper.qcCodeFindOne(data);
+	}
+
+	@Override
+	public List<QcResultGumsaResponseDTO> findGumsa() {
+		// TODO Auto-generated method stub
+		return bMapper.findGumsa();
 	}
 
 }

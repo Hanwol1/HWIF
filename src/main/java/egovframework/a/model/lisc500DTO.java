@@ -19,7 +19,7 @@ public class lisc500DTO {
 	private String keepName;        // 보관방법
 	private String KeepOpenName;    // 개봉후보관방법
 	private String supplierName;    // 거래처명
-	private String jejoCode;        // 제조사코드(명)
+	private String jejoName;        // 제조사코드(명)
 	private String barcode;         // 바코드
 	private String danga;           // 단가
 	private String lotNo;           // Lot No
@@ -30,7 +30,12 @@ public class lisc500DTO {
 	 
 	
 	
-	
+	public String getJejoName() {
+		return jejoName;
+	}
+	public void setJejoName(String jejoName) {
+		this.jejoName = jejoName;
+	}
 	public String getTestCode() {
 		return testCode;
 	}
@@ -139,12 +144,7 @@ public class lisc500DTO {
 	public void setSupplierName(String supplierName) {
 		this.supplierName = supplierName;
 	}
-	public String getJejoCode() {
-		return jejoCode;
-	}
-	public void setJejoCode(String jejoCode) {
-		this.jejoCode = jejoCode;
-	}
+	
 	public String getBarcode() {
 		return barcode;
 	}

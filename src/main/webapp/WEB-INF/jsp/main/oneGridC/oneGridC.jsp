@@ -11,7 +11,7 @@
 	<!-- 위 -->
 	<div class="up">
 		<div class="up-btn">
-			<button class="btn"><img src="/images/search.png" class="icon">조회</button>
+			<button class="btn" onclick="Grid1()"><img src="/images/search.png" class="icon">조회</button>
 			<button class="btn"><img src="/images/save.png" class="icon">저장</button>
 		</div>
 	</div>
@@ -42,9 +42,9 @@
 					<button class="btn" id="btn_add_row2"><img src="/images/search.png" class="icon">입력</button>
 					<button class="btn" id="btn_delete_row2"><img src="/images/delete.png" class="icon-x">삭제</button>
 					<div class="modalall">
-						<button class="btn" onclick="handleOpen(modal1)" id="coulmn"><img src="/images/settings.png" class="icon">컬럼설정</button>
+						<button class="btn" onclick="handleOpen(modal1)" id="coulmn1"><img src="/images/settings.png" class="icon">컬럼설정</button>
 						<!-- Modal  -->
-						<div class="modal" id="myModal">
+						<div class="modal" id="myModal1">
 							<div class="box">
 								<div class="modalText">코드 (30자리) <input type="text" name="" class="modalInput" id="code" ></div>
 								<div class="modalText">항목 1 (80자리) <input type="text" name="" class="modalInput" id="item1" ></div>
@@ -89,13 +89,204 @@
 			</div>
 		</div>
 	</div>
-	
-	
-	
-	
-	
+
 	
 	<script>
+	// Grid --------------------------------------------------------------------------------------------------
+	// Grid1
+	function Grid1(){
+		$("#lisc001DTO").jqGrid("GridUnload");
+		$('#lisc001DTO').jqGrid({  // id
+		    url: "/oneGridC.do",	// 서버주소 
+		    reordercolNames:true,
+		    postData : { type:"A" }, // 보낼 파라미터
+		    mtype:'POST',	// 전송 타입
+		    datatype : "json",	// 받는 데이터 형태 
+		    colNames:['코드','코드명', '비고', 'ITEM1', 'ITEM2'],	//컬럼명
+		    colModel:
+		    [
+		   	 	 { name: 'CODE_TYPE', index: 'CODE_TYPE', width: '40', align:"center"},
+			     { name: 'CODE_TYPE_NAME', index: 'CODE_TYPE_NAME', width: '40', align:"center"},
+			     {
+			         name: 'COMMENTS',
+			         index: 'COMMENTS',
+			         width: '10',
+			         align: 'center',
+			         editable: true, // 편집 가능한 상태로 설정
+			         edittype: 'textarea', // 편집 타입을 textarea로 설정
+			         editoptions: {
+			             rows: 3, // textarea의 높이를 설정 (행 수)
+			             cols: 30 // textarea의 너비를 설정 (문자 수)
+			         }
+			     },
+			     { name: 'ITEM1', index: 'ITEM1', width: '40', align:"center", hidden: true},
+			     { name: 'ITEM2', index: 'ITEM2', width: '40', align:"center", hidden: true}
+			], //서버에서 받은 데이터 설정
+		    jsonReader: 
+		    {
+			     repeatitems: false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
+			     root:'rows', //서버의 결과 내용에서 데이터를 읽어오는 기준점
+			     records:'records'  // 보여지는 데이터 갯수(레코드) totalRecord 
+		    },
+		    autowidth: true,
+		  	rownumbers: true,         
+		  	gridview : false,  // 선표시 true/false  
+			shrinkToFit: true,
+		    height: "auto",//테이블의 세로 크기, Grid의 높이         
+		  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
+		  	emptyrecords: "Nothing to display",  // 데이터없을떄
+		  	rowNum:-1, 
+		  	loadComplete: function(data)
+		  	{  
+		      console.log(data);
+		      jQuery('#lisc001DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
+		  	},	// loadComplete END   
+		  	
+			// Grid2
+		  	onSelectRow: function(rowid) {
+		  		Grid2();
+		  	} 
+		})
+	}
+	Grid1();
+	
+	
+	// Grid2
+	function Grid2(){
+		$('#lisc001DTO').getRowData(rowid);
+     	//선택한 열의 데이터 가져오기  -  var selRowData = $("#lisc001DTO").getRowData(rowid);
+     	var rowid, codetype, item1;
+     	rowid  = $("#lisc001DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
+        codetype = $("#lisc001DTO").jqGrid('getRowData', rowid).CODE_TYPE;   // 선택한 열중에서 grid내의 정보를 가져온다.
+        item1 = $("#lisc001DTO").jqGrid('getRowData', rowid).ITEM1;
+        
+        var item1Array = item1.split(";"); // ';'로 분리하여 배열로 저장
+        console.log(item1Array); // 배열 출력
+        console.log(codetype);
+        console.log(item1);		// Grid2의 컬럼설정 모달에 들어갈 값
+        
+        $("#myModal1 input#code").val(item1Array[0] || '');
+        $("#myModal1 input#item1").val(item1Array[1] || '');
+        $("#myModal1 input#item2").val(item1Array[2] || '');
+        $("#myModal1 input#item3").val(item1Array[3] || '');
+        $("#myModal1 input#item4").val(item1Array[4] || '');
+        $("#myModal1 input#item5").val(item1Array[5] || '');
+        $("#myModal1 input#remark1").val(item1Array[6] || '');
+        $("#myModal1 input#remark2").val(item1Array[7] || '');
+        
+        $("#lisc002DTO").jqGrid("GridUnload"); // 첫 번째 조회했던 그 값으로만 조회될 때 초기화
+        $('#lisc002DTO').jqGrid({
+        	url: "/oneGridC002.do",	// 서버주소 
+    	    reordercolNames:true,
+    	    postData : { type: codetype }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
+    	    mtype:'POST',	// 전송 타입
+    	    datatype : "json",	// 받는 데이터 형태 
+    	    colNames:['CODE', 'ITEM1', 'ITEM2', 'ITEM3', 'ITEM4', 'ITEM5', 'REMARK1', 'REMARK2'],	//컬럼명 item1Array로 바꾸기
+    	    colModel:
+    	    [
+    		     { name: 'CODE', index: 'CODE', width: '10', align:"center"},
+    		     { name: 'ITEM1', index: 'ITEM1', width: '10', align: "center" },
+    		     { name: 'ITEM2', index: 'ITEM2', width: '10', align: "center" },
+    		     { name: 'ITEM3', index: 'ITEM3', width: '10', align: "center" },
+    		     { name: 'ITEM4', index: 'ITEM4', width: '10', align: "center" },
+    		     { name: 'ITEM5', index: 'ITEM5', width: '10', align: "center" },
+    		     { name: 'REMARK1', index: 'REMARK1', width: '10', align: "center" },
+    		     { name: 'REMARK2', index: 'REMARK2', width: '10', align: "center" }
+    		], //서버에서 받은 데이터 설정
+    	    jsonReader: 
+    	    {
+    		     repeatitems: false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
+    		     root:'rows', //서버의 결과 내용에서 데이터를 읽어오는 기준점
+    		     records:'records'  // 보여지는 데이터 갯수(레코드) totalRecord 
+    	    },
+    	    autowidth: true,
+    	  	rownumbers: true,         
+    	  	gridview : false,  // 선표시 true/false  
+    		shrinkToFit: true,
+    	    height: "auto",//테이블의 세로 크기, Grid의 높이         
+    	  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
+    	  	emptyrecords: "Nothing to display",  // 데이터없을떄
+    	  	rowNum:-1, 
+    	  	loadComplete: function(data)
+    	  	{  
+    	      console.log(data);
+    	      jQuery('#lisc002DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
+    	  	},	// loadComplete END   
+    	  	
+    	  	// Grid3
+    	  	onSelectRow: function(rowid) {
+                $('#lisc002DTO').getRowData(rowid);
+                Grid3(rowid); // Grid3 함수 호출
+            }
+    	})	        
+	}
+	
+	
+	// Grid3
+	function Grid3(){
+		$('#lisc001DTO').getRowData(rowid);
+  		$('#lisc002DTO').getRowData(rowid);
+     	//선택한 열의 데이터 가져오기  -  var selRowData = $("#lisc001DTO").getRowData(rowid);
+     	var rowid, code, item2;
+     	rowitem2id  = $("#lisc001DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
+     	rowid  = $("#lisc002DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
+        code = $("#lisc002DTO").jqGrid('getRowData', rowid).CODE;   // 선택한 열중에서 grid내의 정보를 가져온다.
+		item2 = $("#lisc001DTO").jqGrid('getRowData', rowitem2id).ITEM2;   // 001의 ITEM2 값을 가져옴
+		console.log(code);
+        var item2Array = item2.split(";"); // ';'로 분리하여 배열로 저장
+        console.log(item2Array); // 배열 출력
+        console.log(item2);		// Grid3의 컬럼설정 모달에 들어갈 값
+        
+        $("#myModal2 input#code").val(item2Array[0] || '');
+        $("#myModal2 input#item1").val(item2Array[1] || '');
+        $("#myModal2 input#item2").val(item2Array[2] || '');
+        $("#myModal2 input#item3").val(item2Array[3] || '');
+        $("#myModal2 input#item4").val(item2Array[4] || '');
+        $("#myModal2 input#item5").val(item2Array[5] || '');
+        $("#myModal2 input#remark1").val(item2Array[6] || '');
+        $("#myModal2 input#remark2").val(item2Array[7] || '');
+
+        $("#lisc003DTO").jqGrid("GridUnload"); // 첫 번째 조회했던 그 값으로만 조회될 때 초기화
+        $('#lisc003DTO').jqGrid({
+        	url: "/oneGridC003.do",	// 서버주소 
+    	    reordercolNames:true,
+    	    postData : { type: code }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
+    	    mtype:'POST',	// 전송 타입
+    	    datatype : "json",	// 받는 데이터 형태 
+    	    colNames:['CODE2', 'ITEM1', 'ITEM2', 'ITEM3', 'ITEM4', 'ITEM5', 'REMARK1', 'REMARK2'],	//컬럼명
+    	    colModel:
+    	    [
+    		     { name: 'CODE2', index: 'CODE2', width: '10', align:"center"},
+    		     { name: 'ITEM1', index: 'ITEM1', width: '10', align: "center" },
+    		     { name: 'ITEM2', index: 'ITEM2', width: '10', align: "center" },
+    		     { name: 'ITEM3', index: 'ITEM3', width: '10', align: "center" },
+    		     { name: 'ITEM4', index: 'ITEM4', width: '10', align: "center" },
+    		     { name: 'ITEM5', index: 'ITEM5', width: '10', align: "center" },
+    		     { name: 'REMARK1', index: 'REMARK1', width: '10', align: "center" },
+    		     { name: 'REMARK2', index: 'REMARK2', width: '10', align: "center" },
+    		], //서버에서 받은 데이터 설정
+    	    jsonReader: 
+    	    {
+    		     repeatitems: false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
+    		     root:'rows', //서버의 결과 내용에서 데이터를 읽어오는 기준점
+    		     records:'records'  // 보여지는 데이터 갯수(레코드) totalRecord 
+    	    },
+    	    autowidth: true,
+    	  	rownumbers: true,         
+    	  	gridview : false,  // 선표시 true/false  
+    		shrinkToFit: true,
+    	    height: "auto",//테이블의 세로 크기, Grid의 높이         
+    	  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
+    	  	emptyrecords: "Nothing to display",  // 데이터없을떄
+    	  	rowNum:-1, 
+    	  	loadComplete: function(data)
+    	  	{  
+    	      console.log(data);
+    	  	}	// loadComplete END   
+		})
+	}
+	
+	// btn --------------------------------------------------------------------------------------------------------
 	// search lisc001DTO
 	function searchGrid(){ 
 		var searchval = $('#search').val(); // 검색어 
@@ -133,309 +324,46 @@
     	      console.log(data);
     	      jQuery('#lisc001DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
     	  	},	// loadComplete END   
-    	 // Grid2
-    	  	onSelectRow: function(rowid) {
-    	  		$('#lisc001DTO').getRowData(rowid);
-    	     	//선택한 열의 데이터 가져오기  -  var selRowData = $("#lisc001DTO").getRowData(rowid);
-    	     	var rowid, codetype;
-    	     	rowid  = $("#lisc001DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
-    	        codetype = $("#lisc001DTO").jqGrid('getRowData', rowid).CODE_TYPE;   // 선택한 열중에서 grid내의 정보를 가져온다.
-    	        console.log(codetype);
-    	        $("#lisc002DTO").jqGrid("GridUnload"); // 첫 번째 조회했던 그 값으로만 조회될 때 초기화
-    	        $('#lisc002DTO').jqGrid({
-    	        	url: "/oneGridC002.do",	// 서버주소 
-    	    	    reordercolNames:true,
-    	    	    postData : { type: codetype }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
-    	    	    mtype:'POST',	// 전송 타입
-    	    	    datatype : "json",	// 받는 데이터 형태 
-    	    	    colNames:['CODE_TYPE','CODE', 'ITEM1', 'ITEM2', 'ITEM3', 'ITEM4', 'ITEM5', 'REMARK1', 'REMARK2', 'COMMENTS'],	//컬럼명
-    	    	    colModel:
-    	    	    [
-    	    	   	 	 { name: 'CODE_TYPE', index: 'CODE_TYPE', width: '10', align:"center"},
-    	    		     { name: 'CODE', index: 'CODE', width: '10', align:"center"},
-    	    		     { name: 'ITEM1', index: 'ITEM1', width: '10', align: "center" },
-    	    		     { name: 'ITEM2', index: 'ITEM2', width: '10', align: "center" },
-    	    		     { name: 'ITEM3', index: 'ITEM3', width: '10', align: "center" },
-    	    		     { name: 'ITEM4', index: 'ITEM4', width: '10', align: "center" },
-    	    		     { name: 'ITEM5', index: 'ITEM5', width: '10', align: "center" },
-    	    		     { name: 'REMARK1', index: 'REMARK1', width: '10', align: "center" },
-    	    		     { name: 'REMARK2', index: 'REMARK2', width: '10', align: "center" },
-    	    		     { name: 'COMMENTS', index: 'COMMENTS', width: '10', align: "center" }
-    	    		], //서버에서 받은 데이터 설정
-    	    	    jsonReader: 
-    	    	    {
-    	    		     repeatitems: false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
-    	    		     root:'rows', //서버의 결과 내용에서 데이터를 읽어오는 기준점
-    	    		     records:'records'  // 보여지는 데이터 갯수(레코드) totalRecord 
-    	    	    },
-    	    	    autowidth: true,
-    	    	  	rownumbers: true,         
-    	    	  	gridview : false,  // 선표시 true/false  
-    	    		shrinkToFit: true,
-    	    	    height: "auto",//테이블의 세로 크기, Grid의 높이         
-    	    	  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
-    	    	  	emptyrecords: "Nothing to display",  // 데이터없을떄
-    	    	  	rowNum:-1, 
-    	    	  	loadComplete: function(data)
-    	    	  	{  
-    	    	      console.log(data);
-    	    	      jQuery('#lisc002DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
-    	    	  	},	// loadComplete END   
-    	    	  	
-    	    	  	
-    	    	  	
-    	    		// Grid3
-    	    	  	onSelectRow: function(rowid){
-    	    	  		$('#lisc002DTO').getRowData(rowid);
-    	    	     	//선택한 열의 데이터 가져오기  -  var selRowData = $("#lisc001DTO").getRowData(rowid);
-    	    	     	var rowid, code;
-    	    	     	rowid  = $("#lisc002DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
-    	    	        code = $("#lisc002DTO").jqGrid('getRowData', rowid).CODE;   // 선택한 열중에서 grid내의 정보를 가져온다.
-    	    	        console.log(code);
-    	    	        $("#lisc003DTO").jqGrid("GridUnload"); // 첫 번째 조회했던 그 값으로만 조회될 때 초기화
-    	    	        $('#lisc003DTO').jqGrid({
-    	    	        	url: "/oneGridC003.do",	// 서버주소 
-    	    	    	    reordercolNames:true,
-    	    	    	    postData : { type: code }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
-    	    	    	    mtype:'POST',	// 전송 타입
-    	    	    	    datatype : "json",	// 받는 데이터 형태 
-    	    	    	    colNames:['CODE_TYPE','CODE', 'ITEM1', 'ITEM2', 'ITEM3', 'ITEM4', 'ITEM5', 'REMARK1', 'REMARK2', 'COMMENTS'],	//컬럼명
-    	    	    	    colModel:
-    	    	    	    [
-    	    	    	   	 	 { name: 'CODE_TYPE', index: 'CODE_TYPE', width: '10', align:"center"},
-    	    	    		     { name: 'CODE', index: 'CODE', width: '10', align:"center"},
-    	    	    		     { name: 'ITEM1', index: 'ITEM1', width: '10', align: "center" },
-    	    	    		     { name: 'ITEM2', index: 'ITEM2', width: '10', align: "center" },
-    	    	    		     { name: 'ITEM3', index: 'ITEM3', width: '10', align: "center" },
-    	    	    		     { name: 'ITEM4', index: 'ITEM4', width: '10', align: "center" },
-    	    	    		     { name: 'ITEM5', index: 'ITEM5', width: '10', align: "center" },
-    	    	    		     { name: 'REMARK1', index: 'REMARK1', width: '10', align: "center" },
-    	    	    		     { name: 'REMARK2', index: 'REMARK2', width: '10', align: "center" },
-    	    	    		     { name: 'COMMENTS', index: 'COMMENTS', width: '10', align: "center" }
-    	    	    		], //서버에서 받은 데이터 설정
-    	    	    	    jsonReader: 
-    	    	    	    {
-    	    	    		     repeatitems: false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
-    	    	    		     root:'rows', //서버의 결과 내용에서 데이터를 읽어오는 기준점
-    	    	    		     records:'records'  // 보여지는 데이터 갯수(레코드) totalRecord 
-    	    	    	    },
-    	    	    	    autowidth: true,
-    	    	    	  	rownumbers: true,         
-    	    	    	  	gridview : false,  // 선표시 true/false  
-    	    	    		shrinkToFit: true,
-    	    	    	    height: "auto",//테이블의 세로 크기, Grid의 높이         
-    	    	    	  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
-    	    	    	  	emptyrecords: "Nothing to display",  // 데이터없을떄
-    	    	    	  	rowNum:-1, 
-    	    	    	  	loadComplete: function(data)
-    	    	    	  	{  
-    	    	    	      console.log(data);
-    	    	    	  	}	// loadComplete END   
-    	  				})
-    	    	  	}
-
-    	    	})	        
-    	  	}
+    	  	
+    	 	// Grid2
+		  	onSelectRow: function(rowid) {
+		  		Grid2();
+		  	}
     	  	
 		});	
     }
 	$("#search").change(function(){ searchGrid(); }) // searchGrid 함수 호출
-	
-	
 	$("#btn_search").on("click",function(){ searchGrid(); }) // searchGrid 함수 호출
-	
-	
-	// Grid1 lisc001DTO
-	function lisc001(){
-		$("#lisc001DTO").jqGrid("GridUnload");
-		$('#lisc001DTO').jqGrid({  // id
-		    url: "/oneGridC.do",	// 서버주소 
-		    reordercolNames:true,
-		    postData : { type:"A" }, // 보낼 파라미터
-		    mtype:'POST',	// 전송 타입
-		    datatype : "json",	// 받는 데이터 형태 
-		    colNames:['코드','코드명', '비고'],	//컬럼명
-		    colModel:
-		    [
-		   	 	 { name: 'CODE_TYPE', index: 'CODE_TYPE', width: '40', align:"center"},
-			     { name: 'CODE_TYPE_NAME', index: 'CODE_TYPE_NAME', width: '40', align:"center"},
-			     { name: 'COMMENTS', index: 'COMMENTS', width: '10', align: "center"/* , type: "textarea", editable: true, editoptions: {rows:"2",cols:"10"} */}
-			], //서버에서 받은 데이터 설정
-		    jsonReader: 
-		    {
-			     repeatitems: false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
-			     root:'rows', //서버의 결과 내용에서 데이터를 읽어오는 기준점
-			     records:'records'  // 보여지는 데이터 갯수(레코드) totalRecord 
-		    },
-		    autowidth: true,
-		  	rownumbers: true,         
-		  	gridview : false,  // 선표시 true/false  
-			shrinkToFit: true,
-		    height: "auto",//테이블의 세로 크기, Grid의 높이         
-		  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
-		  	emptyrecords: "Nothing to display",  // 데이터없을떄
-		  	rowNum:-1, 
-		  	loadComplete: function(data)
-		  	{  
-		      console.log(data);
-		      jQuery('#lisc001DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
-		  	},	// loadComplete END   
-		  	
-		  	
-		  	
-			// Grid2
-		  	onSelectRow: function(rowid) {
-		  		$('#lisc001DTO').getRowData(rowid);
-		     	//선택한 열의 데이터 가져오기  -  var selRowData = $("#lisc001DTO").getRowData(rowid);
-		     	var rowid, codetype;
-		     	rowid  = $("#lisc001DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
-		        codetype = $("#lisc001DTO").jqGrid('getRowData', rowid).CODE_TYPE;   // 선택한 열중에서 grid내의 정보를 가져온다.
-		        console.log(codetype);
-		        $("#lisc002DTO").jqGrid("GridUnload"); // 첫 번째 조회했던 그 값으로만 조회될 때 초기화
-		        $('#lisc002DTO').jqGrid({
-		        	url: "/oneGridC002.do",	// 서버주소 
-		    	    reordercolNames:true,
-		    	    postData : { type: codetype }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
-		    	    mtype:'POST',	// 전송 타입
-		    	    datatype : "json",	// 받는 데이터 형태 
-		    	    colNames:['CODE_TYPE','CODE', 'ITEM1', 'ITEM2', 'ITEM3', 'ITEM4', 'ITEM5', 'REMARK1', 'REMARK2', 'COMMENTS'],	//컬럼명
-		    	    colModel:
-		    	    [
-		    	   	 	 { name: 'CODE_TYPE', index: 'CODE_TYPE', width: '10', align:"center"},
-		    		     { name: 'CODE', index: 'CODE', width: '10', align:"center"},
-		    		     { name: 'ITEM1', index: 'ITEM1', width: '10', align: "center" },
-		    		     { name: 'ITEM2', index: 'ITEM2', width: '10', align: "center" },
-		    		     { name: 'ITEM3', index: 'ITEM3', width: '10', align: "center" },
-		    		     { name: 'ITEM4', index: 'ITEM4', width: '10', align: "center" },
-		    		     { name: 'ITEM5', index: 'ITEM5', width: '10', align: "center" },
-		    		     { name: 'REMARK1', index: 'REMARK1', width: '10', align: "center" },
-		    		     { name: 'REMARK2', index: 'REMARK2', width: '10', align: "center" },
-		    		     { name: 'COMMENTS', index: 'COMMENTS', width: '10', align: "center" }
-		    		], //서버에서 받은 데이터 설정
-		    	    jsonReader: 
-		    	    {
-		    		     repeatitems: false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
-		    		     root:'rows', //서버의 결과 내용에서 데이터를 읽어오는 기준점
-		    		     records:'records'  // 보여지는 데이터 갯수(레코드) totalRecord 
-		    	    },
-		    	    autowidth: true,
-		    	  	rownumbers: true,         
-		    	  	gridview : false,  // 선표시 true/false  
-		    		shrinkToFit: true,
-		    	    height: "auto",//테이블의 세로 크기, Grid의 높이         
-		    	  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
-		    	  	emptyrecords: "Nothing to display",  // 데이터없을떄
-		    	  	rowNum:-1, 
-		    	  	loadComplete: function(data)
-		    	  	{  
-		    	      console.log(data);
-		    	      jQuery('#lisc002DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
-		    	  	},	// loadComplete END   
-		    	  	
-		    	  	
-		    	  	
-		    		// Grid3
-		    	  	onSelectRow: function(rowid){
-		    	  		$('#lisc002DTO').getRowData(rowid);
-		    	     	//선택한 열의 데이터 가져오기  -  var selRowData = $("#lisc001DTO").getRowData(rowid);
-		    	     	var rowid, code;
-		    	     	rowid  = $("#lisc002DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
-		    	        code = $("#lisc002DTO").jqGrid('getRowData', rowid).CODE;   // 선택한 열중에서 grid내의 정보를 가져온다.
-		    	        console.log(code);
-		    	        $("#lisc003DTO").jqGrid("GridUnload"); // 첫 번째 조회했던 그 값으로만 조회될 때 초기화
-		    	        $('#lisc003DTO').jqGrid({
-		    	        	url: "/oneGridC003.do",	// 서버주소 
-		    	    	    reordercolNames:true,
-		    	    	    postData : { type: code }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
-		    	    	    mtype:'POST',	// 전송 타입
-		    	    	    datatype : "json",	// 받는 데이터 형태 
-		    	    	    colNames:['CODE_TYPE','CODE', 'ITEM1', 'ITEM2', 'ITEM3', 'ITEM4', 'ITEM5', 'REMARK1', 'REMARK2', 'COMMENTS'],	//컬럼명
-		    	    	    colModel:
-		    	    	    [
-		    	    	   	 	 { name: 'CODE_TYPE', index: 'CODE_TYPE', width: '10', align:"center"},
-		    	    		     { name: 'CODE', index: 'CODE', width: '10', align:"center"},
-		    	    		     { name: 'ITEM1', index: 'ITEM1', width: '10', align: "center" },
-		    	    		     { name: 'ITEM2', index: 'ITEM2', width: '10', align: "center" },
-		    	    		     { name: 'ITEM3', index: 'ITEM3', width: '10', align: "center" },
-		    	    		     { name: 'ITEM4', index: 'ITEM4', width: '10', align: "center" },
-		    	    		     { name: 'ITEM5', index: 'ITEM5', width: '10', align: "center" },
-		    	    		     { name: 'REMARK1', index: 'REMARK1', width: '10', align: "center" },
-		    	    		     { name: 'REMARK2', index: 'REMARK2', width: '10', align: "center" },
-		    	    		     { name: 'COMMENTS', index: 'COMMENTS', width: '10', align: "center" }
-		    	    		], //서버에서 받은 데이터 설정
-		    	    	    jsonReader: 
-		    	    	    {
-		    	    		     repeatitems: false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
-		    	    		     root:'rows', //서버의 결과 내용에서 데이터를 읽어오는 기준점
-		    	    		     records:'records'  // 보여지는 데이터 갯수(레코드) totalRecord 
-		    	    	    },
-		    	    	    autowidth: true,
-		    	    	  	rownumbers: true,         
-		    	    	  	gridview : false,  // 선표시 true/false  
-		    	    		shrinkToFit: true,
-		    	    	    height: "auto",//테이블의 세로 크기, Grid의 높이         
-		    	    	  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
-		    	    	  	emptyrecords: "Nothing to display",  // 데이터없을떄
-		    	    	  	rowNum:-1, 
-		    	    	  	loadComplete: function(data)
-		    	    	  	{  
-		    	    	      console.log(data);
-		    	    	  	}	// loadComplete END   
-		  				})
-		    	  	}
-
-		    	})	        
-		  	}
-		 
-		})
-	}
-	
-	lisc001();
-	
 		
 
-	// addrow, deleterow
-    $("#btn_add_row").click(function(){
-        var newRowData = {};
-        var grid = $("#lisc001DTO");
-        var newRowId = grid.jqGrid("getGridParam", "reccount") + 1;
-        grid.jqGrid("addRowData", newRowId, newRowData, "first");
-    })  
+	// addrow, deleterow 	
+	function addRow(gridId) {
+	    var newRowData = {};
+	    var grid = $(gridId);
+	    var newRowId = grid.jqGrid("getGridParam", "reccount") + 1;
+	    grid.jqGrid("addRowData", newRowId, newRowData, "first");
+	}
+	function deleterow(gridId) {
+	    var grid = $(gridId);
+	    var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
+	    if (selectedRowId) { grid.jqGrid('delRowData', selectedRowId);
+	    } else { alert('Please select a row to delete.'); }
+	}
+	$("#btn_add_row").click(function(){ 
+		const newRowData = { /* Data for new row */ };
+		addRow('#lisc001DTO');
+	});
 	const btnDeleteRow = document.getElementById('btn_delete_row');
-	btnDeleteRow.addEventListener('click', function() {
-    	var grid = $("#lisc001DTO");
-    	var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
-    	if (selectedRowId) {grid.jqGrid('delRowData', selectedRowId);
-    	} else {alert('Please select a row to delete.');}
-	});
+	btnDeleteRow.addEventListener('click', function(){ deleterow('#lisc001DTO'); });
 
-    $("#btn_add_row2").click(function(){
-        var newRowData = {};
-        var grid = $("#lisc002DTO");
-        var newRowId = grid.jqGrid("getGridParam", "reccount") + 1;
-        grid.jqGrid("addRowData", newRowId, newRowData, "first");
-    })  
+    $("#btn_add_row2").click(function(){ addRow('#lisc002DTO'); });
   	const btnDeleteRow2 = document.getElementById('btn_delete_row2');
-	btnDeleteRow2.addEventListener('click', function() {
-    	var grid = $("#lisc002DTO");
-    	var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
-    	if (selectedRowId) {grid.jqGrid('delRowData', selectedRowId);
-    	} else {alert('Please select a row to delete.');}
-	});
+	btnDeleteRow2.addEventListener('click', function(){ deleterow('#lisc002DTO'); });
     
-    $("#btn_add_row3").click(function(){
-         var newRowData = {};
-         var grid = $("#lisc003DTO");
-         var newRowId = grid.jqGrid("getGridParam", "reccount") + 1;
-         grid.jqGrid("addRowData", newRowId, newRowData, "first");
-    })  
+    $("#btn_add_row3").click(function(){ addRow('#lisc003DTO'); });
 	const btnDeleteRow3 = document.getElementById('btn_delete_row3');
-	btnDeleteRow3.addEventListener('click', function() {
-    	var grid = $("#lisc003DTO");
-    	var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
-    	if (selectedRowId) {grid.jqGrid('delRowData', selectedRowId);
-    	} else {alert('Please select a row to delete.');}
-	});
+	btnDeleteRow3.addEventListener('click', function(){ deleterow('#lisc003DTO'); });
+	
 	
 	//clear
 	$("#clear").on("click", function() {
@@ -443,28 +371,29 @@
         $("#search").val("");
         // #lisc001DTO 그리드를 초기화하고 데이터 리로드
         console.log('a');
-        lisc001();
+        Grid1();
     });
 	
 	
 	// modal
-	const modal1 = document.getElementById('myModal');
+	const modal1 = document.getElementById('myModal1');
 	const modal2 = document.getElementById('myModal2');
 	function handleOpen (modal) {
 		handleClose(modal1);
 		handleClose(modal2);
 	    modal.style.display = 'block'; /* 모달 창을 보이도록 설정합니다. */
+	    
+	    // item 값 불러오기
 	};
 	function handleClose(modal) {
 	    modal.style.display = 'none'; /* 모달 창을 숨깁니다. */
 	};
-	
 	$(".gridbox").on("click", function() {
 		handleClose(modal1);
 		handleClose(modal2);
 	})
 	
-	
+
 	
 	</script>
 </body>

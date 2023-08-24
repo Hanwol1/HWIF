@@ -4,11 +4,11 @@ public class lisq110DTO {
 	private String testCode;
 	private String gumsaName1;
 	private String item1;
-	private float meanValue;
-	private float sdValue;
-	private float cvValue;
-	private float lowValue;
-	private float highValue;
+	private String meanValue;
+	private String sdValue;
+	private String cvValue;
+	private String lowValue;
+	private String highValue;
 	private String susulValue;
 	private String danui;
 	private String startDate;
@@ -28,6 +28,48 @@ public class lisq110DTO {
 	private String testCodeSeq;
 	private String graphYN;
 	
+	private String qcCode;
+	private String qcLevel;
+	private String lotNo;
+	private String fkStartDate;
+	private String fkQcStartDate;
+	
+	
+	public String getQcCode() {
+		return qcCode;
+	}
+	public void setQcCode(String qcCode) {
+		this.qcCode = qcCode;
+	}
+	public String getQcLevel() {
+		return qcLevel;
+	}
+	public void setQcLevel(String qcLevel) {
+		this.qcLevel = qcLevel;
+	}
+	public String getLotNo() {
+		return lotNo;
+	}
+	public void setLotNo(String lotNo) {
+		this.lotNo = lotNo;
+	}
+	public String getFkStartDate() {
+		return fkStartDate;
+	}
+	public void setFkStartDate(String fkStartDate) {
+		this.fkStartDate = fkStartDate;
+	}
+	public String getFkQcStartDate() {
+		return fkQcStartDate;
+	}
+	public void setFkQcStartDate(String fkQcStartDate) {
+		this.fkQcStartDate = fkQcStartDate;
+	}
+	
+	
+	public void setGumsaName1(String gumsaName1) {
+		this.gumsaName1 = gumsaName1;
+	}
 	public String getTestCode() {
 		return testCode;
 	}
@@ -46,34 +88,34 @@ public class lisq110DTO {
 	public void setItem1(String item1) {
 		this.item1 = item1;
 	}
-	public float getMeanValue() {
+	public String getMeanValue() {
 		return meanValue;
 	}
-	public void setMeanValue(float meanValue) {
+	public void setMeanValue(String meanValue) {
 		this.meanValue = meanValue;
 	}
-	public float getSdValue() {
+	public String getSdValue() {
 		return sdValue;
 	}
-	public void setSdValue(float sdValue) {
+	public void setSdValue(String sdValue) {
 		this.sdValue = sdValue;
 	}
-	public float getCvValue() {
+	public String getCvValue() {
 		return cvValue;
 	}
-	public void setCvValue(float cvValue) {
+	public void setCvValue(String cvValue) {
 		this.cvValue = cvValue;
 	}
-	public float getLowValue() {
+	public String getLowValue() {
 		return lowValue;
 	}
-	public void setLowValue(float lowValue) {
+	public void setLowValue(String lowValue) {
 		this.lowValue = lowValue;
 	}
-	public float getHighValue() {
+	public String getHighValue() {
 		return highValue;
 	}
-	public void setHighValue(float highValue) {
+	public void setHighValue(String highValue) {
 		this.highValue = highValue;
 	}
 	public String getSusulValue() {
@@ -148,17 +190,17 @@ public class lisq110DTO {
 	public void setGubunR4S(String gubunR4S) {
 		this.gubunR4S = gubunR4S;
 	}
-	public String getRuleR41S() {
+	public String getRule41S() {
 		return rule41S;
 	}
-	public void setRuleR41S(String ruleR41S) {
-		this.rule41S = ruleR41S;
+	public void setRule41S(String rule41s) {
+		rule41S = rule41s;
 	}
-	public String getGubunR41S() {
+	public String getGubun41S() {
 		return gubun41S;
 	}
-	public void setGubunR41S(String gubunR41S) {
-		this.gubun41S = gubunR41S;
+	public void setGubun41S(String gubun41s) {
+		gubun41S = gubun41s;
 	}
 	public String getRule10X() {
 		return rule10X;

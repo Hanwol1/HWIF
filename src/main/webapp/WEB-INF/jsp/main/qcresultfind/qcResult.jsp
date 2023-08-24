@@ -49,9 +49,11 @@
         </section>
         <section>
             <div class="container">
-                <div class="check-item-title">검사항목</div>
-                <input class="check-inputbox" type="text">
-                <button class="check-item-button"></button>
+                <div class="check-container">
+                    <div class="check-item-title">검사항목</div>
+                    <input class="check-inputbox" type="text">
+                    <button class="check-item-button"></button>
+                </div>
                 <input type="radio" name="check-item" value="" id="check-item-total" >
                 <label for="check-item-total">전체</label>
                 <input type="radio" name="check-item" value="accept" id="check-item-accept" checked>
@@ -61,9 +63,6 @@
                 <div class="substance-title">물질명</div>
                 <select class="substance-select">
                     <option value="">(전체)</option>
-                        <c:forEach var="item" items="${qcCodeList}">
-                            <option value="${item.item1}">${item.item1}</option>
-                        </c:forEach>
                 </select>
                 <div>QC 코드</div>
                 <input style="background-color: #fff;" class="qccode-input" type="text" disabled>
@@ -98,10 +97,81 @@
         </div>
         
     </div>
+    <div class="modal__background">
+        <div class="gumsa-modal">
+            <div class="flex gumsa-modal-title">
+                <div>검사 코드</div>
+                <div>검사 항목</div>
+            </div>
+            <div class="overflow-A gumsa-modal-display">
+                <c:forEach var="item" items="${gumsaList}">
+                    <div class="flex cell modal-row">
+                        <div class="code">${item.code}</div>
+                        <div class="item">${item.item1}</div>
+                    </div>
+                </c:forEach>
+            </div>
+            <div class="gumsa-modal-btn flex">
+                <button id="confirmBtn">확인</button>
+                <button id="closeBtn">닫기</button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- <script src="./js/qcResult.js" defer></script> -->
     <script>
         let serverData = [];
-        
+        let selectedCell = null;
+        const $modal = $(".modal__background");
+        $('.check-item-button').click(function(e){
+            $modal.addClass("open-modal");
+        });
+
+        $(document).mouseup(function (e){
+            
+            if($modal.has(e.target).length === 0){
+                $modal.removeClass("open-modal");
+            }
+        });
+
+
+
+        $(".cell").on("click", function() {
+            // Remove 'selected' class from previously selected cell
+            if (selectedCell) {
+                selectedCell.removeClass("selected");
+            }
+
+            selectedCell = $(this);
+            selectedCell.addClass("selected");
+        });
+
+        $("#confirmBtn").on("click", function() {
+            if (selectedCell) {
+                const code = selectedCell.find(".code").text();
+                const item = selectedCell.find(".item").text();
+                console.log("Selected Data:", { code, item });
+                selectedCell.removeClass("selected");
+                selectedCell = null;
+                const $checkInputbox = document.querySelector('.check-inputbox');
+                $checkInputbox.value = item;
+                $modal.removeClass("open-modal");
+            } else {
+                alert('선택해주세요');
+                console.log("No cell selected.");
+            }
+        });
+
+        $("#closeBtn").on("click", function() {
+            if (selectedCell) {
+                selectedCell.removeClass("selected");
+                selectedCell = null;
+            }
+            $modal.removeClass("open-modal");
+        });
+
+
         $("input[name='check-item']").change(function() {
             object.ruleResult = $(this).val(); // 선택된 라디오 버튼의 값을 갱신
         });
@@ -121,7 +191,7 @@
             $.ajax({
                 type: 'POST',
                 contentType : "application/json; charset=utf-8",
-                url: 'http://localhost:8888/qcResultSave.do',
+                url: '/qcResultSave.do',
                 data: JSON.stringify(serverData),
                 success: function(res){ 
 
@@ -169,8 +239,8 @@
             const $lotNo = document.getElementById('lotno-input');
             const $장비명 = document.getElementById('check-jangbi-select');
             const $level = document.getElementById('level-select');
-
-
+            const $물질명 = $('.substance-select');
+            const $검사항목 = $('.check-inputbox');
 
             object.qcInOut = $qcInOut.val();
             object.ruleResult = $ruleResult.val();
@@ -178,14 +248,71 @@
             object.lotNo = $lotNo.value;
             object.장비명 = $장비명.value;
             object.level = $level.value;
+            object.물질명 = $물질명.val();
+            object.검사항목 = $검사항목.val();
             console.log(object);
             return object;
         }
+
+        // 검사파트 변경했을 때 하위 셀렉트 렌더링
+        $('.check-part-select').change(function(e){
+            const data = e.target.value.substring(1, 4);
+            console.log(data);
+            var $qccodeInput = document.querySelector(".qccode-input");
+            $qccodeInput.value = '';
+            $.ajax({
+                type: "POST",
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                data : JSON.stringify(data),
+                url: '/qcCode.do',
+
+                success: function(res){ 
+                    var selectElement = document.querySelector(".substance-select");
+        
+                    // Clear existing options
+                    selectElement.innerHTML = '<option value="">(전체)</option>';
+                    
+                    // Populate options using the received JSON data
+                    res.qcCodeList.forEach(function(item) {
+                        var option = document.createElement("option");
+                        option.value = item.item1;
+                        option.textContent = item.item1;
+                        selectElement.appendChild(option);
+                    });
+                },
+                error: function(err){
+
+                }
+            })
+
+
+
+        })
        
        $('.substance-select').change(function(e){
         //    const 
+            const data = e.target.value;
+            console.log(data);
+           $.ajax({
+                type: "POST",
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                data : JSON.stringify(data),
+                url: '/findOneQcCode.do',
+        
+                success: function(res){ 
+                    var $qccodeInput = document.querySelector(".qccode-input");
+    
+                    $qccodeInput.value = res.qcCode;
+                    
+                    
+                },
+                error: function(err){
 
-           console.log(e.target.value);
+                }
+            })
+
        });
         
 
@@ -285,7 +412,7 @@
 
         $.ajax({
             type: "POST",
-            url: "http://localhost:8888/qcResultFindAll.do",
+            url: "/qcResultFindAll.do",
             dataType: "json",
             contentType : "application/json; charset=utf-8",
             data: JSON.stringify(convertFormData),
@@ -333,7 +460,7 @@
             console.log(colModel);
             // jqGrid 초기화
             $("#list1").jqGrid({
-                url: "http://localhost:8888/qcResultFindAll.do",	// 서버주소 
+                url: "/qcResultFindAll.do",	// 서버주소 
                 reordercolNames:true,
                 postData:convertFormData, // 보낼 파라미터
                 mtype:'POST',	// 전송 타입
@@ -385,7 +512,7 @@
                 },
 
                 afterSaveCell : function(rowid, cellname, value, iRow, iCol){
-
+                        
                         console.log(value);
                         var selRowData = $("#list1").getRowData(rowid);
                         selRowData[cellname] = value;
