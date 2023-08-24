@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import egovframework.b.model.QcResultDTO;
 import egovframework.b.model.QcResultDateDTO;
+import egovframework.b.model.QcResultGumsaResponseDTO;
 import egovframework.b.model.QcResultRequestDTO;
 import egovframework.b.model.UserBDTO;
 import egovframework.b.model.QcCodeDTO;
@@ -71,8 +72,8 @@ public class BController {
 		List<String> gumsapartList = bService.gumsapartList();
 		List<String> jangbiList = bService.jangbiFindAll();
 		List<String> levelList = bService.levelList();
-		List<QcCodeDTO> qcCodeList = bService.qcCodeList();
-		
+		// List<QcCodeDTO> qcCodeList = bService.qcCodeList();
+		List<QcResultGumsaResponseDTO> gumsaList = bService.findGumsa();
 		
 //		for(QcCodeDTO test : qcCodeList) {
 //			System.out.println(test.getItem1() + " " + test.getCode());
@@ -81,10 +82,38 @@ public class BController {
 		model.addAttribute("gumsapartList", gumsapartList);
 		model.addAttribute("jangbiList", jangbiList);
 		model.addAttribute("levelList", levelList);
-		model.addAttribute("qcCodeList", qcCodeList);
+		model.addAttribute("gumsaList", gumsaList);
+		// model.addAttribute("qcCodeList", qcCodeList);
 		return ".main/qcresultfind/qcResult";
 	}
 	
+	
+	@RequestMapping(value = "/findOneQcCode.do", method = RequestMethod.POST)
+	@ResponseBody
+	public JSONObject findOneQcCode(@RequestBody String data, Model model) throws Exception{
+		JSONObject json = new JSONObject();
+		System.out.println("findoNeqcCOde----1");
+		String qcCode = bService.qcCodeFindOne(data);
+
+		System.out.println("findoNeqcCOde----2");
+		json.put("success", "성공");
+		json.put("qcCode", qcCode);
+		return json;
+	}
+	
+	
+	@RequestMapping(value = "/qcCode.do", method = RequestMethod.POST)
+	@ResponseBody
+	public JSONObject findQcCode(@RequestBody String data, Model model) throws Exception{
+		JSONObject json = new JSONObject();
+		
+		List<QcCodeDTO> qcCodeList = bService.qcCodeList(data);
+		
+		json.put("success", "성공");
+		json.put("qcCodeList", qcCodeList);
+		model.addAttribute("qcCodeList", qcCodeList);
+		return json;
+	}
 	
 	@RequestMapping(value= "/qcResultFindAll.do", method = RequestMethod.POST)
 	@ResponseBody
@@ -115,6 +144,8 @@ public class BController {
 				.jundalPart(String.valueOf(requestMap.get("jundalPart")))
 				.jangbi(String.valueOf(requestMap.get("장비명")))
 				.level(String.valueOf(requestMap.get("level")))
+				.muljil(String.valueOf(requestMap.get("물질명")))
+				.gumsa(String.valueOf(requestMap.get("검사항목")))
 				.dateList(dateList)
 				.build();
 				

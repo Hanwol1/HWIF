@@ -171,10 +171,10 @@ pageEncoding="UTF-8"%>
             <div class="must-option">
               <input
                 type="checkbox"
-                name="result-check-subOption"
-                id="resultCheckSuboption"
+                name="lowHighMeanSDCheck"
+                id="lowHighMeanSDCheck"
               />
-              <label for="resultCheckSuboption"
+              <label for="lowHighMeanSDCheck"
                 >Low,High 값입력, Mean,SD 계산</label
               >
             </div>
@@ -184,23 +184,23 @@ pageEncoding="UTF-8"%>
             <input type="checkbox" name="result-check-option" id="3SDRange" />
             <label for="3SDRange">3SD범위 사용</label>
 
-            <input type="checkbox" name="result-check-option" id="1_2S" />
-            <label for="1_2S">1_2S</label>
+            <input type="checkbox" name="result-check-option" id="rule12SCheckbox" />
+            <label for="rule12SCheckbox">1_2S</label>
 
-            <input type="checkbox" name="result-check-option" id="1_3S" />
-            <label for="1_3S">1_3S</label>
+            <input type="checkbox" name="result-check-option" id="rule13SCheckbox" />
+            <label for="rule13SCheckbox">1_3S</label>
 
-            <input type="checkbox" name="result-check-option" id="2_2S" />
-            <label for="2_2S">2_2S</label>
+            <input type="checkbox" name="result-check-option" id="rule22SCheckbox" />
+            <label for="rule22SCheckbox">2_2S</label>
 
-            <input type="checkbox" name="result-check-option" id="R_4S" />
-            <label for="R_4S">R_4S</label>
+            <input type="checkbox" name="result-check-option" id="ruleR4SCheckbox" />
+            <label for="ruleR4SCheckbox">R_4S</label>
 
-            <input type="checkbox" name="result-check-option" id="4_1S" />
-            <label for="4_1S">4_1S</label>
+            <input type="checkbox" name="result-check-option" id="rule41SCheckbox" />
+            <label for="rule41SCheckbox">4_1S</label>
 
-            <input type="checkbox" name="result-check-option" id="10X" />
-            <label for="10X">10X</label>
+            <input type="checkbox" name="result-check-option" id="rule10XCheckbox" />
+            <label for="rule10XCheckbox">10X</label>
           </div>
         </div>
 
@@ -310,9 +310,9 @@ const printGridlisq110 = function(qcCode) {
 			{ name: 'jundalPart',		index: 'jundalPart',	width: '80', 	align: "left" },
 			{ name: 'meanValue',		index: 'meanValue',		width: '70', 	align: "left",   editable: true, edittype: 'text' },
 			{ name: 'sdValue',			index: 'sdValue',		width: '60', 	align: "left",   editable: true, edittype: 'text' },
-			{ name: 'cvValue',			index: 'cvValue',		width: '60', 	align: "left",   editable: true, edittype: 'text' },
-			{ name: 'lowValue',			index: 'lowValue',		width: '60', 	align: "left",   editable: true, edittype: 'text' },
-			{ name: 'highValue',		index: 'highValue',		width: '60', 	align: "left",   editable: true, edittype: 'text' },
+			{ name: 'cvValue',			index: 'cvValue',		width: '60', 	align: "left" },
+			{ name: 'lowValue',			index: 'lowValue',		width: '60', 	align: "left",   editable: false, edittype: 'text' },
+			{ name: 'highValue',		index: 'highValue',		width: '60', 	align: "left",   editable: false, edittype: 'text' },
 			{ name: 'susulValue',		index: 'susulValue',	width: '60', 	align: "left",   editable: true, edittype: 'text' },
 			{ name: 'danui',			index: 'danui',			width: '60', 	align: "left" },
 			{ name: 'startDate',		index: 'startDate',		width: '90', 	align: "left", 	 editable: true, edittype: 'text', 
@@ -329,19 +329,32 @@ const printGridlisq110 = function(qcCode) {
 					}
 				} 
 			},
-			{ name: 'endDate',			index: 'endDate',		width: '90', 	align: "left", 	 editable: true, edittype: 'date' },
+			{ name: 'endDate',			index: 'endDate',		width: '90', 	align: "left", 	 editable: true, edittype: 'text',
+				editoptions: {
+					dataInit: function(e) {
+						var rowData = $(this).jqGrid("getLocalRow", $(this).closest("tr").prop("id"));
+						var savedDate = rowData.dateColumn; // 저장된 데이터 가져오기
+						
+						$(e).datepicker({
+							dateFormat: 'yy-mm-dd', // 원하는 날짜 포맷
+							// 기타 datepicker 옵션들 설정
+							defaultDate: savedDate // 저장된 데이터를 초기 값으로 설정
+						});
+					}
+				} 
+			},
 			{ name: 'rule12S',			index: 'rule12S',		width: '40', 	align: "center", editable: true, formatter: checkboxFormatter, unformat: checkboxUnformatter, edittype: 'checkbox', editoptions: { value: 'Y:N' } },
 			{ name: 'gubun12S',			index: 'gubun12S',		width: '70', 	align: "left",	 editable: true, edittype: 'select', editoptions: {value: {Reject: 'Reject', Warning: 'Warning'}} },
 			{ name: 'rule13S',			index: 'rule13S',		width: '40', 	align: "center", editable: true, formatter: checkboxFormatter, unformat: checkboxUnformatter, edittype: 'checkbox', editoptions: { value: 'Y:N' } },
-			{ name: 'gubun13S',			index: 'gubun13S',		width: '70', 	align: "left" },
+			{ name: 'gubun13S',			index: 'gubun13S',		width: '70', 	align: "left",	 editable: true, edittype: 'select', editoptions: {value: {Reject: 'Reject', Warning: 'Warning'}} },
 			{ name: 'rule22S',			index: 'rule22S',		width: '40', 	align: "center", editable: true, formatter: checkboxFormatter, unformat: checkboxUnformatter, edittype: 'checkbox', editoptions: { value: 'Y:N' } },
-			{ name: 'gubun22S',			index: 'gubun22S',		width: '70', 	align: "left" },
+			{ name: 'gubun22S',			index: 'gubun22S',		width: '70', 	align: "left",	 editable: true, edittype: 'select', editoptions: {value: {Reject: 'Reject', Warning: 'Warning'}} },
 			{ name: 'ruleR4S',			index: 'ruleR4S',		width: '40', 	align: "center", editable: true, formatter: checkboxFormatter, unformat: checkboxUnformatter, edittype: 'checkbox', editoptions: { value: 'Y:N' } },
-			{ name: 'gubunR4S',			index: 'gubunR4S',		width: '70', 	align: "left" },
+			{ name: 'gubunR4S',			index: 'gubunR4S',		width: '70', 	align: "left",	 editable: true, edittype: 'select', editoptions: {value: {Reject: 'Reject', Warning: 'Warning'}} },
 			{ name: 'rule41S',			index: 'rule41S',		width: '40', 	align: "center", editable: true, formatter: checkboxFormatter, unformat: checkboxUnformatter, edittype: 'checkbox', editoptions: { value: 'Y:N' } },
-			{ name: 'gubun41S',			index: 'gubun41S',		width: '70', 	align: "left" },
+			{ name: 'gubun41S',			index: 'gubun41S',		width: '70', 	align: "left",	 editable: true, edittype: 'select', editoptions: {value: {Reject: 'Reject', Warning: 'Warning'}} },
 			{ name: 'rule10X',			index: 'rule10X',		width: '40', 	align: "center", editable: true, formatter: checkboxFormatter, unformat: checkboxUnformatter, edittype: 'checkbox', editoptions: { value: 'Y:N' } },
-			{ name: 'gubun10X',			index: 'gubun10X',		width: '70', 	align: "left" },
+			{ name: 'gubun10X',			index: 'gubun10X',		width: '70', 	align: "left",	 editable: true, edittype: 'select', editoptions: {value: {Reject: 'Reject', Warning: 'Warning'}} },
 			{ name: 'testCodeSeq',		index: 'testCodeSeq',	width: '40', 	align: "right" },
 			{ name: 'graphYN',			index: 'graphYN',		width: '40', 	align: "center", editable: true, formatter: checkboxFormatter, unformat: checkboxUnformatter, edittype: 'checkbox', editoptions: { value: 'Y:N' } },
 			
@@ -386,11 +399,32 @@ const printGridlisq110 = function(qcCode) {
 			$('#list3').setRowData(rowid, rowData);
 			
 			console.log(rowData);
-			
-			return value;
 		},
 		afterSaveCell: function(rowid, cellname, value, iRow, iCol) {
+			console.log(cellname, value, iRow, iCol);
+			var rowData = $("#list3").getRowData(rowid);
+			var sdRange = ($("#3SDRange").is(":checked")) ? 3 : 2;
 			
+			if (cellname === "meanValue") {
+				rowData.cvValue = (parseFloat(rowData.sdValue) / parseFloat(value) * 100).toFixed(2);
+				rowData.lowValue = (parseFloat(value) - (sdRange * parseFloat(rowData.sdValue))).toFixed(2);
+				rowData.highValue = (parseFloat(value) + (sdRange * parseFloat(rowData.sdValue))).toFixed(2);
+			} else if (cellname === "sdValue") {
+				rowData.cvValue = ((parseFloat(value) / parseFloat(rowData.meanValue)) * 100).toFixed(2);
+				rowData.lowValue = (parseFloat(rowData.meanValue) - (sdRange * parseFloat(value))).toFixed(2);
+				rowData.highValue = (parseFloat(rowData.meanValue) + (sdRange * parseFloat(value))).toFixed(2);
+			} else if (cellname === "lowValue") {
+				rowData.meanValue = ((parseFloat(value) + parseFloat(rowData.highValue)) / sdRange).toFixed(2);
+				rowData.sdValue = ((parseFloat(rowData.highValue) - parseFloat(value)) / 2 * sdRange).toFixed(2);
+				rowData.cvValue = (parseFloat(rowData.sdValue) / parseFloat(rowData.meanValue) * 100).toFixed(2);
+			} else if (cellname === "highValue") {
+				rowData.meanValue = ((parseFloat(rowData.lowValue) + parseFloat(value)) / sdRange).toFixed(2);
+				rowData.sdValue = ((parseFloat(value) - parseFloat(rowData.lowValue)) / 2 * sdRange).toFixed(2);
+				rowData.cvValue = (parseFloat(rowData.sdValue) / parseFloat(rowData.meanValue) * 100).toFixed(2);
+			}
+			
+			$('#list3').setRowData(rowid, rowData);
+			console.log(rowData);
 		}
 	});
 	
@@ -406,13 +440,66 @@ const printGridlisq110 = function(qcCode) {
 		$("#list3").jqGrid("setCell", rowId, "value", newValue); // 새로운 값 넣기
 		
 		console.log($("#list3").getRowData(rowId));
-	}
+	};
 
 	$("#list3").on("change", "input[type=checkbox]", function() {
 		const rowId = $(this).closest("tr.jqgrow").attr("id"); // 체크된 셀의 rowId 가져오기
 		const newValue = $(this).prop("checked") ? "Y" : "N"; // 체크되면 Y, 안되면 N
+		const rowData = $("#list3").getRowData(rowId);
+
+		if (rowData.flag === '') {
+			rowData.flag = 'U';
+		}
 		
 		updateCellValue(rowId, newValue);
+		$('#list3').setRowData(rowId, rowData);
+	});
+	
+	$("#lowHighMeanSDCheck").on("change", function() {
+		if ($("#lowHighMeanSDCheck").is(":checked")) {
+			$("#list3").jqGrid('setColProp', "meanValue", { editable: false });
+			$("#list3").jqGrid('setColProp', "sdValue", { editable: false });
+			$("#list3").jqGrid('setColProp', "lowValue", { editable: true });
+			$("#list3").jqGrid('setColProp', "highValue", { editable: true });
+		} else {
+			$("#list3").jqGrid('setColProp', "meanValue", { editable: true });
+			$("#list3").jqGrid('setColProp', "sdValue", { editable: true });
+			$("#list3").jqGrid('setColProp', "lowValue", { editable: false });
+			$("#list3").jqGrid('setColProp', "highValue", { editable: false });
+		}
+	});
+	
+	function allCheck(checkboxName) {
+	    console.log(checkboxName);
+
+	    var rows = $("#list3").jqGrid("getDataIDs"); // 행 ID들 가져오기
+	    console.log(rows);
+	    var tf = $("#" + checkboxName + "Checkbox").is(":checked") ? "Y" : "N";
+	    console.log(tf);
+
+	    for (var i = 0; i < rows.length; i++) {
+	        var rowId = rows[i];
+	        $("#list3").jqGrid("setCell", rowId, checkboxName, tf);
+	    }
+	};
+	
+	$("#rule12SCheckbox").on("change", function() {
+		allCheck("rule12S");
+	});
+	$("#rule13SCheckbox").on("change", function() {
+		allCheck("rule13S");
+	});
+	$("#rule22SCheckbox").on("change", function() {
+		allCheck("rule22S");
+	});
+	$("#ruleR4SCheckbox").on("change", function() {
+		allCheck("ruleR4S");
+	});
+	$("#rule41SCheckbox").on("change", function() {
+		allCheck("rule41S");
+	});
+	$("#rule10XCheckbox").on("change", function() {
+		allCheck("rule10X");
 	});
 };
 
@@ -439,6 +526,11 @@ $("#addBtn").on("click", function() {
 			danui: selectedRowData.resultDanui,
 			startDate: lisq100SelectedRowData.startDate,
 			endDate: lisq100SelectedRowData.endDate,
+			meanValue: 0,
+			sdValue: 0,
+			cvValue: 0,
+			lowValue: 0,
+			highValue: 0,
 			rule12S: "N",
 			gubun12S:"Reject",
 			rule13S: "N",
@@ -451,12 +543,11 @@ $("#addBtn").on("click", function() {
 			gubun41S: "Reject",
 			rule10X: "N",
 			gubun10X:"Reject",
+			testCodeSeq: 0,
 			graphYN:"N",
-			qcCode: selectedRowData.qcCode,
-			qcLevel: selectedRowData.qcLevel,
-			lotNo: selectedRowData.lotNo,
-			fkStartDate: selectedRowData.fkStartDate,
-			fkQcStartDate: selectedRowData.fkQcStartDate
+			qcCode: lisq100SelectedRowData.qcCode,
+			qcLevel: lisq100SelectedRowData.qcLevel,
+			lotNo: lisq100SelectedRowData.lotNo
 		};
 		
 		console.log(newRowData);
@@ -591,6 +682,7 @@ const printGridlisq100 = function() {
 			$("#qcName").val(selectRow.qcName);
 			$("#startDate").val(selectRow.startDate);
 			
+			printGridlisc100();
 			printGridlisq110(selectRow.qcCode);
 		}
 	});

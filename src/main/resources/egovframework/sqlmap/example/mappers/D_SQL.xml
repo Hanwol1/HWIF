@@ -80,19 +80,81 @@
 	</select>
 	
 	<insert id="addData" parameterType="egovframework.d.model.lisq110DTO">
-		INSERT INTO USER (
-			id, 
-			password
+		INSERT INTO lisq110 (
+			SYS_DATE,
+			TEST_CODE,
+            JUNDAL_PART,
+            MEAN_VALUE,
+            SD_VALUE,
+            CV_VALUE,
+            LOW_VALUE,
+            HIGH_VALUE,
+            SUSUL_VALUE,
+            DANUI,
+            START_DATE, 
+            END_DATE,
+            RULE_1_2S,
+            GUBUN_1_2S,
+            RULE_1_3S,
+            GUBUN_1_3S,
+            RULE_2_2S,
+            GUBUN_2_2S,
+            RULE_R_4S,
+            GUBUN_R_4S,
+            RULE_4_1S,
+            GUBUN_4_1S, 
+            RULE_10X,
+            GUBUN_10X,
+            TEST_CODE_SEQ, 
+            GRAPH_YN,
+            QC_CODE,
+			QC_LEVEL,
+			LOT_NO
 		) VALUES (
-			#{id},
-			#{password}
+			CASE
+		        WHEN HOUR(NOW()) >= 12 THEN CONCAT(DATE(NOW()), ' 오후 ', HOUR(NOW()) - 12, ':', MINUTE(NOW()), ':', SECOND(NOW()))
+		        ELSE CONCAT(DATE(NOW()), ' 오전 ', TIME(NOW()))
+		    END,
+			#{testCode},
+            #{item1},
+            #{meanValue},
+            #{sdValue},
+            #{cvValue}, 
+            #{lowValue}, 
+            #{highValue}, 
+            #{susulValue}, 
+            #{danui}, 
+            #{startDate}, 
+            #{endDate}, 
+            #{rule12S}, 
+            #{gubun12S}, 
+            #{rule13S}, 
+            #{gubun13S}, 
+            #{rule22S}, 
+            #{gubun22S}, 
+            #{ruleR4S}, 
+            #{gubunR4S}, 
+            #{rule41S}, 
+            #{gubun41S}, 
+            #{rule10X}, 
+            #{gubun10X}, 
+            #{testCodeSeq}, 
+            #{graphYN},
+            #{qcCode},
+            #{qcLevel},
+            #{lotNo}
 		);
     </insert>
     
     <update id="updateData" parameterType="egovframework.d.model.lisq110DTO">
-    	<!-- 		Q.TEST_CODE, C1.GUMSA_NAME1, C2.ITEM1, MEAN_VALUE, SD_VALUE, CV_VALUE, LOW_VALUE, HIGH_VALUE, SUSUL_VALUE, DANUI, Q.START_DATE, Q.END_DATE, RULE_1_2S, GUBUN_1_2S, RULE_1_3S, GUBUN_1_3S, RULE_2_2S, GUBUN_2_2S, RULE_R_4S, GUBUN_R_4S, RULE_4_1S, GUBUN_4_1S, RULE_10X, GUBUN_10X, TEST_CODE_SEQ, GRAPH_YN -->
+    	<!-- Q.TEST_CODE, C1.GUMSA_NAME1, C2.ITEM1, MEAN_VALUE, SD_VALUE, CV_VALUE, LOW_VALUE, HIGH_VALUE, SUSUL_VALUE, DANUI, Q.START_DATE, Q.END_DATE, RULE_1_2S, GUBUN_1_2S, RULE_1_3S, GUBUN_1_3S, RULE_2_2S, GUBUN_2_2S, RULE_R_4S, GUBUN_R_4S, RULE_4_1S, GUBUN_4_1S, RULE_10X, GUBUN_10X, TEST_CODE_SEQ, GRAPH_YN -->
         UPDATE lisq110
-        SET TEST_CODE = #{testCode},
+        SET 
+        	UPD_DATE = CASE
+		        WHEN HOUR(NOW()) >= 12 THEN CONCAT(DATE(NOW()), ' 오후 ', HOUR(NOW()) - 12, ':', MINUTE(NOW()), ':', SECOND(NOW()))
+		        ELSE CONCAT(DATE(NOW()), ' 오전 ', TIME(NOW()))
+		    END,
+        	TEST_CODE = #{testCode},
             JUNDAL_PART = #{item1},
             MEAN_VALUE = #{meanValue},
             SD_VALUE = #{sdValue},
@@ -121,7 +183,7 @@
     </update>
     
     <select id="getJundalPart" parameterType="String" resultType="String">
-    	SELECT CODE
+    	SELECT DISTINCT CODE
     	FROM lisc002
     	WHERE ITEM1 = #{jundalPart};
     </select>

@@ -10,6 +10,7 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import egovframework.b.model.QcResultDTO;
 import egovframework.b.model.QcResultDateDTO;
+import egovframework.b.model.QcResultGumsaResponseDTO;
 import egovframework.b.model.QcResultRequestDTO;
 import egovframework.b.model.UserBDTO;
 import egovframework.b.model.QcCodeDTO;
@@ -31,7 +32,7 @@ public interface BMapper {
 
 	List<String> levelListFindAll();
 
-	List<QcCodeDTO> qcCodeFindAll();
+	List<QcCodeDTO> qcCodeFindAll(String data);
 
 	int delete(Map<String, Object> map);
 
@@ -39,5 +40,7 @@ public interface BMapper {
 	
 	List<String> findTestCode(@Param("gumsaName") String gumsaName);
 	String findQcCode(@Param("qcName") String qcName);
+	String qcCodeFindOne(String data);
+	List<QcResultGumsaResponseDTO> findGumsa(); 
 	
 }

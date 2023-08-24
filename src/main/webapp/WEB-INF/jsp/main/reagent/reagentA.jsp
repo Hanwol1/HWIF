@@ -52,7 +52,7 @@
 				<button class="btn-sec input" onclick="addListData()">
 					<img src="/images/icons/printer.png" class="img">입 력
 				</button>
-				<button class="btn-sec save">
+				<button class="btn-sec save" onclick="list1DataSave()">
 					<img src="/images/icons/save.png" class="img"> 저 장
 				</button>
 				<button class="btn-sec delete" onclick="deleteListData()">
@@ -110,7 +110,8 @@
 		</div> 
 
 	</div>
-	<script src="/js/reagentA.js"></script>
+	<script src="/js/reagentA/reagentAlist.js"></script>
+	<script src="/js/reagentA/reagentAbutton.js"></script>
 </body>
 </html>
 

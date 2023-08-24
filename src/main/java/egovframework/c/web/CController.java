@@ -112,6 +112,8 @@ public class CController {
 			        row.put("CODE_TYPE", item.getCodeType());
 			        row.put("CODE_TYPE_NAME", item.getCodeTypeName());
 			        row.put("COMMENTS", item.getComments());
+			        // row.put("ITEM1", item.getItem1());
+			        // row.put("ITEM2", item.getItem2());
 			        // 필요한 다른 필드 추가
 			        rowsArray.add(row);
 			    }
@@ -127,6 +129,8 @@ public class CController {
 			        row.put("CODE_TYPE", item.getCodeType());
 			        row.put("CODE_TYPE_NAME", item.getCodeTypeName());
 			        row.put("COMMENTS", item.getComments());
+			        row.put("ITEM1", item.getItem1());
+			        row.put("ITEM2", item.getItem2());
 			        // 필요한 다른 필드 추가
 			        rowsArray.add(row);
 			    }
@@ -153,7 +157,6 @@ public class CController {
 		    JSONArray rowsArray = new JSONArray();
 		    for (lisc002DTO item : data) {
 		        JSONObject row = new JSONObject();
-		        row.put("CODE_TYPE", item.getCodeType());
 		        row.put("CODE", item.getCode());
 		        row.put("ITEM1", item.getItem1());
 		        row.put("ITEM2", item.getItem2());
@@ -162,7 +165,6 @@ public class CController {
 		        row.put("ITEM5", item.getItem5());
 		        row.put("REMARK1", item.getRemark1());
 		        row.put("REMARK2", item.getRemark2());
-		        row.put("COMMENTS", item.getComments());
 		        // 필요한 다른 필드 추가
 		        rowsArray.add(row);
 		    }
@@ -186,8 +188,7 @@ public class CController {
 		    JSONArray rowsArray = new JSONArray();
 		    for (lisc003DTO item : data) {
 		        JSONObject row = new JSONObject();
-		        row.put("CODE_TYPE", item.getCodeType());
-		        row.put("CODE", item.getCode());
+		        row.put("CODE2", item.getCode2());
 		        row.put("ITEM1", item.getItem1());
 		        row.put("ITEM2", item.getItem2());
 		        row.put("ITEM3", item.getItem3());
@@ -195,7 +196,6 @@ public class CController {
 		        row.put("ITEM5", item.getItem5());
 		        row.put("REMARK1", item.getRemark1());
 		        row.put("REMARK2", item.getRemark2());
-		        row.put("COMMENTS", item.getComments());
 		        // 필요한 다른 필드 추가
 		        rowsArray.add(row);
 		    }

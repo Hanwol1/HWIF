@@ -74,15 +74,20 @@
 		where code_type = UPPER('qc_level');
 		]]>
 	</select>
-	<select id="qcCodeFindAll" resultType="egovframework.b.model.QcCodeDTO">
+	<select id="qcCodeFindAll" parameterType="String"  resultType="egovframework.b.model.QcCodeDTO">
 	<![CDATA[
 		select code, item1
 		from lisc002
-		where code_type = UPPER('QC_MATERIAL_CODE');
+		where code_type = UPPER('QC_MATERIAL_CODE')
+		 and item2 = #{data};
 		]]>
 	</select>
 	
-	
+	<select id="qcCodeFindOne" parameterType="String" resultType="String">
+		select MAX(code) 
+		from lisc002
+		where item1 = #{data}; 
+	</select>
 	
 	
 	<select id="qcResultFindHashMap" parameterType="egovframework.b.model.QcResultRequestDTO" resultType="java.util.LinkedHashMap">
@@ -129,6 +134,12 @@
 			<if test="jangbi != null and jangbi.length() > 0">
 			and d.item1 = #{jangbi}
 			</if>
+			<if test="muljil != null and muljil.length() > 0">
+			and c.qc_name = #{muljil}
+			</if>
+			<if test="gumsa != null and gumsa.length() > 0">
+			and gumsa_name1 like CONCAT('%',#{gumsa},'%')
+			</if>
 			group by c.qc_name, gumsa_name1, a.qc_level, a.lot_no, 장비명
 			order by 1,2,3,4
 	</select>
@@ -161,6 +172,13 @@
         and a.lot_no = b.lot_no
         and a.start_date = b.fk_start_date
         where qc_name = #{qcName};
+	</select>
+	
+	<select id="findGumsa" resultType="egovframework.b.model.QcResultGumsaResponseDTO">
+		select code, item1
+		from lisc002
+		where 1=1
+        and CODE_TYPE = 'TUBE_CODE';
 	</select>
 	
 	

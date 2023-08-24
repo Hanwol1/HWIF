@@ -14,6 +14,8 @@ public class QcResultRequestDTO {
 	 private String lotNo;
 	 private String level;
 	 private String jangbi;
+	 private String muljil;
+	 private String gumsa;
 	 private List<String> dateList;
 	 
 }	

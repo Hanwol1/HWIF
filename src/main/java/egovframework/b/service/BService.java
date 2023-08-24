@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import egovframework.b.model.QcResultDTO;
 import egovframework.b.model.QcResultDateDTO;
+import egovframework.b.model.QcResultGumsaResponseDTO;
 import egovframework.b.model.QcResultRequestDTO;
 import egovframework.b.model.UserBDTO;
 import egovframework.b.model.QcCodeDTO;
@@ -25,9 +26,10 @@ public interface BService {
 
 	List<String> levelList();
 
-	List<QcCodeDTO> qcCodeList();
+	List<QcCodeDTO> qcCodeList(String data);
 
 	int save(List<Map<String, Object>> list);
 	
-	
+	String qcCodeFindOne(String data);
+	List<QcResultGumsaResponseDTO> findGumsa();
 }

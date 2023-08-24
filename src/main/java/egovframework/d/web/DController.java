@@ -273,10 +273,10 @@ public class DController {
 		for (int i=0; i<map.size(); i++) {
 			Map<String, String> data = new HashMap<>(map.get(i));
 			System.out.println(data);
+			
 			lisq110DTO dto = new lisq110DTO();
 			
 			String testCode = data.get("testCode").toString();
-			String gumsaName = data.get("gumsaName").toString();
 			String item1 = data.get("jundalPart").toString();
 			String jundalPart = dService.getJundalPart(item1);
 			String meanValue = data.get("meanValue").toString();
@@ -309,7 +309,6 @@ public class DController {
 			String fkQcStartDate = data.get("fkQcStartDate").toString();
 			
 			dto.setTestCode(testCode);
-			dto.setGumsaName(gumsaName);
 			dto.setItem1(jundalPart);
 			dto.setMeanValue(meanValue);
 			dto.setSdValue(sdValue);
@@ -344,15 +343,26 @@ public class DController {
 			if ("U".equals(data.get("flag"))) {
 				int result = dService.updateData(dto);
 				
-				if (result == 1) {
-					json.put("result", "success");
-				} else {
+				if (result != 1) {
 					json.put("result", "error");
+					
+					return json;
 				}
 			} else if ("A".equals(data.get("flag"))) {
+				System.out.println("-----A-----");
+				System.out.println(dto);
+				int result = dService.addData(dto);
+				System.out.println(result);
 				
+				if (result != 1) {
+					json.put("result", "error");
+					
+					return json;
+				}
 			}
 		}
+		
+		json.put("result", "success");
 		
 		return json;
 	}

@@ -161,11 +161,12 @@ public class AController {
 	public JSONObject reagentA(@RequestParam Map<String, Object> map, HttpSession session, HttpServletRequest request,
 			HttpServletResponse response, Model model) throws Exception {
 		
-		System.out.print("ㅎㅇㅎㅇㅎㅇ");
+		System.out.println("ㅎㅇㅎㅇㅎㅇ");
 		for(String key : map.keySet()) {
 			System.out.println(key + ":" + map.get(key));
 		}
 		JSONObject json = new JSONObject();
+		
 		
 		List<lisc500DTO> data = aService.lisc500();
 		List<Map> dataList = new ArrayList();
@@ -198,10 +199,7 @@ public class AController {
 			map1.put("endDate", data.get(i).getEndDate());
 			map1.put("hospitalCode", data.get(i).getHospitalCode());
 			
-			dataList.add(map1);
-			
-			
-//			System.out.println(map1);
+			dataList.add(map1);		
 		}
 		json.put("rows", dataList);
 		
