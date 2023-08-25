@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import egovframework.e.model.UserEDTO;
 import egovframework.e.model.grid1DTO;
@@ -310,7 +312,23 @@ public class EController {
 		    return json;
 		}
 
+		@RequestMapping(value = "/saveGrid1.do", method = RequestMethod.POST , produces = "application/json")
+		@ResponseBody
+		public JSONObject saveGrid1( @RequestParam Map<String, Object> map) {
+			System.out.println("11111111111111");
+			try {
+				String jsonData = map.get("data").toString();
+				System.out.println("jsonData >>>" + jsonData);
+	            JSONParser jsonParse = new JSONParser();
+	            JSONObject jsonObj = (JSONObject) jsonParse.parse(jsonData);
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
 
+			    
+			    
+			return null;
+		}
 
 
 	

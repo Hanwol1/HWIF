@@ -104,6 +104,8 @@
 	<script type="text/javascript">
 		var selGrid1Row = 0;
 		var firstBlur = 0;
+		var selRowId = ""; // 더블클릭으로 선택한 행 id
+		var editableCells = ['item1', 'item3', 'item4', 'item5', 'remark1', 'remark2', 'comments']
 		//html -> japGrid 로 변환 및 그리드 설정 정의
 		$('#list1').jqGrid({ 
 			url            : "/dcListGrid100.do", // 서버주소
@@ -180,7 +182,8 @@
 			},
 			
 			 // 그리드1 cellEdit 설정
-	        ondblClickRow: function (rowid, iRow, iCol, e) {
+	        /*
+			 ondblClickRow: function (rowid, iRow, iCol, e) {
 	        	console.log('ondblClickRow');
 	            var $target = $(e.target);
 	            var colName = $target.closest('td').attr('aria-describedby'); // 더블클릭한 컬럼의 이름을 가져옴
@@ -191,31 +194,49 @@
 	                var colModel = $("#list1").jqGrid('getGridParam', 'colModel');
 	                
 	                // 모든 컬럼을 일단 비활성화
-	               /*  for (var i = 0; i < colModel.length; i++) {
-	                    $("#list1").jqGrid('setColProp', colModel[i].name, { editable: false });
-	                }
-	                 */
+	                
+// 	                for (var i = 0; i < colModel.length; i++) {
+// 	                	 console.log("colModel[i].name >>>" + colModel[i].name);
+// 	                    $("#list1").jqGrid('setColProp', colModel[i].name, { editable: false });
+// 	                }
+
 	                // 클릭한 컬럼만 에디터 모드로 변경
 	                $("#list1").jqGrid('setColProp', colModel[colIndex].name, { editable: true });
 	                $("#list1").jqGrid('editRow', rowid, { keys: true });
-	                
 	            }
+
+	            if(selRowId != ""){
+	            	console.log("기존 row >>>" + selRowId);
+		            $("#list1").jqGrid('saveCell', iRow, iCol);
+	            }
+	            selRowId = iRow;
 	           
-               $("input", e.target).focus().blur(function() {
-                	console.log("firstBlur >>>" + firstBlur);
-                	if(firstBlur > 0){
-                		console.log("focus out 000000000000000000000000");
-                		$("#list1").jqGrid('restoreRow', iRow);
-                	}else{
-                		firstBlur = firstBlur+1 ;
+//                $("input", e.target).focus().blur(function() {
+//                 	console.log("firstBlur >>>" + firstBlur);
+//                 	if(firstBlur > 0){
+//                 		console.log("focus out 000000000000000000000000");
+//                 		$("#list1").jqGrid('restoreRow', iRow);
+//                 	}else{
+//                 		firstBlur = firstBlur+1 ;
                 		
-                		console.log('first blur !!!' + firstBlur)  
+//                 		console.log('first blur !!!' + firstBlur)  
                 		
-                	}
-                });
+//                 	}
+//                 });
+	        },
+	        */
+	        ondblClickRow: function (rowid, iRow, iCol) {
+	        	console.log("ondblClickRow");
+	            var colModels = $(this).getGridParam('colModel');
+	            var colName = colModels[iCol].name;
+
+	            if (editableCells.indexOf(colName) >= 0) {
+	                $(this).setColProp(colName, { editable: true });
+	                $(this).editCell(iRow, iCol, true);
+	            }
 	        },
 			//그리드1 선택행으로 그리드2 화면 갱신 로직
-			onSelectRow: function (rowid) {
+			onSelectRow: function (rowid, iRow, iCol) {
 				var params = {} //피라미터를 담을 객체생성
 				params.isSearch2 = "true"; // 검색여부를 true로 세팅
 				params.code = $('#list1').getRowData(rowid).code; // 선택행의 값을 params.code 에 설정 -> 그리드1의 선택값을 그리드2에서 사용하기위함
@@ -234,6 +255,7 @@
 			},
 			
 			onCellSelect: function (rowid) {
+				console.log("onCellSelect rowid >>> " + rowid);
 				var params = {} //피라미터를 담을 객체생성
 				params.isSearch2 = "true"; // 검색여부를 true로 세팅
 				params.code = $('#list1').getRowData(rowid).code; // 선택행의 값을 params.code 에 설정 -> 그리드1의 선택값을 그리드2에서 사용하기위함
@@ -251,8 +273,18 @@
 				}).trigger("reloadGrid");
 			},
 			afterEditCell: function(id,name,val,iRow,iCol){
-				console.log('afterEditCell');
-				
+//  				alert('afterEditCell' + iRow);
+
+//  				for(var i=0;i<$("#list1").getGridParam('reccount');i++){
+//  					console.log('1111111111111111111111');
+//  					$("#list1").jqGrid("saveCell",i+1,2);
+//  				}
+ 				/*
+				$('#'+id +"_"+name).blur(function(e){
+					console.log("blur >>>>>>>>>>>>>>>>>>>>>>>>>>");
+					$("#"+id).jqGrid("saveCell", iRow, iCol);
+				});
+ 				*/
 			}
 		});
 		
@@ -491,6 +523,7 @@
 
             // 더블클릭한 컬럼이 특정 컬럼인 경우에만 에디터 모드로 변경
             if (colName !== undefined && colName !== null) {
+            	console.log("if not undefined >>>>>");
                 var colIndex = iCol; // 더블클릭한 컬럼의 인덱스
                 var colModel = $("#list2").jqGrid('getGridParam', 'colModel');
                 
@@ -502,6 +535,8 @@
                 // 클릭한 컬럼만 에디터 모드로 변경
                 $("#list2").jqGrid('setColProp', colModel[colIndex].name, { editable: true });
                 $("#list2").jqGrid('editRow', rowid, { keys: true });
+            }else{
+            	console.log("if undefined >>>>>");
             }
         }
 		
@@ -653,6 +688,33 @@
                 this.classList.add("active");
             });
         });
+    });
+    
+    //function setGridDate(){
+    $(".btn-sec.save").click(function(){
+    	alert('11111111111111111');
+    	var data = $('#list1').getRowData();
+    	//var data = [{"fruit1":"apple", "fruit2":"banana"}]; 
+    	console.log("그리드 데이터 >>>"  + JSON.stringify(data));
+
+    	$.ajax({
+    	    url : "/saveGrid1.do",                    // 전송 URL
+    	    type : 'POST',                // GET or POST 방식
+    	    traditional : true,
+    	    dataType : 'JSON',
+    	    //traditional : true,
+    	    data : {'data' : JSON.stringify(data)}, 
+    	    //Ajax 성공시 호출 
+    	    success : function(data){
+    	        console.log("컨트롤러에서 받은 MSG : " + data);
+    	    },
+    	 
+    	    //Ajax 실패시 호출
+    	    error : function(jqXHR, textStatus, errorThrown){
+    	        console.log("jqXHR : " +jqXHR +"textStatus : " + textStatus + "errorThrown : " + errorThrown);
+    	    }
+    	}); 
+    	
     });
        
     
