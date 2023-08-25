@@ -19,31 +19,28 @@ import egovframework.b.service.BService;
 @Service("BService")
 public class BServiceImpl implements BService {
 
-	@Resource(name="BMapper")
+	@Resource(name = "BMapper")
 	private BMapper bMapper;
-	
+
 	@Override
 	public int joinUser(UserBDTO dto) {
-		System.out.println("serviceimpl");
 		return bMapper.joinUser(dto);
 	}
 
 	@Override
 	public boolean duplicate(UserBDTO dto) {
-		
+
 		int result = bMapper.duplicate(dto);
-		System.out.println("=====result=====" + result);
-		if(result == 1) return true;
+		if (result == 1)
+			return true;
 		return false;
 	}
 
 	@Override
 	public UserBDTO findOne(String id) {
-		
 		return bMapper.findOne(id);
 	}
 
-	
 	@Override
 	public List<String> qcResultDate(QcResultDateDTO qcResultDateDTO) {
 		List<String> list = bMapper.qcResultDate(qcResultDateDTO);
@@ -57,25 +54,21 @@ public class BServiceImpl implements BService {
 
 	@Override
 	public List<String> gumsapartList() {
-		// TODO Auto-generated method stub
 		return bMapper.gumsapartFindAll();
 	}
 
 	@Override
 	public List<String> jangbiFindAll() {
-		// TODO Auto-generated method stub
 		return bMapper.jangbiFindAll();
 	}
 
 	@Override
 	public List<String> levelList() {
-		// TODO Auto-generated method stub
 		return bMapper.levelListFindAll();
 	}
 
 	@Override
 	public List<QcCodeDTO> qcCodeList(String data) {
-		// TODO Auto-generated method stub
 		return bMapper.qcCodeFindAll(data);
 	}
 
@@ -83,51 +76,35 @@ public class BServiceImpl implements BService {
 	public int save(List<Map<String, Object>> list) {
 		int result = 0;
 		int updateRow = 0, deleteRow = 0;
-		System.out.println(list);
-		System.out.println(list.size());
-		
-		 // 데이터 처리 로직
-		System.out.println("=======================");
-        for (Map<String, Object> map : list) {
-        	 
-        	String qcCode = bMapper.findQcCode(map.get("QC물질명").toString());
-        	List<String> testCode = bMapper.findTestCode(String.valueOf(map.get("검사명")));
-        	System.out.println(testCode);
-        	map.put("qcCode", qcCode);
-        	map.put("testCode", testCode);
-  
-        	System.out.println("=======================");
-        	for (String key : map.keySet()) {
-            	System.out.println(key + " : " + map.get(key));    
-            }
-        	System.out.println("=======================");
-        	switch((String)map.get("flag")) {
-	        	case "U":
-	        		updateRow = bMapper.update(map);
-	        		break;
-	        	case "D":
-	        		deleteRow = bMapper.delete(map);
-	        		break;
-	        	default :
-	        }
-        	result = result + updateRow + deleteRow;
-        	
-        	
-        	
-        }
-		
+
+		for (Map<String, Object> map : list) {
+			String qcCode = bMapper.findQcCode(map.get("QC물질명").toString());
+			List<String> testCode = bMapper.findTestCode(String.valueOf(map.get("검사명")));
+			map.put("qcCode", qcCode);
+			map.put("testCode", testCode);
+
+			switch ((String) map.get("flag")) {
+			case "U":
+				updateRow = bMapper.update(map);
+				break;
+			case "D":
+				deleteRow = bMapper.delete(map);
+				break;
+			default:
+			}
+			result = result + updateRow + deleteRow;
+		}
+
 		return result;
 	}
 
 	@Override
 	public String qcCodeFindOne(String data) {
-		// TODO Auto-generated method stub
 		return bMapper.qcCodeFindOne(data);
 	}
 
 	@Override
 	public List<QcResultGumsaResponseDTO> findGumsa() {
-		// TODO Auto-generated method stub
 		return bMapper.findGumsa();
 	}
 

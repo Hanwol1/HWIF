@@ -16,8 +16,11 @@ public interface BService {
 	int joinUser(UserBDTO dto);
 
 	boolean duplicate(UserBDTO dto);
+
 	UserBDTO findOne(String id);
+
 	List<String> qcResultDate(QcResultDateDTO qcResultDateDTO);
+
 	List<Map<String, Object>> qcResultFindHashMap(QcResultRequestDTO qcResultDTO);
 
 	List<String> gumsapartList();
@@ -29,7 +32,8 @@ public interface BService {
 	List<QcCodeDTO> qcCodeList(String data);
 
 	int save(List<Map<String, Object>> list);
-	
+
 	String qcCodeFindOne(String data);
+
 	List<QcResultGumsaResponseDTO> findGumsa();
 }

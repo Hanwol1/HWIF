@@ -1,3 +1,7 @@
+// 초기 값을 0으로 설정하는 부분
+var selGrid1Row = 0;
+var firstBlur = 0;
+		
 $('#list1').jqGrid(
 		{
 			url : "/reagentA.do", // 서버주소 
@@ -34,14 +38,14 @@ $('#list1').jqGrid(
 				index : 'testGubun',
 				width : '100',
 				align : "center",
-				editable: true,
+				editable: false,
 				edittype: "text"
 			}, {
 				name : 'kukuk',
 				index : 'kukuk',
 				width : '100',
 				align : "center",
-				editable: true,
+				editable: false,
 				edittype: "text"
 			}, {
 				name : 'inDanui',
@@ -201,26 +205,58 @@ $('#list1').jqGrid(
 			    };
 			    console.log("Edited Data:", editedData);
 			},
-			
-			/*
 			//더블클릭 이벤트... 더블클릭할 경우 에디트 모드로.
-			ondblClickRow: function (rowid, iRow, iCol) {
-			    var colModels = $(this).getGridParam('colModel');
-			    var colName = colModels[iCol].name;
+			// 함수의 매개변수로 rowid, iRow, iCol, e가 전달되는데, 각각 클릭된 행의 ID, 행 인덱스, 열 인덱스 및 이벤트 객체입니다.
+			ondblClickRow: function (rowid, iRow, iCol, e) {
+			    console.log('ondblClickRow');
 
-				console.log(colModels);
-				console.log(colName, typeof colName);
-				console.log(editableCells);
-				console.log(editableCells.indexOf(colName));
-				
-				console.log(iRow, iCol);
-		        $(this).jqGrid('editCell', iRow, iCol, true);
+				// 더블 클릭한 열의 정보 추출
+				// e.target은 클릭된 요소를 가리킴. $target은 jQuery 객체로 감쌈.
+	            var $target = $(e.target);
+				// closest('td')은 클릭된 요소에서 가장 가까운 'td'(테이블 셀)요소를 찾는다.
+				// attr('aria-describedby')을 사용하여 td 요소의 'aria-describedby'속성 값을 가져온다.
+	            var colName = $target.closest('td').attr('aria-describedby'); // 더블클릭한 컬럼의 이름을 가져옴
+
+	            // 더블클릭한 컬럼이 특정 컬럼인 경우에만 에디터 모드로 변경
+	            if (colName !== undefined && colName !== null) {
+	                var colIndex = iCol; // 더블클릭한 컬럼의 인덱스
+	                var colModel = $("#list1").jqGrid('getGridParam', 'colModel');
+	                
+	                // 모든 컬럼을 일단 비활성화
+	               /*  for (var i = 0; i < colModel.length; i++) {
+	                    $("#list1").jqGrid('setColProp', colModel[i].name, { editable: false });
+	                }
+	                 */
+	                // 클릭한 컬럼만 에디터 모드로 변경
+					// setColProp 함수는 특정 열의 속성을 설정
+					// editRow 함수는 특정 행을 편집 모드로 변경함
+	                $("#list1").jqGrid('setColProp', colModel[colIndex].name, { editable: true });
+	                $("#list1").jqGrid('editRow', rowid, { keys: true });
+	                
+	            }
+	           
+			   // 더블클릭한 열의 셀 내부의 input 요소를 찾아 포커스를 주고, 해당 input 요소에서 포커스가 빠져나갈 때 발생하는 blur 이벤트를 처리하는 함수를 등록한다.
+               $("input", e.target).focus().blur(function() {
+                	console.log("firstBlur >>>" + firstBlur);
+					
+					// firstBlur 변수를 사용하여 처음 blur 이벤트가 발생했는지를 확인하고, 
+					// 해당 조건에 따라 행을 복원하거나 firstBlur 값을 업데이트 한다.
+                	if(firstBlur > 0){
+                		console.log("focus out 000000000000000000000000");
+                		$("#list1").jqGrid('restoreRow', iRow);
+                	} else {
+                		firstBlur = firstBlur+1 ;
+                		
+                		console.log('first blur !!!' + firstBlur)  
+                		
+                	}
+                });
 			},
 			afterEditCell: function (rowid, cellname, value, iRow, iCol) {
 				//에디트가 종료되면, 셀의 에디트 가능 여부를 false 로 돌린다.
 			    $(this).setColProp(cellname, { editable: false });
 			},
-			*/
+			
 		    onSelectRow : function(rowid) { // 행이 선택될 때 실행될 함수를 설정한다.
 				
 				var listData =  $('#list1').jqGrid('getRowData', rowid).testCode;

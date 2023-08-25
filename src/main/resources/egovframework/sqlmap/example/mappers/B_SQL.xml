@@ -2,54 +2,61 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="egovframework.b.mapper.BMapper">
 
-	<resultMap id="qcResultMap" type="egovframework.b.model.QcResultDTO">
-	    <id property="qcName" column="qc_name" />
-	    <result property="gumsaName1" column="gumsa_name1" />
-	    <result property="qcLevel" column="qc_level" />
-	    <result property="lotNo" column="lot_no" />
-	    <result property="fixedMean" column="FixedMean" />
-	    <result property="fixedSD" column="FixedSD" />
-	    <result property="fixedCV" column="FixedCV" />
-	    <result property="cumMean" column="CumMean" />
-	    <result property="cumSD" column="CumSD" />
-	    <result property="cumCV" column="CumCV" />
-    
-   		 <!-- 동적 컬럼들을 매핑하기 위한 collection -->
-	    <collection property="dynamicColumns" ofType="java.util.HashMap">
-	        <result column="dynamic_column_name" property="key" />
-	        <result column="dynamic_column_value" property="value" />
-	    </collection>
+	<resultMap id="qcResultMap"
+		type="egovframework.b.model.QcResultDTO">
+		<id property="qcName" column="qc_name" />
+		<result property="gumsaName1" column="gumsa_name1" />
+		<result property="qcLevel" column="qc_level" />
+		<result property="lotNo" column="lot_no" />
+		<result property="fixedMean" column="FixedMean" />
+		<result property="fixedSD" column="FixedSD" />
+		<result property="fixedCV" column="FixedCV" />
+		<result property="cumMean" column="CumMean" />
+		<result property="cumSD" column="CumSD" />
+		<result property="cumCV" column="CumCV" />
+
+		<!-- 동적 컬럼들을 매핑하기 위한 collection -->
+		<collection property="dynamicColumns"
+			ofType="java.util.HashMap">
+			<result column="dynamic_column_name" property="key" />
+			<result column="dynamic_column_value" property="value" />
+		</collection>
 	</resultMap>
-	
-	
-	<select id="duplicate" parameterType="egovframework.b.model.UserBDTO" resultType="int">
-		SELECT COUNT(*)
+
+
+	<select id="duplicate"
+		parameterType="egovframework.b.model.UserBDTO" resultType="int">
+		SELECT
+		COUNT(*)
 		FROM USER
 		WHERE ID = #{id}
 	</select>
-	
-	<select id="findOne" parameterType="String" resultType="egovframework.b.model.UserBDTO">
+
+	<select id="findOne" parameterType="String"
+		resultType="egovframework.b.model.UserBDTO">
 		SELECT ID, PASSWORD
 		FROM USER
 		WHERE ID = #{id}
 	</select>
-	
-	<select id="qcResultDate" parameterType="egovframework.b.model.QcResultDateDTO" resultType="string">
-		
-			
-		    select distinct final_date
-		    from lisq200 a
-		    where 1=1
-		    <if test="fromDate != null and fromDate != ''">
-		    and final_date &gt;= #{fromDate}
-		   	</if>
-		    <if test="toDate != null and toDate != ''">
-		    and final_date &lt;= #{toDate}
-		    </if>
-		    order by 1
-		
+
+	<select id="qcResultDate"
+		parameterType="egovframework.b.model.QcResultDateDTO"
+		resultType="string">
+
+
+		select distinct final_date
+		from lisq200 a
+		where 1=1
+		<if test="fromDate != null and fromDate != ''">
+			and final_date &gt;= #{fromDate}
+		</if>
+		<if test="toDate != null and toDate != ''">
+			and final_date &lt;= #{toDate}
+		</if>
+		order by 1
+
 	</select>
-	
+
 	<select id="gumsapartFindAll" resultType="string">
 	<![CDATA[
 		select concat('[', code, ']  ', item1) as 'jundal_part'
@@ -57,9 +64,9 @@
 		where code_type = UPPER('jundal_part')
 		and item4 = 'Y';
 		]]>
-		
+
 	</select>
-	
+
 	<select id="jangbiFindAll" resultType="string">
 	<![CDATA[	
 		select item1
@@ -74,7 +81,8 @@
 		where code_type = UPPER('qc_level');
 		]]>
 	</select>
-	<select id="qcCodeFindAll" parameterType="String"  resultType="egovframework.b.model.QcCodeDTO">
+	<select id="qcCodeFindAll" parameterType="String"
+		resultType="egovframework.b.model.QcCodeDTO">
 	<![CDATA[
 		select code, item1
 		from lisc002
@@ -82,131 +90,148 @@
 		 and item2 = #{data};
 		]]>
 	</select>
-	
-	<select id="qcCodeFindOne" parameterType="String" resultType="String">
-		select MAX(code) 
+
+	<select id="qcCodeFindOne" parameterType="String"
+		resultType="String">
+		select MAX(code)
 		from lisc002
-		where item1 = #{data}; 
+		where item1 = #{data};
 	</select>
-	
-	
-	<select id="qcResultFindHashMap" parameterType="egovframework.b.model.QcResultRequestDTO" resultType="java.util.LinkedHashMap">
-		
-			select c.qc_name as 'QC물질명', gumsa_name1 as '검사명', a.qc_level as 'Level', a.lot_no as 'LotNo', max(a.mean_value) as 'FixedMean', max(a.sd_value) as 'FixedSD', max(a.cv_value) as 'FixedCV',  ROUND(AVG(test_result), 2) as 'CumMean',  ROUND(STDDEV(test_result), 2) AS 'CumSD',  ROUND(STDDEV(test_result)/AVG(test_result)*100, 2) as 'CumCV', 
-			d.item1 as '장비명'
-			<if test="dateList != null and dateList.size() > 0">
+
+
+	<select id="qcResultFindHashMap"
+		parameterType="egovframework.b.model.QcResultRequestDTO"
+		resultType="java.util.LinkedHashMap">
+
+		select c.qc_name as 'QC물질명', gumsa_name1 as '검사명', a.qc_level as
+		'Level', a.lot_no as 'LotNo', max(a.mean_value) as 'FixedMean',
+		max(a.sd_value) as 'FixedSD', max(a.cv_value) as 'FixedCV',
+		ROUND(AVG(test_result), 2) as 'CumMean', ROUND(STDDEV(test_result), 2)
+		AS 'CumSD', ROUND(STDDEV(test_result)/AVG(test_result)*100, 2) as
+		'CumCV',
+		d.item1 as '장비명'
+		<if test="dateList != null and dateList.size() > 0">
 			,
-		  <foreach collection="dateList" item="i" separator="," index="index">    
-             MAX(CASE WHEN final_date = #{i} THEN test_result ELSE null END) AS '${i}'
-   		  </foreach>    
-   		  	</if>
-			from lisq200 a
-			left join lisc100 b
-			on a.test_code = b.test_code
-			and a.fk_start_date = b.start_date
-			left join lisq100 c
-			on a.qc_code = c.qc_code
-			and a.qc_level = c.qc_level
-			and a.lot_no = c.lot_no
-			left join (
-				select code, item1
-				from lisc002
-				where code_type = UPPER('jangbi_code')
-            ) d
-            on a.jangbi_code = d.code
-			where 1=1
-			and qc_name is not null
-			<if test="qcInOut != null and qcInOut.length() > 0">
+			<foreach collection="dateList" item="i" separator=","
+				index="index">
+				MAX(CASE WHEN final_date = #{i} THEN test_result ELSE null END) AS '${i}'
+			</foreach>
+		</if>
+		from lisq200 a
+		left join lisc100 b
+		on a.test_code = b.test_code
+		and a.fk_start_date = b.start_date
+		left join lisq100 c
+		on a.qc_code = c.qc_code
+		and a.qc_level = c.qc_level
+		and a.lot_no = c.lot_no
+		left join (
+		select code, item1
+		from lisc002
+		where code_type = UPPER('jangbi_code')
+		) d
+		on a.jangbi_code = d.code
+		where 1=1
+		and qc_name is not null
+		<if test="qcInOut != null and qcInOut.length() > 0">
 			and a.qc_in_out = #{qcInOut}
-			</if>
-			<if test="ruleResult != null and ruleResult.length() > 0">
+		</if>
+		<if test="ruleResult != null and ruleResult.length() > 0">
 			and a.rule_result = #{ruleResult}
-			</if>
-			<if test="jundalPart != null and jundalPart.length() > 0">
+		</if>
+		<if test="jundalPart != null and jundalPart.length() > 0">
 			and a.jundal_part = #{jundalPart}
-			</if>
-			<if test="lotNo != null and lotNo.length() > 0">
+		</if>
+		<if test="lotNo != null and lotNo.length() > 0">
 			and a.lot_no like CONCAT('%',#{lotNo},'%')
-			</if>
-			<if test="level != null and level.length() > 0">
+		</if>
+		<if test="level != null and level.length() > 0">
 			and a.qc_level = #{level}
-			</if>
-			<if test="jangbi != null and jangbi.length() > 0">
+		</if>
+		<if test="jangbi != null and jangbi.length() > 0">
 			and d.item1 = #{jangbi}
-			</if>
-			<if test="muljil != null and muljil.length() > 0">
+		</if>
+		<if test="muljil != null and muljil.length() > 0">
 			and c.qc_name = #{muljil}
-			</if>
-			<if test="gumsa != null and gumsa.length() > 0">
+		</if>
+		<if test="gumsa != null and gumsa.length() > 0">
 			and gumsa_name1 like CONCAT('%',#{gumsa},'%')
-			</if>
-			group by c.qc_name, gumsa_name1, a.qc_level, a.lot_no, 장비명
-			order by 1,2,3,4
+		</if>
+		group by c.qc_name, gumsa_name1, a.qc_level, a.lot_no, 장비명
+		order by 1,2,3,4
 	</select>
-	<insert id="joinUser" parameterType="egovframework.b.model.UserBDTO">
+	<insert id="joinUser"
+		parameterType="egovframework.b.model.UserBDTO">
 		INSERT INTO USER(
-			id, 
-			password
-		) 
+		id,
+		password
+		)
 		VALUES(
-			#{id}, 
-			#{password}
+		#{id},
+		#{password}
 		)
 	</insert>
-	
-	<select id="findTestCode" parameterType="String" resultType="String">
+
+	<select id="findTestCode" parameterType="String"
+		resultType="String">
 		select a.test_code
-        from lisc100 a
-        left join lisq200 b 
-        on a.test_code = b.test_code
-        and a.start_date = b.fk_start_date
-        and a.specimen_code = b.specimen_ser
-        where gumsa_name1 = #{gumsaName};
+		from lisc100 a
+		left join lisq200 b
+		on a.test_code = b.test_code
+		and a.start_date = b.fk_start_date
+		and a.specimen_code = b.specimen_ser
+		where gumsa_name1 = #{gumsaName};
 	</select>
-	<select id="findQcCode" parameterType="String" resultType="String">
+	<select id="findQcCode" parameterType="String"
+		resultType="String">
 		select MAX(a.qc_code)
-        from lisq100 a
-        left join lisq200 b
-        on a.qc_code = b.qc_code
-        and a.qc_level = b.qc_level
-        and a.lot_no = b.lot_no
-        and a.start_date = b.fk_start_date
-        where qc_name = #{qcName};
+		from lisq100 a
+		left join lisq200 b
+		on a.qc_code = b.qc_code
+		and a.qc_level = b.qc_level
+		and a.lot_no = b.lot_no
+		and a.start_date = b.fk_start_date
+		where qc_name = #{qcName};
 	</select>
-	
-	<select id="findGumsa" resultType="egovframework.b.model.QcResultGumsaResponseDTO">
+
+	<select id="findGumsa"
+		resultType="egovframework.b.model.QcResultGumsaResponseDTO">
 		select code, item1
 		from lisc002
 		where 1=1
-        and CODE_TYPE = 'TUBE_CODE';
+		and CODE_TYPE = 'TUBE_CODE';
 	</select>
-	
-	
+
+
 	<update id="update" parameterType="hashMap">
-		UPDATE lisq200 
-		SET 
-			MEAN_VALUE = #{FixedMean},
-			SD_VALUE = #{FixedSD},
-			CV_VALUE = SD_VALUE / MEAN_VALUE * 100	 
+		UPDATE lisq200
+		SET
+		MEAN_VALUE = #{FixedMean},
+		SD_VALUE = #{FixedSD},
+		CV_VALUE = SD_VALUE / MEAN_VALUE * 100
 		WHERE 1=1
 		AND QC_CODE = #{qcCode}
 		AND QC_LEVEL = #{Level}
-		AND LOT_NO = #{LotNo}
+		AND LOT_NO =
+		#{LotNo}
 		AND TEST_CODE IN
-        <foreach collection="testCode" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+		<foreach collection="testCode" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
 	</update>
 	<delete id="delete" parameterType="hashMap">
 		delete
 		from lisq200
 		where 1=1
 		AND QC_CODE = #{qcCode}
-		AND QC_LEVEL = #{Level}
+		AND QC_LEVEL =
+		#{Level}
 		AND LOT_NO = #{LotNo}
 		AND TEST_CODE IN
-        <foreach collection="testCode" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+		<foreach collection="testCode" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
 	</delete>
 </mapper>

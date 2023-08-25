@@ -161,9 +161,11 @@
         item1 = $("#lisc001DTO").jqGrid('getRowData', rowid).ITEM1;
         
         var item1Array = item1.split(";"); // ';'로 분리하여 배열로 저장
+        console.log('aaa');
         console.log(item1Array); // 배열 출력
         console.log(codetype);
         console.log(item1);		// Grid2의 컬럼설정 모달에 들어갈 값
+        item1Array = [...item1Array, "lisc002code"];
         
         $("#myModal1 input#code").val(item1Array[0] || '');
         $("#myModal1 input#item1").val(item1Array[1] || '');
@@ -178,20 +180,24 @@
         $('#lisc002DTO').jqGrid({
         	url: "/oneGridC002.do",	// 서버주소 
     	    reordercolNames:true,
-    	    postData : { type: codetype }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
+    	    postData : { 
+    	    	item1 : JSON.stringify(item1Array),
+    	    	type: codetype 
+    	    }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
     	    mtype:'POST',	// 전송 타입
     	    datatype : "json",	// 받는 데이터 형태 
-    	    colNames:['CODE', 'ITEM1', 'ITEM2', 'ITEM3', 'ITEM4', 'ITEM5', 'REMARK1', 'REMARK2'],	//컬럼명 item1Array로 바꾸기
+    	    colNames:item1Array,	//컬럼명 item1Array로 바꾸기
     	    colModel:
-    	    [
-    		     { name: 'CODE', index: 'CODE', width: '10', align:"center"},
-    		     { name: 'ITEM1', index: 'ITEM1', width: '10', align: "center" },
-    		     { name: 'ITEM2', index: 'ITEM2', width: '10', align: "center" },
-    		     { name: 'ITEM3', index: 'ITEM3', width: '10', align: "center" },
-    		     { name: 'ITEM4', index: 'ITEM4', width: '10', align: "center" },
-    		     { name: 'ITEM5', index: 'ITEM5', width: '10', align: "center" },
-    		     { name: 'REMARK1', index: 'REMARK1', width: '10', align: "center" },
-    		     { name: 'REMARK2', index: 'REMARK2', width: '10', align: "center" }
+    	    [	
+    		     { name: item1Array[0], index: item1Array[0], width: '10', align:"center"},
+    		     { name: item1Array[1], index: item1Array[1], width: '10', align: "center" },
+    		     { name: item1Array[2], index: item1Array[2], width: '10', align: "center" },
+    		     { name: item1Array[3], index: item1Array[3], width: '10', align: "center" },
+    		     { name: item1Array[4], index: item1Array[4], width: '10', align: "center" },
+    		     { name: item1Array[5], index: item1Array[5], width: '10', align: "center" },
+    		     { name: item1Array[6], index: item1Array[6], width: '10', align: "center" },
+    		     { name: item1Array[7], index: item1Array[7], width: '10', align: "center" },
+    		     { name: "lisc002code", index: "lisc002code", hidden : true},
     		], //서버에서 받은 데이터 설정
     	    jsonReader: 
     	    {
@@ -210,13 +216,13 @@
     	  	loadComplete: function(data)
     	  	{  
     	      console.log(data);
-    	      jQuery('#lisc002DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
+    	      $('#lisc002DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
     	  	},	// loadComplete END   
     	  	
     	  	// Grid3
     	  	onSelectRow: function(rowid) {
                 $('#lisc002DTO').getRowData(rowid);
-                Grid3(rowid); // Grid3 함수 호출
+                Grid3(); // Grid3 함수 호출
             }
     	})	        
 	}
@@ -224,18 +230,28 @@
 	
 	// Grid3
 	function Grid3(){
-		$('#lisc001DTO').getRowData(rowid);
-  		$('#lisc002DTO').getRowData(rowid);
      	//선택한 열의 데이터 가져오기  -  var selRowData = $("#lisc001DTO").getRowData(rowid);
      	var rowid, code, item2;
-     	rowitem2id  = $("#lisc001DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
      	rowid  = $("#lisc002DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
-        code = $("#lisc002DTO").jqGrid('getRowData', rowid).CODE;   // 선택한 열중에서 grid내의 정보를 가져온다.
+     	console.log($("#lisc002DTO").jqGrid('getRowData', rowid));
+        code = $("#lisc002DTO").jqGrid('getRowData', rowid).lisc002code;   // 선택한 열중에서 grid내의 정보를 가져온다.
+		console.log("Rowid", rowid, "Grid3", code);
+        // 컬럼 명 item2로 바꾸기 ---------------------------------------------------------------
+		rowitem2id  = $("#lisc001DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
 		item2 = $("#lisc001DTO").jqGrid('getRowData', rowitem2id).ITEM2;   // 001의 ITEM2 값을 가져옴
-		console.log(code);
-        var item2Array = item2.split(";"); // ';'로 분리하여 배열로 저장
-        console.log(item2Array); // 배열 출력
-        console.log(item2);		// Grid3의 컬럼설정 모달에 들어갈 값
+		
+		var item2Array = item2.split(";"); // 일단 ;으로 분리
+		if (item2Array.length === 1 && item2Array[0] === "") {
+		    // 만약 ;으로 분리한 결과가 빈 배열이라면 빈칸을 추가
+		    item2Array = ["", "", "", "", "", "", "", ""];
+		} else {
+		    // 아닌 경우에는 기존의 값을 그대로 사용
+		    while (item2Array.length < 8) {
+		        // 배열의 길이가 8보다 작을 경우 빈칸으로 채우기
+		        item2Array.push("");
+		    }
+		}
+        console.log("item2Array: ", item2Array); // 배열 출력
         
         $("#myModal2 input#code").val(item2Array[0] || '');
         $("#myModal2 input#item1").val(item2Array[1] || '');
@@ -245,26 +261,30 @@
         $("#myModal2 input#item5").val(item2Array[5] || '');
         $("#myModal2 input#remark1").val(item2Array[6] || '');
         $("#myModal2 input#remark2").val(item2Array[7] || '');
-
+        
+        
         $("#lisc003DTO").jqGrid("GridUnload"); // 첫 번째 조회했던 그 값으로만 조회될 때 초기화
         $('#lisc003DTO').jqGrid({
         	url: "/oneGridC003.do",	// 서버주소 
     	    reordercolNames:true,
-    	    postData : { type: code }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
+    	    postData : { 
+    	    	item2 : JSON.stringify(item2Array),
+    	    	type: code
+    	    }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
     	    mtype:'POST',	// 전송 타입
     	    datatype : "json",	// 받는 데이터 형태 
-    	    colNames:['CODE2', 'ITEM1', 'ITEM2', 'ITEM3', 'ITEM4', 'ITEM5', 'REMARK1', 'REMARK2'],	//컬럼명
+    	    colNames:item2Array,	//컬럼명
     	    colModel:
     	    [
-    		     { name: 'CODE2', index: 'CODE2', width: '10', align:"center"},
-    		     { name: 'ITEM1', index: 'ITEM1', width: '10', align: "center" },
-    		     { name: 'ITEM2', index: 'ITEM2', width: '10', align: "center" },
-    		     { name: 'ITEM3', index: 'ITEM3', width: '10', align: "center" },
-    		     { name: 'ITEM4', index: 'ITEM4', width: '10', align: "center" },
-    		     { name: 'ITEM5', index: 'ITEM5', width: '10', align: "center" },
-    		     { name: 'REMARK1', index: 'REMARK1', width: '10', align: "center" },
-    		     { name: 'REMARK2', index: 'REMARK2', width: '10', align: "center" },
-    		], //서버에서 받은 데이터 설정
+       		     { name: item2Array[0], index: item2Array[0], width: '10', align:"center"},
+       		     { name: item2Array[1], index: item2Array[1], width: '10', align: "center" },
+       		     { name: item2Array[2], index: item2Array[2], width: '10', align: "center" },
+       		     { name: item2Array[3], index: item2Array[3], width: '10', align: "center" },
+       		     { name: item2Array[4], index: item2Array[4], width: '10', align: "center" },
+       		     { name: item2Array[5], index: item2Array[5], width: '10', align: "center" },
+       		     { name: item2Array[6], index: item2Array[6], width: '10', align: "center" },
+       		     { name: item2Array[7], index: item2Array[7], width: '10', align: "center" }
+       		], //서버에서 받은 데이터 설정
     	    jsonReader: 
     	    {
     		     repeatitems: false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?

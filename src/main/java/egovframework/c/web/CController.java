@@ -1,5 +1,6 @@
 package egovframework.c.web;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -146,25 +147,35 @@ public class CController {
 	
 	@RequestMapping(value = "/oneGridC002.do", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject lisc002DTO(@RequestParam Map<String, Object> map, HttpSession session, HttpServletRequest request,
+	public JSONObject lisc002DTO(@RequestParam String item1, String type, HttpSession session, HttpServletRequest request,
 	HttpServletResponse response, Model model) throws Exception {
-		String codetype = (String) map.get("type");
-		System.out.println(map.get("type"));
+		//String codetype = (String) map["type"];
+		
+		System.out.print(item1);
+		String item1Array[] = item1.substring(1, item1.length()-1).split("&quot;,");
+		System.out.println(item1Array.length);
+		for(int i=0; i<item1Array.length; i++) {
+			item1Array[i] = item1Array[i].replace("&quot;", "");
+			System.out.println(i + "번째 : " + item1Array[i]);
+		}
+			
 		JSONObject json = new JSONObject();
 		try {
-		    List<lisc002DTO> data = cService.codetype(codetype);
+		    List<lisc002DTO> data = cService.codetype(type);
 		    System.out.println(data);
 		    JSONArray rowsArray = new JSONArray();
 		    for (lisc002DTO item : data) {
-		        JSONObject row = new JSONObject();
-		        row.put("CODE", item.getCode());
-		        row.put("ITEM1", item.getItem1());
-		        row.put("ITEM2", item.getItem2());
-		        row.put("ITEM3", item.getItem3());
-		        row.put("ITEM4", item.getItem4());
-		        row.put("ITEM5", item.getItem5());
-		        row.put("REMARK1", item.getRemark1());
-		        row.put("REMARK2", item.getRemark2());
+		    	LinkedHashMap<String, Object> row = new LinkedHashMap<>();
+		        row.put(item1Array[0], item.getCode());
+		        row.put(item1Array[1], item.getItem1());
+		        row.put(item1Array[2], item.getItem2());
+		        row.put(item1Array[3], item.getItem3());
+		        row.put(item1Array[4], item.getItem4());
+		        row.put(item1Array[5], item.getItem5());
+		        row.put(item1Array[6], item.getRemark1());
+		        row.put(item1Array[7], item.getRemark2());
+		        row.put("lisc002code", item.getCode());
+		        System.out.println(row);
 		        // 필요한 다른 필드 추가
 		        rowsArray.add(row);
 		    }
@@ -177,25 +188,32 @@ public class CController {
 	
 	@RequestMapping(value = "/oneGridC003.do", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject lisc003DTO(@RequestParam Map<String, Object> map, HttpSession session, HttpServletRequest request,
+	public JSONObject lisc003DTO(@RequestParam String item2, String type, HttpSession session, HttpServletRequest request,
 	HttpServletResponse response, Model model) throws Exception {
-		String code = (String) map.get("type");
-		System.out.println(map.get("type"));
+		System.out.println("-----------");
+		System.out.println(type);
+		String item2Array[] = item2.substring(1, item2.length()-1).split("&quot;,");
+		System.out.println("item2Array길이: " + item2Array.length);
+		for(int i=0; i<item2Array.length; i++) {
+			item2Array[i] = item2Array[i].replace("&quot;", "");
+			System.out.println(i + "번째 : " + item2Array[i]);
+		}
+		
 		JSONObject json = new JSONObject();
 		try {
-		    List<lisc003DTO> data = cService.code(code);
+		    List<lisc003DTO> data = cService.code(type);
 		    System.out.println(data);
 		    JSONArray rowsArray = new JSONArray();
 		    for (lisc003DTO item : data) {
-		        JSONObject row = new JSONObject();
-		        row.put("CODE2", item.getCode2());
-		        row.put("ITEM1", item.getItem1());
-		        row.put("ITEM2", item.getItem2());
-		        row.put("ITEM3", item.getItem3());
-		        row.put("ITEM4", item.getItem4());
-		        row.put("ITEM5", item.getItem5());
-		        row.put("REMARK1", item.getRemark1());
-		        row.put("REMARK2", item.getRemark2());
+		    	LinkedHashMap<String, Object> row = new LinkedHashMap<>();
+		        row.put(item2Array[0], item.getCode2());
+		        row.put(item2Array[1], item.getItem1());
+		        row.put(item2Array[2], item.getItem2());
+		        row.put(item2Array[3], item.getItem3());
+		        row.put(item2Array[4], item.getItem4());
+		        row.put(item2Array[5], item.getItem5());
+		        row.put(item2Array[6], item.getRemark1());
+		        row.put(item2Array[7], item.getRemark2());
 		        // 필요한 다른 필드 추가
 		        rowsArray.add(row);
 		    }
