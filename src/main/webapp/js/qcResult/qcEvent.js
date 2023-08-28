@@ -1,6 +1,25 @@
-let serverData = [];
-let selectedCell = null;
-const $modal = $(".modal__background");
+
+
+// 저장 처리 로직, 임시
+$('.save-btn').click(function () {
+    saveGrid();
+})
+
+// 삭제 처리 로직, 8-22 작업중
+$('.delete-btn').click(function () {
+    deleteGrid();
+})
+
+// 검사파트 변경했을 때 하위 셀렉트 렌더링
+$('.check-part-select').change(function (e) {
+    checkPartChangeRendering(e);
+})
+
+
+$('.substance-select').change(function (e) {
+    substanceChangeRendering(e);
+});
+
 $('.check-item-button').click(function (e) {
     $modal.addClass("open-modal");
 });

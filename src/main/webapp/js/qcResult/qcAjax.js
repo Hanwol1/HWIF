@@ -1,5 +1,5 @@
-// 저장 처리 로직, 임시
-$('.save-btn').click(function () {
+
+const saveGrid = function(){
     if (!confirm("저장하시겠습니까?" + serverData.length + '행이 삭제/변경 됩니다.')) 
         return;
     
@@ -11,11 +11,9 @@ $('.save-btn').click(function () {
         success: function (res) {},
         error: function (err) {}
     })
+}
 
-})
-
-// 삭제 처리 로직, 8-22 작업중
-$('.delete-btn').click(function () {
+const deleteGrid = function(){
     var rowIds = $("#list1").getGridParam("selarrrow");
     for (var i = rowIds.length - 1; i >= 0; i--) {
         var selRowData = $("#list1").getRowData(rowIds[i]);
@@ -33,12 +31,10 @@ $('.delete-btn').click(function () {
             // 해당 no 값이 존재하지 않는 경우, 새로운 객체 추가
             serverData.push(selRowData);
         }
-
     }
-})
+}
 
-// 검사파트 변경했을 때 하위 셀렉트 렌더링
-$('.check-part-select').change(function (e) {
+const checkPartChangeRendering = function(e){
     const data = e
         .target
         .value
@@ -70,10 +66,10 @@ $('.check-part-select').change(function (e) {
         },
         error: function (err) {}
     })
-})
+}
 
-$('.substance-select').change(function (e) {
 
+const substanceChangeRendering = function(e){
     const data = e.target.value;
     $.ajax({
         type: "POST",
@@ -90,5 +86,4 @@ $('.substance-select').change(function (e) {
         },
         error: function (err) {}
     })
-
-});
+}

@@ -118,12 +118,13 @@
             </div>
         </div>
     </div>
+
+    <script src="./js/qcResult/qcInit.js" defer></script>
+    <script src="./js/qcResult/qcJqgrid.js" defer></script>
+    <script src="./js/qcResult/qcEvent.js" defer></script>
     <script src="./js/qcResult/qcAjax.js" defer></script>
     <script src="./js/qcResult/qcChart.js" defer></script>
     <script src="./js/qcResult/qcDate.js" defer></script>
-    <script src="./js/qcResult/qcEvent.js" defer></script>
-    <script src="./js/qcResult/qcInit.js" defer></script>
-    <script src="./js/qcResult/qcJqgrid.js" defer></script>
     <script src="./js/qcResult/qcPrint.js" defer></script>
     
 </body>

@@ -39,7 +39,7 @@
 		ORDER BY QC_CODE, QC_NAME, QC_LEVEL, START_DATE;
 	</select>
 	
-	<select id="lisq110" parameterType="String" resultType="egovframework.d.model.lisq110DTO">
+	<select id="lisq110" parameterType="java.util.Map" resultType="egovframework.d.model.lisq110DTO">
 		SELECT Q.TEST_CODE, C1.GUMSA_NAME1, C2.ITEM1, MEAN_VALUE, SD_VALUE, CV_VALUE, LOW_VALUE, HIGH_VALUE, SUSUL_VALUE, 
 			DANUI, Q.START_DATE, Q.END_DATE, RULE_1_2S, GUBUN_1_2S, RULE_1_3S, GUBUN_1_3S, RULE_2_2S, GUBUN_2_2S, 
 			RULE_R_4S, GUBUN_R_4S, RULE_4_1S, GUBUN_4_1S, RULE_10X, GUBUN_10X, TEST_CODE_SEQ, GRAPH_YN,
@@ -49,8 +49,11 @@
 		ON Q.TEST_CODE = C1.TEST_CODE
 		JOIN lisc002 AS C2
 		ON C2.CODE_TYPE = 'JUNDAL_PART' AND Q.JUNDAL_PART = C2.CODE
-		WHERE Q.QC_CODE = #{qcCode}
-		ORDER BY Q.QC_CODE, Q.TEST_CODE, C1.GUMSA_NAME1, Q.START_DATE;
+		WHERE 
+			(#{endDate} = 'all' OR (#{endDate} = 'use' AND STR_TO_DATE(Q.END_DATE, '%Y-%m-%d') >= CURDATE()) OR (#{endDate} = 'useNot' AND CURDATE() > STR_TO_DATE(Q.END_DATE, '%Y-%m-%d')))
+    		AND QC_CODE = #{qcCode}
+    		AND LOT_NO = #{lotNo} 
+		ORDER BY QC_CODE, Q.TEST_CODE, C1.GUMSA_NAME1, Q.START_DATE;
 	</select>
 	
 	<select id="lisc100" parameterType="String" resultType="egovframework.d.model.lisc100DTO">
@@ -111,12 +114,15 @@
 			QC_LEVEL,
 			LOT_NO
 		) VALUES (
-			CASE
-		        WHEN HOUR(NOW()) >= 12 THEN CONCAT(DATE(NOW()), ' 오후 ', HOUR(NOW()) - 12, ':', MINUTE(NOW()), ':', SECOND(NOW()))
-		        ELSE CONCAT(DATE(NOW()), ' 오전 ', TIME(NOW()))
-		    END,
+			REPLACE(
+				REPLACE(
+					DATE_FORMAT(NOW(), '%Y-%m-%d %p %h:%i:%s'),
+					'AM', '오전'
+					),
+				'PM', '오후'
+			),
 			#{testCode},
-            #{item1},
+            #{jundalPart},
             #{meanValue},
             #{sdValue},
             #{cvValue}, 
@@ -150,12 +156,15 @@
     	<!-- Q.TEST_CODE, C1.GUMSA_NAME1, C2.ITEM1, MEAN_VALUE, SD_VALUE, CV_VALUE, LOW_VALUE, HIGH_VALUE, SUSUL_VALUE, DANUI, Q.START_DATE, Q.END_DATE, RULE_1_2S, GUBUN_1_2S, RULE_1_3S, GUBUN_1_3S, RULE_2_2S, GUBUN_2_2S, RULE_R_4S, GUBUN_R_4S, RULE_4_1S, GUBUN_4_1S, RULE_10X, GUBUN_10X, TEST_CODE_SEQ, GRAPH_YN -->
         UPDATE lisq110
         SET 
-        	UPD_DATE = CASE
-		        WHEN HOUR(NOW()) >= 12 THEN CONCAT(DATE(NOW()), ' 오후 ', HOUR(NOW()) - 12, ':', MINUTE(NOW()), ':', SECOND(NOW()))
-		        ELSE CONCAT(DATE(NOW()), ' 오전 ', TIME(NOW()))
-		    END,
+        	UPD_DATE = REPLACE(
+				REPLACE(
+					DATE_FORMAT(NOW(), '%Y-%m-%d %p %h:%i:%s'),
+					'AM', '오전'
+					),
+				'PM', '오후'
+			),
         	TEST_CODE = #{testCode},
-            JUNDAL_PART = #{item1},
+            JUNDAL_PART = #{jundalPart},
             MEAN_VALUE = #{meanValue},
             SD_VALUE = #{sdValue},
             CV_VALUE = #{cvValue}, 
@@ -179,12 +188,27 @@
             GUBUN_10X = #{gubun10X}, 
             TEST_CODE_SEQ = #{testCodeSeq}, 
             GRAPH_YN = #{graphYN}
-        WHERE QC_CODE = #{qcCode} AND QC_LEVEL = #{qcLevel} AND LOT_NO = #{lotNo} AND TEST_CODE = #{testCode} AND FK_START_DATE = #{fkStartDate} AND FK_QC_START_DATE = #{fkQcStartDate}
+        WHERE QC_CODE = #{qcCode} AND QC_LEVEL = #{qcLevel} AND LOT_NO = #{lotNo} AND TEST_CODE = #{testCode} AND (#{fkStartDate} = '' OR FK_START_DATE = #{fkStartDate}) AND (#{fkQcStartDate} = '' OR FK_QC_START_DATE = #{fkQcStartDate});
+    </update>
+    
+    <update id="delData" parameterType="egovframework.d.model.lisq110DTO">
+    	<!-- Q.TEST_CODE, C1.GUMSA_NAME1, C2.ITEM1, MEAN_VALUE, SD_VALUE, CV_VALUE, LOW_VALUE, HIGH_VALUE, SUSUL_VALUE, DANUI, Q.START_DATE, Q.END_DATE, RULE_1_2S, GUBUN_1_2S, RULE_1_3S, GUBUN_1_3S, RULE_2_2S, GUBUN_2_2S, RULE_R_4S, GUBUN_R_4S, RULE_4_1S, GUBUN_4_1S, RULE_10X, GUBUN_10X, TEST_CODE_SEQ, GRAPH_YN -->
+        UPDATE lisq100
+        SET 
+        	UPD_DATE = REPLACE(
+				REPLACE(
+					DATE_FORMAT(NOW(), '%Y-%m-%d %p %h:%i:%s'),
+					'AM', '오전'
+					),
+				'PM', '오후'
+			),
+		    END_DATE = #{endDate}
+        WHERE QC_CODE = #{qcCode} AND QC_LEVEL = #{qcLevel} AND LOT_NO = #{lotNo} AND START_DATE = #{startDate};
     </update>
     
     <select id="getJundalPart" parameterType="String" resultType="String">
     	SELECT DISTINCT CODE
     	FROM lisc002
-    	WHERE ITEM1 = #{jundalPart};
+    	WHERE ITEM1 = #{item1};
     </select>
 </mapper>

@@ -11,13 +11,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.json.simple.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import egovframework.a.model.Lisc501updateDTO;
 import egovframework.a.model.UserADTO;
 import egovframework.a.model.lisc100DTO;
 import egovframework.a.model.lisc500DTO;
@@ -191,7 +195,7 @@ public class AController {
 			map1.put("keepName", data.get(i).getKeepName());
 			map1.put("keepOpenName", data.get(i).getKeepOpenName());
 			map1.put("supplierName", data.get(i).getSupplierName());
-			map1.put("jejoName", data.get(i).getJejoName());
+			map1.put("jejoCode", data.get(i).getJejoCode());
 			map1.put("barcode", data.get(i).getBarcode());
 			map1.put("danga", data.get(i).getDanga());
 			map1.put("lotNo", data.get(i).getLotNo());
@@ -264,6 +268,34 @@ public class AController {
 		}
 		
 		
+		// jqGrid list2
+		@RequestMapping(value = "/reagentA2Data.do", method = RequestMethod.POST)
+		public ResponseEntity<String> receiveData(@RequestBody Lisc501updateDTO[] data) {
+			for (Lisc501updateDTO item : data) {
+				System.out.println("Test Code: " + item.getTestCode());
+				System.out.println("Inv Code: " + item.getInvCode());
+	            
+				String testCode = item.getTestCode();
+	            String invCode = item.getInvCode();
+	               
+	            aService.lisc501SaveData(testCode, invCode);
+	        } 
+			return new ResponseEntity<>("Data received successfully", HttpStatus.OK);
+		}
 		
-			
+		
+		// jqGrid list2 Delete
+		@RequestMapping(value = "/reagentA2DataDelete.do", method = RequestMethod.POST)
+		public ResponseEntity<String> receiveData1(@RequestBody Lisc501updateDTO[] data) {
+			for (Lisc501updateDTO item : data) {
+				System.out.println("Test Code: " + item.getTestCode());
+				System.out.println("Inv Code: " + item.getInvCode());
+	            
+				String testCode = item.getTestCode();
+	            String invCode = item.getInvCode();
+	               
+	            aService.lisc501DeleteData(testCode, invCode);
+	        } 
+			return new ResponseEntity<>("Data received successfully", HttpStatus.OK);
+		}
 }

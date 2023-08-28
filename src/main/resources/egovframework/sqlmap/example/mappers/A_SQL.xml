@@ -4,51 +4,77 @@
 	<insert id="joinUserA"
 		parameterType='egovframework.a.model.UserADTO'>
 		INSERT INTO USER (
-		id, password
-		) values(
-		#{id},
-		#{password}
-		)
+					id, password
+					) values(
+					#{id},
+					#{password}
+				)
 	</insert>
 
 	<!-- 데이터베이스에 같은 userId가 있는지 체크하는 쿼리문 -->
 	<select id="findOne" parameterType='String' resultType="int">
-		select
-		count(id)
-		from user
-		where id = #{id}
+		select  count(id)
+				from user
+				where id = #{id}
 	</select>
 
 	<select id="loginA"
 		parameterType='egovframework.a.model.UserADTO'
 		resultType="egovframework.a.model.UserADTO">
 		select id, password
-		from user
-		where id = #{id} and password =
-		#{password}
+				from user
+				where id = #{id} 
+				and password =	#{password}
 	</select>
 
 	<select id="lisc500" resultType="egovframework.a.model.lisc500DTO">
 		select TEST_CODE, TEST_NAME, JUNDAL_PART, TEST_GUBUN, KUKUK,
-		IN_DANUI, OUT_DANUI, CHANGE_QTY, BARCODE_IN_YN, BARCODE_DIV, BARCODE_STORE_YN,
-		STORE_DANUI, BARCODE_OUT_YN, EXP_DAY, EXP_OPEN_DAY, KEEP_NAME,
-		KEEP_OPEN_NAME, SUPPLIER_NAME, JEJO_NAME, BARCODE, DANGA, LOT_NO,
-		START_DATE, END_DATE, HOSPITAL_CODE
-		from lisc500
-		order by TEST_CODE, TEST_NAME;
+				IN_DANUI, OUT_DANUI, CHANGE_QTY, BARCODE_IN_YN, BARCODE_DIV, BARCODE_STORE_YN,
+				STORE_DANUI, BARCODE_OUT_YN, EXP_DAY, EXP_OPEN_DAY, KEEP_NAME,
+				KEEP_OPEN_NAME, SUPPLIER_NAME, JEJO_CODE, BARCODE, DANGA, LOT_NO,
+				START_DATE, END_DATE, HOSPITAL_CODE
+				from lisc500
+				order by TEST_CODE, TEST_NAME;
 	</select>
 	
 	<select id="lisc100" resultType="egovframework.a.model.lisc100DTO">
 		select TEST_CODE, GUMSA_NAME1 
-		from lisc100
-		order by TEST_CODE, GUMSA_NAME1;
+				from lisc100
+				order by TEST_CODE, GUMSA_NAME1;
 	</select>
 
 	<select id="lisc501" parameterType="String" resultType="egovframework.a.model.lisc501DTO">
 		select lisc501.TEST_CODE, lisc100.GUMSA_NAME1 
-		from lisc501
-		left join lisc500 on lisc500.TEST_CODE = lisc501.INV_CODE
-		left join lisc100 on lisc100.TEST_CODE = lisc501.TEST_CODE
-		where lisc501.INV_CODE = #{listData};
+				from lisc501
+				left join lisc500 on lisc500.TEST_CODE = lisc501.INV_CODE
+				left join lisc100 on lisc100.TEST_CODE = lisc501.TEST_CODE
+				where lisc501.INV_CODE = #{listData};
 	</select>
+	
+	<insert id="lisc501SaveData" parameterType="egovframework.a.model.Lisc501updateDTO">
+        INSERT INTO lisc501 (SYS_DATE, USER_ID, UPD_DATE, INV_CODE, TEST_CODE)
+		        VALUES (
+		            CONCAT(
+		                DATE_FORMAT(NOW(), '%Y-%m-%d '),
+		                CASE WHEN HOUR(NOW()) >= 12 THEN CONCAT('오후 ', IF(HOUR(NOW()) > 12, HOUR(NOW()) - 12, HOUR(NOW()))) ELSE CONCAT('오전 ', HOUR(NOW())) END,
+		                DATE_FORMAT(NOW(), ':%i:%s')
+		            ),
+		            'hict',
+		            CONCAT(
+		                DATE_FORMAT(NOW(), '%Y-%m-%d '),
+		                CASE WHEN HOUR(NOW()) >= 12 THEN CONCAT('오후 ', IF(HOUR(NOW()) > 12, HOUR(NOW()) - 12, HOUR(NOW()))) ELSE CONCAT('오전 ', HOUR(NOW())) END,
+		                DATE_FORMAT(NOW(), ':%i:%s')
+		            ),
+		            #{invCode},
+		            #{testCode}
+        		);
+    </insert>
+	
+	<delete id="lisc501DeleteData" parameterType="egovframework.a.model.Lisc501updateDTO">
+	    DELETE FROM lisc501
+				    WHERE INV_CODE = #{invCode}
+				      AND TEST_CODE = #{testCode}
+				    LIMIT 1
+	</delete>
+	
 </mapper>

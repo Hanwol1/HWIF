@@ -48,6 +48,8 @@ const drawJqgrid = () => {
     };
 
     const convertFormData = sendConvertObject(formData);
+
+
     function getTextWidth(text) {
         var canvas = document.createElement("canvas");
         var context = canvas.getContext("2d");
@@ -66,7 +68,7 @@ const drawJqgrid = () => {
         },
         success: function (data) {
 
-
+            console.log(data);
             var dynamicColumns = Object.keys(data.rows[0]);
             var colNames = ['플래그'].concat(dynamicColumns);
             var colModel = [

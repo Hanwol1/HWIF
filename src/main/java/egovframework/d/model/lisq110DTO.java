@@ -1,8 +1,16 @@
 package egovframework.d.model;
 
 public class lisq110DTO {
+	private String flag;
+	public String getFlag() {
+		return flag;
+	}
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
 	private String testCode;
 	private String gumsaName1;
+	private String jundalPart;
 	private String item1;
 	private String meanValue;
 	private String sdValue;
@@ -34,6 +42,14 @@ public class lisq110DTO {
 	private String fkStartDate;
 	private String fkQcStartDate;
 	
+	
+
+	public String getJundalPart() {
+		return jundalPart;
+	}
+	public void setJundalPart(String jundalPart) {
+		this.jundalPart = jundalPart;
+	}
 	
 	public String getQcCode() {
 		return qcCode;

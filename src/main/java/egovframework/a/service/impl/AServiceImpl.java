@@ -75,4 +75,16 @@ public class AServiceImpl implements AService{
 		public List<lisc501DTO> lisc501(String data) {
 			return aMapper.lisc501(data);
 		}
+		
+		@Override
+	    public Object lisc501SaveData(String testCode, String invCode) {
+	        // 예시: Mapper를 통해 데이터베이스에 저장
+			return aMapper.lisc501SaveData(testCode, invCode);
+	    }
+		
+		@Override
+	    public Object lisc501DeleteData(String testCode, String invCode) {
+	        // 예시: Mapper를 통해 데이터베이스에 저장
+			return aMapper.lisc501DeleteData(testCode, invCode);
+	    }
 	}

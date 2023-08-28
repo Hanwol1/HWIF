@@ -2,6 +2,7 @@ package egovframework.a.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 // org.egovframe.rte.psl.dataaccess.mapper 패키지에서 Mapper 어노테이션을 가져온다.
 // 이 어노테이션은 스프링의 @Repository 어노테이션과 유사한 역할을 한다. 즉, 매퍼를 스프링 빈으로 등록하기 위해 사용한다.
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
@@ -40,4 +41,6 @@ public interface AMapper {
 	List<lisc500DTO> lisc500();
 	List<lisc100DTO> lisc100();
 	List<lisc501DTO> lisc501(String data);
+	Object lisc501SaveData(@Param("testCode") String testCode, @Param("invCode") String invCode);
+	Object lisc501DeleteData(@Param("testCode") String testCode, @Param("invCode") String invCode);
 }

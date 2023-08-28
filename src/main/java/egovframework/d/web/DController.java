@@ -49,13 +49,12 @@ public class DController {
 		String id = map.get("id").toString();
 		int check = dService.checkUser(id);
 		
-		// System.out.println(check);
-		
 		if (check != 1) {
 			String pw = Sha256.encrypt(map.get("password").toString());
 			dto.setId(id);
 			dto.setPassword(pw);
-			// 서비스의 조인유저를 실행하라
+			
+			// 서비스의 조인유저를 실행
 			int join = dService.joinUser(dto);
 			json.put("result", "success");
 		} else {
@@ -190,7 +189,17 @@ public class DController {
 			HttpServletResponse response, Model model) throws Exception {
 		JSONObject json = new JSONObject();
 		
-		List<lisq110DTO> data = dService.lisq110(map.get("qcCode"));
+		String endDate = map.get("endDate").toString();
+        String lotNo = map.get("lotNo").toString();
+        String qcCode = map.get("qcCode").toString();
+        
+        Map<String, String> paramMap = new HashMap<>();
+        
+        paramMap.put("endDate", endDate);
+        paramMap.put("lotNo", lotNo);
+        paramMap.put("qcCode", qcCode);
+		
+        List<lisq110DTO> data = dService.lisq110(paramMap);
 		List<Map> dataList = new ArrayList();
 		
 		for(int i=0; i<data.size(); i++) {
@@ -199,7 +208,7 @@ public class DController {
 	    	// '1(2S)', '판정(1_2S)', '1(3S)', '판정(1_3S)', '2(2S)', '판정(2_2S)', 'R(4S)', '판정(R_4S)', '4(1S)', '판정(4_1S)', '10X', '판정(10X)', '순번', '그래프'
 			map1.put("testCode", data.get(i).getTestCode());
 			map1.put("gumsaName", data.get(i).getGumsaName1());
-			map1.put("jundalPart", data.get(i).getItem1());
+			map1.put("item1", data.get(i).getItem1());
 			map1.put("meanValue", data.get(i).getMeanValue());
 			map1.put("sdValue", data.get(i).getSdValue());
 			map1.put("cvValue", data.get(i).getCvValue());
@@ -264,95 +273,62 @@ public class DController {
 	
 	@RequestMapping(value = "/saveData.do", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject saveData(@RequestBody List<Map<String,String>> map, HttpSession session, HttpServletRequest request,
-			HttpServletResponse response, Model model) throws Exception {		
+	public JSONObject saveData(@RequestBody List<lisq110DTO> dtos, HttpSession session, HttpServletRequest request,
+	                           HttpServletResponse response, Model model) throws Exception {
+	    JSONObject json = new JSONObject();
+
+	    for (lisq110DTO dto : dtos) {
+	        String flag = dto.getFlag();
+	        dto.setJundalPart(dService.getJundalPart(dto.getItem1()));
+	        
+	        int result = 0;
+	        
+	        switch (flag) {
+	            case "U":
+	                result = dService.updateData(dto);
+	                break;
+	            case "A":
+	                result = dService.addData(dto);
+	                break;
+                default:
+                	continue;
+	        }
+
+	        if (result < 1) {
+	            json.put("result", "error");
+	            return json;
+	        }
+	    }
+
+	    json.put("result", "success");
+	    return json;
+	}
+	
+	@RequestMapping(value = "/delData.do", method = RequestMethod.POST)
+	@ResponseBody
+	public JSONObject delData(@RequestBody List<Map<String,String>> map, HttpSession session, HttpServletRequest request,
+			HttpServletResponse response, Model model) throws Exception {
 		JSONObject json = new JSONObject();
-		
-//		System.out.println(map);
 		
 		for (int i=0; i<map.size(); i++) {
 			Map<String, String> data = new HashMap<>(map.get(i));
-			System.out.println(data);
 			
-			lisq110DTO dto = new lisq110DTO();
+			lisq100DTO dto = new lisq100DTO();
 			
-			String testCode = data.get("testCode").toString();
-			String item1 = data.get("jundalPart").toString();
-			String jundalPart = dService.getJundalPart(item1);
-			String meanValue = data.get("meanValue").toString();
-			String sdValue = data.get("sdValue").toString();
-			String cvValue = data.get("cvValue").toString();
-			String lowValue = data.get("lowValue").toString();
-			String highValue = data.get("highValue").toString();
-			String susulValue = data.get("susulValue").toString();
-			String danui = data.get("danui").toString();
 			String startDate = data.get("startDate").toString();
 			String endDate = data.get("endDate").toString();
-			String gubun10X = data.get("gubun10X").toString();
-			String gubun12S = data.get("gubun12S").toString();
-			String gubun13S = data.get("gubun13S").toString();
-			String gubun22S = data.get("gubun22S").toString();
-			String gubun41S = data.get("gubun41S").toString();
-			String gubunR4S = data.get("gubunR4S").toString();
-			String rule10X = data.get("rule10X").toString();
-			String rule12S = data.get("rule12S").toString();
-			String rule13S = data.get("rule13S").toString();
-			String rule22S = data.get("rule22S").toString();
-			String rule41S = data.get("rule41S").toString();
-			String ruleR4S = data.get("ruleR4S").toString();
-			String testCodeSeq = data.get("testCodeSeq").toString();
-			String graphYN = data.get("graphYN").toString();
 			String qcCode = data.get("qcCode").toString();
 			String qcLevel = data.get("qcLevel").toString();
 			String lotNo = data.get("lotNo").toString();
-			String fkStartDate = data.get("fkStartDate").toString();
-			String fkQcStartDate = data.get("fkQcStartDate").toString();
 			
-			dto.setTestCode(testCode);
-			dto.setItem1(jundalPart);
-			dto.setMeanValue(meanValue);
-			dto.setSdValue(sdValue);
-			dto.setCvValue(cvValue);
-			dto.setLowValue(lowValue);
-			dto.setHighValue(highValue);
-			dto.setSusulValue(susulValue);
-			dto.setDanui(danui);
 			dto.setStartDate(startDate);
 			dto.setEndDate(endDate);
-			dto.setRule12S(rule12S);
-			dto.setGubun12S(gubun12S);
-			dto.setRule13S(rule13S);
-			dto.setGubun13S(gubun13S);
-			dto.setRule22S(rule22S);
-			dto.setGubun22S(gubun22S);
-			dto.setRuleR4S(ruleR4S);
-			dto.setGubunR4S(gubunR4S);
-			dto.setRule41S(rule41S);
-			dto.setGubun41S(gubun41S);
-			dto.setRule10X(rule10X);
-			dto.setGubun10X(gubun10X);
-			dto.setTestCodeSeq(testCodeSeq);
-			dto.setGraphYN(graphYN);
-			
 			dto.setQcCode(qcCode);
 			dto.setQcLevel(qcLevel);
 			dto.setLotNo(lotNo);
-			dto.setFkStartDate(fkStartDate);
-			dto.setFkQcStartDate(fkQcStartDate);
 			
-			if ("U".equals(data.get("flag"))) {
-				int result = dService.updateData(dto);
-				
-				if (result != 1) {
-					json.put("result", "error");
-					
-					return json;
-				}
-			} else if ("A".equals(data.get("flag"))) {
-				System.out.println("-----A-----");
-				System.out.println(dto);
-				int result = dService.addData(dto);
-				System.out.println(result);
+			if ("D".equals(data.get("flag"))) {
+				int result = dService.delData(dto);
 				
 				if (result != 1) {
 					json.put("result", "error");

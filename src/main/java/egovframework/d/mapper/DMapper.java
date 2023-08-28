@@ -17,12 +17,13 @@ public interface DMapper {
 	int checkUser(String id);
 	UserDDTO loginUser(UserDDTO dto);
 	List<lisq100DTO> lisq100(Map<String,String> map);
-	List<lisq110DTO> lisq110(String qcCode);
+	List<lisq110DTO> lisq110(Map<String,String> map);
 	List<lisc100DTO> lisc100(String jundalPart);
 	List<testPartListDTO> testPartList();
 	List<String> qcNameFindAll();
 	List<String> qcNameListByTestPart(String jundalPart);
 	int addData(lisq110DTO dto);
 	int updateData(lisq110DTO dto);
+	int delData(lisq100DTO dto);
 	String getJundalPart(String jundalPart);
 }
