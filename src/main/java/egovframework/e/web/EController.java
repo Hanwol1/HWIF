@@ -105,8 +105,8 @@ public class EController {
 	}
 	
 	//grid1
-	@RequestMapping(value = "/dcListGrid100.do")
-	@ResponseBody //반환데이터를 http 응답으로 사용
+	@RequestMapping(value = "/dcListGrid100.do") //해당 URL로의 요청이 이 메서드에 매핑되도록 설정
+	@ResponseBody //이 어노테이션은 메서드가 반환하는 데이터를 HTTP 응답의 본문(body)으로 사용하도록 지정, 반환되는 데이터를 JSON 형식으로 변환하여 클라이언트에게 전달
 	
 	// 메서드 정의 , 요청 파라미터와 세션,요청,응답 등을 받아 처리하는 역할
 	public JSONObject dcListGrid100(@RequestParam Map<String, Object> map, HttpSession session, HttpServletRequest request,
@@ -134,7 +134,7 @@ public class EController {
 		    		data = eService.grid1(grid1DTO);
 		    	}
 		    	
-		    	//JSON 배열 생성 , 조회된 데이터를 순회하면 JSON 객체로 변환
+		    	//조회된 데이터를 JSON 배열 형태로 담을 객체를 생성 & for ~ 데이터베이스에서 조회한 결과를 반복하여 JSON 객체로 변환
 			    JSONArray rowsArray = new JSONArray();
 			    for (grid1DTO item : data) {
 			        JSONObject row = new JSONObject();
@@ -151,13 +151,13 @@ public class EController {
 			    }
 		
 			    //System.out.println("rowsArray >>>" + rowsArray);
-			    json.put("rows", rowsArray); //JSON 객체에 배열을 rows 이름으로 추가
+			    json.put("rows", rowsArray); //최종적으로 JSON 배열을 JSON 객체에 "rows"라는 키로 넣어준다
 		    }
 	    }catch(Exception ex) {
 	    	ex.printStackTrace();
 	    }
 		//System.out.println("========rows==================");
-	    return json; //변환된 json을 http 응답으로 보냄
+	    return json; //JSON 객체를 반환하여 클라이언트로 전송
 	}
 	
 	/**
@@ -311,24 +311,84 @@ public class EController {
 
 		    return json;
 		}
-
+		
+		//그리드1 셀입력 수정&입력
 		@RequestMapping(value = "/saveGrid1.do", method = RequestMethod.POST , produces = "application/json")
 		@ResponseBody
 		public JSONObject saveGrid1( @RequestParam Map<String, Object> map) {
-			System.out.println("11111111111111");
+			int resultIdx = 0;
+			JSONObject result = new JSONObject();
+			
 			try {
+				JSONParser jsonParse = new JSONParser();
+				String newCode = map.get("code").toString();
+				newCode = newCode.replaceAll("&quot;", "\"");
+				
 				String jsonData = map.get("data").toString();
+				jsonParse = new JSONParser();
+				jsonData = jsonData.replaceAll("&quot;", "\"");
 				System.out.println("jsonData >>>" + jsonData);
-	            JSONParser jsonParse = new JSONParser();
-	            JSONObject jsonObj = (JSONObject) jsonParse.parse(jsonData);
+	            JSONArray jsonArray = (JSONArray) jsonParse.parse(jsonData);
+	            System.out.println("jsonObj >>>" + jsonArray.size()); //
+	            
+	            for(Object data : jsonArray) {
+	            	Map paramData = (HashMap)data; 
+	            	Object code = paramData.get("code");
+	            	if("".equals(code)) { // 등록
+	            		resultIdx = eService.insertGrid1Row(paramData);
+	            	}else { // 수정
+	            		resultIdx = eService.updateGrid1Row(paramData);
+	            	}
+	            }
+	            
 			}catch(Exception e) {
 				e.printStackTrace();
+				result.put("result", "false");
 			}
 
+			result.put("result", "true");
 			    
-			    
-			return null;
+			return result;
 		}
+		
+		//그리드2 셀입력 수정&입력
+				@RequestMapping(value = "/saveGrid2.do", method = RequestMethod.POST , produces = "application/json")
+				@ResponseBody
+				public JSONObject saveGrid2( @RequestParam Map<String, Object> map) {
+					int resultIdx = 0;
+					JSONObject result = new JSONObject();
+					
+					try {
+						JSONParser jsonParse = new JSONParser();
+						String newCode_no = map.get("code_no").toString();
+						newCode_no = newCode_no.replaceAll("&quot;", "\"");
+						
+						String jsonData = map.get("data").toString();
+						jsonParse = new JSONParser();
+						jsonData = jsonData.replaceAll("&quot;", "\"");
+						System.out.println("jsonData >>>" + jsonData);
+			            JSONArray jsonArray = (JSONArray) jsonParse.parse(jsonData);
+			            System.out.println("jsonObj >>>" + jsonArray.size()); //
+			            
+			            for(Object data : jsonArray) {
+			            	Map paramData = (HashMap)data; 
+			            	Object code_no = paramData.get("code_no");
+			            	if("".equals(code_no)) { // 등록
+			            		resultIdx = eService.insertGrid2Row(paramData);
+			            	}else { // 수정
+			            		resultIdx = eService.updateGrid2Rows(paramData);
+			            	}
+			            }
+			            
+					}catch(Exception e) {
+						e.printStackTrace();
+						result.put("result", "false");
+					}
+
+					result.put("result", "true");
+					    
+					return result;
+				}
 
 
 	

@@ -44,7 +44,7 @@ public class EServiceImpl implements EService {
 	public List<grid1DTO> grid1(grid1DTO grid1DTO) {
 		
 		System.out.println("grid1DTO service >>>" + grid1DTO.getItem1());
-	    List<grid1DTO> data = eMapper.grid1(grid1DTO);
+	    List<grid1DTO> data = eMapper.grid1(grid1DTO); //eMapper 인터페이스의 grid1 메서드를 호출하여 데이터베이스에서 그리드1 데이터를 조회 & 조회된 데이터는 data 리스트에 저장
 	    //데이터확인용 코드
 	    //for (grid1DTO item : data) {
 	        //System.out.println("item1: " + item.getitem1());
@@ -156,6 +156,54 @@ public class EServiceImpl implements EService {
 	            e.printStackTrace();
 	            return 0;
 	        }
+		}
+		
+		@Override
+		public int insertGrid1Row(Map<String, Object> param) {
+			try {
+				System.out.println("param >>> " + param);
+
+	            int result = eMapper.insertGrid1Row(param);
+	            return result;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return 0;
+	        }
+		}
+
+		@Override
+		public int updateGrid1Row(Map<String, Object> param) {
+			try {
+				int result = eMapper.updateGrid1Row(param);
+				return result;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
+		}
+		
+		@Override
+		public int insertGrid2Row(Map<String, Object> param) {
+			try {
+				System.out.println("param >>> " + param);
+
+	            int result = eMapper.insertGrid2Row(param);
+	            return result;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return 0;
+	        }
+		}
+
+		@Override
+		public int updateGrid2Rows(Map<String, Object> param) {
+			try {
+				int result = eMapper.updateGrid2Rows(param);
+				return result;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
 		}
 	}
 

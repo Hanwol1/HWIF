@@ -33,6 +33,14 @@ public interface EMapper {
 	void clearDcListFileEndDate(Map<String, Object> deleteMap);
 
 	int deleteGrid2Row(Map<String, Object> params);
+	
+	int insertGrid1Row(Map<String, Object> params);
+
+	int updateGrid1Row(Map<String, Object> params);
+	
+	int insertGrid2Row(Map<String, Object> params);
+
+	int updateGrid2Rows(Map<String, Object> params);
 
 	
 

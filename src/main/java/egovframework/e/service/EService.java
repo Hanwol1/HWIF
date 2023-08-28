@@ -27,5 +27,13 @@ public interface EService {
 	void clearDcListFileEndDate(Map<String, Object> updateMap);
 
 	int deleteGrid2Row(Map<String, Object> updateMap);
+	
+	int insertGrid1Row(Map<String, Object> insertMap);
+
+	int updateGrid1Row(Map<String, Object> updateMap);
+
+	int insertGrid2Row(Map<String, Object> insertMap);
+
+	int updateGrid2Rows(Map<String, Object> updateMap);
 
 }
