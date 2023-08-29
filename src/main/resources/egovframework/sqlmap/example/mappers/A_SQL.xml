@@ -77,4 +77,102 @@
 				    LIMIT 1
 	</delete>
 	
+	
+	<insert id ="lisc500addData" parameterType="egovframework.a.model.lisc500DTO">
+		INSERT INTO lisc500 (
+				TEST_CODE, 
+				TEST_NAME, 
+				JUNDAL_PART, 
+				TEST_GUBUN, 
+				KUKUK,
+                IN_DANUI, 
+                OUT_DANUI, 
+                CHANGE_QTY, 
+                BARCODE_IN_YN, 
+                BARCODE_DIV, 
+                BARCODE_STORE_YN,
+                STORE_DANUI, 
+                BARCODE_OUT_YN, 
+                EXP_DAY, 
+                EXP_OPEN_DAY, 
+                KEEP_NAME,
+                KEEP_OPEN_NAME, 
+                SUPPLIER_NAME, 
+                JEJO_CODE, 
+                BARCODE, 
+                DANGA, 
+                LOT_NO,
+                START_DATE,
+                END_DATE,
+                HOSPITAL_CODE
+            ) VALUES (
+            	#{testCode}, 
+            	#{testName}, 
+            	#{jundalPart}, 
+            	#{testGubun}, 
+            	#{kukuk},
+			    #{inDanui}, 
+			    #{outDanui}, 
+			    #{changeQty}, 
+			    #{barcodeInYn}, 
+			    #{barcodeDiv}, 
+			    #{barcodeStoreYn},
+			    #{storeDanui}, 
+			    #{barcodeOutYn}, 
+			    #{expDay}, 
+			    #{expOpenDay}, 
+			    #{keepName},
+			    #{keepOpenName}, 
+			    #{supplierName}, 
+			    #{jejoCode}, 
+			    #{barcode}, 
+			    #{danga}, 
+			    #{lotNo},
+			    #{startDate},
+			    #{endDate},
+		        #{hospitalCode}
+		    );
+	
+	</insert>
+	
+	
+	<update id="lisc500updateData" parameterType="egovframework.a.model.lisc500DTO">
+		UPDATE lisc500
+    	SET
+    		TEST_CODE = #{testCode},
+	        TEST_NAME = #{testName},
+	        JUNDAL_PART = #{jundalPart},
+	        TEST_GUBUN = #{testGubun},
+	        KUKUK = #{kukuk},
+	        IN_DANUI = #{inDanui},
+	        OUT_DANUI = #{outDanui},
+	        CHANGE_QTY = #{changeQty},
+	        BARCODE_IN_YN = #{barcodeInYn},
+	        BARCODE_DIV = #{barcodeDiv},
+	        BARCODE_STORE_YN = #{barcodeStoreYn},
+	        STORE_DANUI = #{storeDanui},
+	        BARCODE_OUT_YN = #{barcodeOutYn},
+	        EXP_DAY = #{expDay},
+	        EXP_OPEN_DAY = #{expOpenDay},
+	        KEEP_NAME = #{keepName},
+	        KEEP_OPEN_NAME = #{keepOpenName},
+	        SUPPLIER_NAME = #{supplierName},
+	        JEJO_CODE = #{jejoCode},
+	        BARCODE = #{barcode},
+	        DANGA = #{danga},
+	        LOT_NO = #{lotNo},
+	        START_DATE = #{startDate},
+	        END_DATE = #{endDate},
+	        HOSPITAL_CODE = #{hospitalCode}
+	     WHERE
+	     	TEST_CODE = #{testCode} and	START_DATE = #{startDate};
+	</update>
+	
+	<delete id="lisc500delData" parameterType="egovframework.a.model.lisc500DTO">
+		DELETE FROM lisc500 WHERE
+				    TEST_CODE = #{testCode} 
+				 and START_DATE = #{startDate};
+	</delete>
+	
+	
 </mapper>

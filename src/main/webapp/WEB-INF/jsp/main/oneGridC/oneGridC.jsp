@@ -105,21 +105,10 @@
 		    [
 		    	{ name: 'flag', index: 'flag', hidden: true},
 		    	{ name: 'CODE_TYPE', index: 'CODE_TYPE', width: '40', align:"center"},
-		   	 	{ name: 'CODE_TYPE_NAME', index: 'CODE_TYPE_NAME', width: '40', align: "center", editable : false},
-			    {
-			        name: 'COMMENTS',
-			        index: 'COMMENTS',
-			        width: '10',
-			        align: 'center',
-			        editable: true, // 편집 가능한 상태로 설정
-			        edittype: 'textarea', // 편집 타입을 textarea로 설정
-			        editoptions: {
-			           rows: 3, // textarea의 높이를 설정 (행 수)
-			           cols: 30 // textarea의 너비를 설정 (문자 수)
-		         	}
-			     },
-			     { name: 'ITEM1', index: 'ITEM1', width: '40', align:"center", hidden: true},
-			     { name: 'ITEM2', index: 'ITEM2', width: '40', align:"center", hidden: true}
+		   	 	{ name: 'CODE_TYPE_NAME', index: 'CODE_TYPE_NAME', width: '40', align: "center", editable : true, edittype : "text"},
+			    { name: 'COMMENTS', index: 'COMMENTS', width: '10', align: 'center' },
+			    { name: 'ITEM1', index: 'ITEM1', width: '40', align:"center", hidden: true},
+			    { name: 'ITEM2', index: 'ITEM2', width: '40', align:"center", hidden: true}
 			], //서버에서 받은 데이터 설정
 		    jsonReader: 
 		    {
@@ -135,16 +124,18 @@
 		  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
 		  	emptyrecords: "Nothing to display",  // 데이터없을떄
 		  	rowNum:-1, 
-		  	/* cellEdit: true,
-            cellsubmit: 'clientArray',  */
+		  	cellEdit: true,
+            cellsubmit: 'clientArray',
+            
 		  	loadComplete: function(data)
 		  	{  
 		      console.log(data);
-		      jQuery('#lisc001DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
+		      //jQuery('#lisc001DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
 		  	},	// loadComplete END   
 		  	
 			// Grid2
-		  	onSelectRow: function(rowid) {
+		  	onCellSelect: function(rowid, iCol, cellcontent, e) {
+		  		$('#lisc001DTO').jqGrid('setSelection',rowid);
 		  		Grid2();
 		  	} 
 		})
@@ -154,7 +145,7 @@
 	
 	// Grid2
 	function Grid2(){
-		$('#lisc001DTO').getRowData(rowid);
+		//$('#lisc001DTO').getRowData(rowid);
      	//선택한 열의 데이터 가져오기  -  var selRowData = $("#lisc001DTO").getRowData(rowid);
      	var rowid, codetype, item1;
      	rowid  = $("#lisc001DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
@@ -197,14 +188,14 @@
     	    colNames:item1Array,	//컬럼명 item1Array로 바꾸기
     	    colModel:
     	    [		
-    		    { name: item1Array[0], index: item1Array[0], width: '10', align:"center", hidden: item1Array[0] === ""},
-    		    { name: item1Array[1], index: item1Array[1], width: '10', align: "center", hidden: item1Array[1] === ""},
-    		    { name: item1Array[2], index: item1Array[2], width: '10', align: "center", hidden: item1Array[2] === "" },
-    		    { name: item1Array[3], index: item1Array[3], width: '10', align: "center", hidden: item1Array[3] === ""},
-    		    { name: item1Array[4], index: item1Array[4], width: '10', align: "center", hidden: item1Array[4] === ""},
-    		    { name: item1Array[5], index: item1Array[5], width: '10', align: "center", hidden: item1Array[5] === ""},
-    		    { name: item1Array[6], index: item1Array[6], width: '10', align: "center", hidden: item1Array[6] === ""},
-    		    { name: item1Array[7], index: item1Array[7], width: '10', align: "center", hidden: item1Array[7] === ""},
+    		    { name: item1Array[0], index: item1Array[0], width: '10', align:"center", hidden: item1Array[0] === "", editable : true, edittype : "text"},
+    		    { name: item1Array[1], index: item1Array[1], width: '10', align: "center", hidden: item1Array[1] === "", editable : true, edittype : "text"},
+    		    { name: item1Array[2], index: item1Array[2], width: '10', align: "center", hidden: item1Array[2] === "", editable : true, edittype : "text"},
+    		    { name: item1Array[3], index: item1Array[3], width: '10', align: "center", hidden: item1Array[3] === "", editable : true, edittype : "text"},
+    		    { name: item1Array[4], index: item1Array[4], width: '10', align: "center", hidden: item1Array[4] === "", editable : true, edittype : "text"},
+    		    { name: item1Array[5], index: item1Array[5], width: '10', align: "center", hidden: item1Array[5] === "", editable : true, edittype : "text"},
+    		    { name: item1Array[6], index: item1Array[6], width: '10', align: "center", hidden: item1Array[6] === "", editable : true, edittype : "text"},
+    		    { name: item1Array[7], index: item1Array[7], width: '10', align: "center", hidden: item1Array[7] === "", editable : true, edittype : "text"},
     		    { name: "lisc002code", index: "lisc002code", hidden : true},
     		    { name: 'flag', index: 'flag', hidden: true}
     		], //서버에서 받은 데이터 설정
@@ -222,15 +213,17 @@
     	  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
     	  	emptyrecords: "Nothing to display",  // 데이터없을떄
     	  	rowNum:-1, 
+    	  	cellEdit: true,
+            cellsubmit: 'clientArray',
     	  	loadComplete: function(data)
     	  	{  
     	      console.log(data);
-    	      $('#lisc002DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
+    	     // $('#lisc002DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
     	  	},	// loadComplete END   
     	  	
     	  	// Grid3
-    	  	onSelectRow: function(rowid) {
-                $('#lisc002DTO').getRowData(rowid);
+    	  	onCellSelect: function(rowid, iCol, cellcontent, e) {
+                $('#lisc002DTO').jqGrid('setSelection',rowid);
                 Grid3(); // Grid3 함수 호출
             }
     	})	        
@@ -286,14 +279,14 @@
     	    colNames:item2Array,	//컬럼명
     	    colModel:
     	    [
-       		   	{ name: item2Array[0], index: item2Array[0], width: '10', align:"center", hidden: item2Array[0] === ""},
-       		    { name: item2Array[1], index: item2Array[1], width: '10', align: "center", hidden: item2Array[1] === ""},
-       		    { name: item2Array[2], index: item2Array[2], width: '10', align: "center", hidden: item2Array[2] === ""},
-       		    { name: item2Array[3], index: item2Array[3], width: '10', align: "center", hidden: item2Array[3] === ""},
-       		    { name: item2Array[4], index: item2Array[4], width: '10', align: "center", hidden: item2Array[4] === ""},
-       		    { name: item2Array[5], index: item2Array[5], width: '10', align: "center", hidden: item2Array[5] === ""},
-       		    { name: item2Array[6], index: item2Array[6], width: '10', align: "center", hidden: item2Array[6] === ""},
-       		    { name: item2Array[7], index: item2Array[7], width: '10', align: "center", hidden: item2Array[7] === ""},
+       		   	{ name: item2Array[0], index: item2Array[0], width: '10', align:"center", hidden: item2Array[0] === "", editable : true, edittype : "text"},
+       		    { name: item2Array[1], index: item2Array[1], width: '10', align: "center", hidden: item2Array[1] === "", editable : true, edittype : "text"},
+       		    { name: item2Array[2], index: item2Array[2], width: '10', align: "center", hidden: item2Array[2] === "", editable : true, edittype : "text"},
+       		    { name: item2Array[3], index: item2Array[3], width: '10', align: "center", hidden: item2Array[3] === "", editable : true, edittype : "text"},
+       		    { name: item2Array[4], index: item2Array[4], width: '10', align: "center", hidden: item2Array[4] === "", editable : true, edittype : "text"},
+       		    { name: item2Array[5], index: item2Array[5], width: '10', align: "center", hidden: item2Array[5] === "", editable : true, edittype : "text"},
+       		    { name: item2Array[6], index: item2Array[6], width: '10', align: "center", hidden: item2Array[6] === "", editable : true, edittype : "text"},
+       		    { name: item2Array[7], index: item2Array[7], width: '10', align: "center", hidden: item2Array[7] === "", editable : true, edittype : "text"},
        		 	{ name: 'flag', index: 'flag', hidden: true}
        		], //서버에서 받은 데이터 설정
     	    jsonReader: 
@@ -309,7 +302,9 @@
     	    height: "auto",//테이블의 세로 크기, Grid의 높이         
     	  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
     	  	emptyrecords: "Nothing to display",  // 데이터없을떄
-    	  	rowNum:-1, 
+    	  	rowNum:-1,
+    	  	cellEdit: true,
+            cellsubmit: 'clientArray',
     	  	loadComplete: function(data)
     	  	{  
     	      console.log(data);
@@ -434,14 +429,7 @@
 		handleClose(modal2);
 	})
 
-	
-	
-	
-	
-	
-	
-	
-	
+
 	</script>
 </body>
 </html>

@@ -12,12 +12,19 @@ $('#list1').jqGrid(
 			}, // 보낼 파라미터`
 			mtype : 'POST', // 전송 타입
 			datatype : "json", // 받는 데이터 형태 
-			colNames : [ '제품코드', '제품명', '파트', '물품구분', '규격', '입고단위',
+			colNames : ['flag', '제품코드', '제품명', '파트', '물품구분', '규격', '입고단위',
 					'출고단위', '환산수량', '입고바코드', '출고단위별출력', '창고바코드',
 					'창고출고단위', '사용등록바코드', '유효기간', '개봉유효기간', '보관방법',
 					'개봉후보관방법', '거래처명', '제조사코드(명)', '바코드', '단가',
 					'Lot no', '적용일', '불용일', '병원코드' ], //컬럼명
-			colModel : [ {
+			colModel : [ 
+				{
+					name : 'statusV',
+					index : 'statusV',
+					hidden : true
+				},
+				
+				{
 				name : 'testCode',
 				index : 'testCode',
 				width : '75',
@@ -128,8 +135,8 @@ $('#list1').jqGrid(
 				width : '100',
 				align : "center"
 			}, {
-				name : 'KeepOpenName',
-				index : 'KeepOpenName',
+				name : 'keepOpenName',
+				index : 'keepOpenName',
 				width : '100',
 				align : "center"
 			}, {
@@ -207,8 +214,9 @@ $('#list1').jqGrid(
 	                var colIndex = iCol; // 더블클릭한 컬럼의 인덱스
 	                var colModel = $("#list1").jqGrid('getGridParam', 'colModel');
 					// 수정한 열을 U 플래그로 설정
-					$("#list1").jqGrid('setRowData', rowid, { statusV: "U" });	
-	                
+					if(rowid<=totalLength){
+						$("#list1").jqGrid('setRowData', rowid, { statusV: "U" });	
+	                }
 	                // 모든 컬럼을 일단 비활성화
 	               /*  for (var i = 0; i < colModel.length; i++) {
 	                    $("#list1").jqGrid('setColProp', colModel[i].name, { editable: false });
@@ -239,7 +247,7 @@ $('#list1').jqGrid(
                 	}
                 });
 			},
-			afterEditCell: function (rowid, cellname, value, iRow, iCol) {
+			/*afterEditCell: function (rowid, cellname, value, iRow, iCol) {
 				//에디트가 종료되면, 셀의 에디트 가능 여부를 false 로 돌린다.
 			    $(this).setColProp(cellname, { editable: false });
 			
@@ -268,7 +276,7 @@ $('#list1').jqGrid(
 			        console.log("Added Data:", addedData);
 			        // 여기에서 추가된 데이터를 서버로 보내는 로직을 추가할 수 있습니다.
 			    }
-			},
+			},*/
 /*			afterSaveCell: function (rowid, name, val, iRow, iCol) {
 				// rowid: 행 ID, name: 열 이름, val: 새로운 값, iRow: 행 인덱스, iCol: 열 인덱스
 			    var grid = $(this);
@@ -298,10 +306,15 @@ $('#list1').jqGrid(
 				
 			},
 			loadComplete : function(data) { // 데이터 로드가 완료되었을 때 실행될 함수를 설정한다. 
+				
 				console.log(data);
+				totalLength = $("#list1").getGridParam("records");
+				console.log(totalLength);
 			} // loadComplete END   
 		});
-				
+			var totalLength;
+
+		
 
 		var grid2 = function(data) {$('#list2').jqGrid({
 			url : "/reagentA2.do", // 서버주소 

@@ -8,7 +8,7 @@ function addListData() {
 	var newRowId = grid.jqGrid('getGridParam', 'records') + 1; 
 	
 	// 빈 객체로 시작
-	var newData = { statusV: "I" };  // I 플래그로 설정
+	var newData = { statusV: "I" , jundalPart : 0, changeQty: 0, danga: 0 };  // I 플래그로 설정
 	
 	// jqGrid에 빈 데이터로 행 추가
 	grid.jqGrid('addRowData', newRowId, newData);
@@ -21,39 +21,39 @@ function addListData() {
 	
 }	
 
+    var modifiedData = [];
 
 // list1DataSave() 함수 정의
 function list1DataSave() {
 	var grid = $('#list1');
     var rowDataArray = grid.jqGrid('getRowData');
     
-    var modifiedData = [];
+	console.log('---------------')
+	console.log(rowDataArray);
+
     rowDataArray.forEach(function(rowData) {
         if (rowData.statusV === "I" || rowData.statusV === "U") {
             modifiedData.push(rowData);
         }
     });
-    
     // modifiedData 배열에는 추가 및 수정된 데이터가 들어 있음
     console.log("Modified Data:", modifiedData);
-    
-    // 여기에서 modifiedData를 서버로 보내는 로직을 추가할 수 있습니다.
-    // 서버로 데이터를 보내는 로직을 추가하는 부분입니다.
-     $.ajax({
-         type: "POST",
-         url: "reagentA.do",
-         data: JSON.stringify(modifiedData),
-		 contentType: "application/json; charset=utf-8", // 데이터 전송 형식 지정
-         dataType: "json",
-         success: function(response) {
+
+    $.ajax({
+        type: "POST",
+        url: "/reagentAsave.do",
+        data: JSON.stringify(modifiedData),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response) {
             console.log("Data sent successfully:", response);
-			 // 성공적으로 서버로 전송된 후의 동작을 정의할 수 있습니다.
-         },
-         error: function(error) {
+            // 성공적으로 서버로 전송된 후의 동작을 정의할 수 있습니다.
+        },
+        error: function(error) {
             console.error("Error sending data:", error);
-			// 서버로 전송 중 에러 발생 시의 동작을 정의할 수 있습니다.
-         }
-     });
+            // 서버로 전송 중 에러 발생 시의 동작을 정의할 수 있습니다.
+        }
+    });
 }
 
 // deleteListData() 함수 정의, list1 열 삭제
@@ -63,12 +63,43 @@ function deleteListData() {
 	
 	if (selectedRowId) {
 		// 선택된 행이 있다면 해당 행을 삭제
-		grid.jqGrid('delRowData', selectedRowId);
-		console.log("Row deleted: ", selectedRowId);
+		var rowData = grid.jqGrid('getRowData', selectedRowId);
+		
+		// 행의 statusV 값을 D로 설정
+        rowData.statusV = "D";
+        grid.jqGrid('setRowData', selectedRowId, rowData);
+        
+        // 해당 행을 삭제하고 수정된 데이터로 업데이트
+        grid.jqGrid('delRowData', selectedRowId);
+
+		console.log("Row deleted and flagged as 'D':", selectedRowId);
+        console.log(rowData);
+		
 	} else {
 		console.log("No row selected for deletion.");
 	}
+	
+	$.ajax({
+        type: "POST",
+        url: "/reagentAdel.do",
+        data: JSON.stringify(rowData),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response) {
+            console.log("Data sent successfully:", response);
+            // 성공적으로 서버로 전송된 후의 동작을 정의할 수 있습니다.
+        },
+        error: function(error) {
+            console.error("Error sending data:", error);
+            // 서버로 전송 중 에러 발생 시의 동작을 정의할 수 있습니다.
+        }
+    });
+	
 }
+
+
+
+
 
 
 // list1 EXCEL 파일
@@ -374,6 +405,7 @@ function saveListData2() {
 		type: 'POST',
 		url: '/reagentA2Data.do',
 		data: JSON.stringify(listData),
+		dataType: "json",
 		contentType: 'application/json', // 데이터 타입 설정
         success: function(response) {
             console.log('Data sent successfully:', response);
@@ -417,6 +449,7 @@ function deleteListData2() {
         url: '/reagentA2DataDelete.do', // 수정된 URL
         data: JSON.stringify(listData),
         contentType: 'application/json', // 데이터 타입 설정
+		dataType: "json",
         success: function(response) {
             console.log('Data deleted successfully:', response);
             // 성공 시 처리할 로직 추가

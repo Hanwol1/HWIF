@@ -41,6 +41,9 @@ public interface AMapper {
 	List<lisc500DTO> lisc500();
 	List<lisc100DTO> lisc100();
 	List<lisc501DTO> lisc501(String data);
-	Object lisc501SaveData(@Param("testCode") String testCode, @Param("invCode") String invCode);
-	Object lisc501DeleteData(@Param("testCode") String testCode, @Param("invCode") String invCode);
+	int lisc501SaveData(@Param("testCode") String testCode, @Param("invCode") String invCode);
+	int lisc501DeleteData(@Param("testCode") String testCode, @Param("invCode") String invCode);
+	int lisc500addData(lisc500DTO dto);
+	int lisc500updateData(lisc500DTO dto);
+	int lisc500delData(lisc500DTO dto);
 }

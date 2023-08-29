@@ -270,7 +270,10 @@ public class AController {
 		
 		// jqGrid list2
 		@RequestMapping(value = "/reagentA2Data.do", method = RequestMethod.POST)
-		public ResponseEntity<String> receiveData(@RequestBody Lisc501updateDTO[] data) {
+		public JSONObject receiveData(@RequestBody List<Lisc501updateDTO> data) {
+			
+			JSONObject json = new JSONObject();
+			
 			for (Lisc501updateDTO item : data) {
 				System.out.println("Test Code: " + item.getTestCode());
 				System.out.println("Inv Code: " + item.getInvCode());
@@ -278,15 +281,20 @@ public class AController {
 				String testCode = item.getTestCode();
 	            String invCode = item.getInvCode();
 	               
-	            aService.lisc501SaveData(testCode, invCode);
+	            int result = 0;
+	            
+	            result = aService.lisc501SaveData(testCode, invCode);
 	        } 
-			return new ResponseEntity<>("Data received successfully", HttpStatus.OK);
+			return json;
 		}
 		
 		
 		// jqGrid list2 Delete
 		@RequestMapping(value = "/reagentA2DataDelete.do", method = RequestMethod.POST)
-		public ResponseEntity<String> receiveData1(@RequestBody Lisc501updateDTO[] data) {
+		public JSONObject receiveData1(@RequestBody List<Lisc501updateDTO> data) {
+			
+			JSONObject json = new JSONObject();
+			
 			for (Lisc501updateDTO item : data) {
 				System.out.println("Test Code: " + item.getTestCode());
 				System.out.println("Inv Code: " + item.getInvCode());
@@ -294,8 +302,64 @@ public class AController {
 				String testCode = item.getTestCode();
 	            String invCode = item.getInvCode();
 	               
-	            aService.lisc501DeleteData(testCode, invCode);
+	            int result = 0;
+	            
+	            result = aService.lisc501DeleteData(testCode, invCode);
 	        } 
-			return new ResponseEntity<>("Data received successfully", HttpStatus.OK);
+			return json;
+		}
+		
+		
+		// jqGrid list1 Save and Update
+		@RequestMapping(value = "/reagentAsave.do", method = RequestMethod.POST)
+		public JSONObject saveData(@RequestBody List<lisc500DTO> modifiedData, HttpSession session,
+		                        HttpServletRequest request, HttpServletResponse response, Model model) {
+			
+			JSONObject json = new JSONObject();
+		   
+		        for (lisc500DTO dto : modifiedData) {
+		            String statusV = dto.getStatusV();
+		     
+		            int result = 0;
+		            
+		            switch (statusV) {
+		                case "I":
+	                    // 신규 추가 로직 처리
+		                	result = aService.lisc500addData(dto);
+		                    break;
+		                case "U":
+		                    // 수정 로직 처리
+		                    result = aService.lisc500updateData(dto);
+		                    break;
+		                default:
+		                    continue;
+		            }
+		            if (result < 1) {
+		            	json.put("result", "error");
+		            	return json;
+		            }
+		        }
+		        json.put("result", "success");
+			    return json;
+			}
+		
+		
+		// jqGrid list1 Delete
+		@RequestMapping(value = "/reagentAdel.do", method = RequestMethod.POST)
+		public JSONObject delData(@RequestBody lisc500DTO dto) {
+			
+			JSONObject json = new JSONObject();
+			
+			System.out.println(77777);
+			
+//			for ( lisc500DTO dto : data ) {
+				int result = 0;
+				
+				System.out.println(dto.getTestCode());
+				
+				result = aService.lisc500delData(dto);
+//			}
+			
+			return json;
 		}
 }

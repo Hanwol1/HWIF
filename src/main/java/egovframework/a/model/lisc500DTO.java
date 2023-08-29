@@ -1,6 +1,14 @@
 package egovframework.a.model;
 
 public class lisc500DTO {
+	private String statusV;
+	
+	public String getStatusV() {
+		return statusV;
+	}
+	public void setStatusV(String statusV) {
+		this.statusV = statusV;
+	}
 	private String testCode;        // 제품코드
 	private String testName;        // 제품명
 	private String jundalPart;      // 파트
@@ -17,7 +25,7 @@ public class lisc500DTO {
 	private String expDay;          // 유효기간
 	private String expOpenDay;      // 개봉유효기간
 	private String keepName;        // 보관방법
-	private String KeepOpenName;    // 개봉후보관방법
+	private String keepOpenName;    // 개봉후보관방법
 	private String supplierName;    // 거래처명
 	private String jejoCode;        // 제조사코드(명)
 	private String barcode;         // 바코드
@@ -128,10 +136,10 @@ public class lisc500DTO {
 		this.keepName = keepName;
 	}
 	public String getKeepOpenName() {
-		return KeepOpenName;
+		return keepOpenName;
 	}
 	public void setKeepOpenName(String keepOpenName) {
-		KeepOpenName = keepOpenName;
+		this.keepOpenName = keepOpenName;
 	}
 	public String getSupplierName() {
 		return supplierName;

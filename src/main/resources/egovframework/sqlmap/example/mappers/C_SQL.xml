@@ -10,22 +10,30 @@
 			#{password}
 		)
 	</insert>
-	<select id="userID" parameterType="egovframework.c.model.UserCDTO" resultType="int">
+	<!-- 아이디 중복 조회 -->
+	<select id="userID" parameterType="egovframework.c.model.UserCDTO" resultType="int"> 
 		select count(id) from user
 		where id = #{id}
 	</select>
+	
+	<!-- 로그인 조회 -->
 	<select id="loginID" parameterType="egovframework.c.model.UserCDTO" resultType="egovframework.c.model.UserCDTO">
 		select * from user
 		where id = #{id} and password = #{password}
 	</select>
+	
+	<!-- 그리드1 -->
 	<select id="lisc001list" resultType="egovframework.c.model.lisc001DTO">
 		select CODE_TYPE, CODE_TYPE_NAME, COMMENTS, ITEM1, ITEM2 from lisc001
 		order by CODE_TYPE
 	</select>
+	
+	<!-- 그리드2 -->
 	<select id="lisc002list" resultType="egovframework.c.model.lisc002DTO">
 		select CODE, ITEM1, ITEM2, ITEM3, ITEM4, ITEM5, REMARK1, REMARK2 from lisc002
 		order by CODE_TYPE
 	</select>
+	
 	<select id="codetype" parameterType="String" resultType="egovframework.c.model.lisc002DTO">
 		select * from lisc002
 		where CODE_TYPE = #{type}
@@ -35,6 +43,8 @@
 		select * from lisc003
 		where CODE = #{type}
 	</select>
+	
+	<!-- 그리드1 검색 -->
 	<select id="searchval" parameterType="String" resultType="egovframework.c.model.lisc001DTO">
 		select * from lisc001
 		<if test="CODE_TYPE != null and !CODE_TYPE.equals('')">
@@ -42,5 +52,13 @@
 		</if>
 		order by CODE_TYPE
 	</select>
+	
 
+	
+	
+	
+	
+	
+	
+	
 </mapper>

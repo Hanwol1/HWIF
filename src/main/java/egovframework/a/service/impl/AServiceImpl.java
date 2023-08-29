@@ -77,14 +77,31 @@ public class AServiceImpl implements AService{
 		}
 		
 		@Override
-	    public Object lisc501SaveData(String testCode, String invCode) {
+	    public int lisc501SaveData(String testCode, String invCode) {
 	        // 예시: Mapper를 통해 데이터베이스에 저장
 			return aMapper.lisc501SaveData(testCode, invCode);
 	    }
 		
 		@Override
-	    public Object lisc501DeleteData(String testCode, String invCode) {
+	    public int lisc501DeleteData(String testCode, String invCode) {
 	        // 예시: Mapper를 통해 데이터베이스에 저장
 			return aMapper.lisc501DeleteData(testCode, invCode);
 	    }
+		
+		@Override
+	    public int lisc500addData(lisc500DTO dto) {
+	        // 신규 추가 로직을 수행하고 데이터베이스에 저장
+			return aMapper.lisc500addData(dto); 
+	    }
+		
+		@Override
+	    public int lisc500updateData(lisc500DTO dto) {	
+	        // 수정 로직을 수행하고 데이터베이스를 업데이트
+			return aMapper.lisc500updateData(dto);       
+	    }
+		
+		@Override
+		public int lisc500delData(lisc500DTO dto) {
+			return aMapper.lisc500delData(dto);
+		}
 	}
