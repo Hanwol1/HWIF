@@ -55,6 +55,7 @@
 				<div id="pager1"></div>
 			</div>
 		</div>
+		
 
 		<!-- 탭 및 검색바(찾기,지우기,사용등록/종료) 그리드2 -->
 		<div class="container" style="width: 49%;">
@@ -83,14 +84,13 @@
 					</div>
 				</div>
 			</div>
-
+		
 			<div class="grid2">
 				<table id="list2"></table>
 				<div id="pager2"></div>
 			</div>
 		</div>
 	</div>
-
 	<!-- 푸터 -->
 	<div class="footer" style="text-align: left; padding-down: 20px;">
 		<p>
@@ -100,12 +100,34 @@
 		<p>b) 문서형식인 PDF, EXL, DOC, HTML 4가지중 하나로 입력</p>
 	</div>
 
+	<div id="popLayer" style="display:none;" class="custom-comment-form">
+		<div>
+			<textarea rows="4" cols="50" id="remart2Area"></textarea>
+		</div>
+		<div style="text-align:right;margin-top:5px;">				
+			<input style="margin-right: 5px;" type="button" id="Save" value="Save" onclick="setRemark2();" >
+			<input id="Cancel" type="button" value="Cancel" onclick="$('#popLayer').hide();">
+		</div>
+	</div>
+		
+		<!-- 
+        <textarea class="comment-textarea" rows="4" cols="40" placeholder="코멘트를 입력하세요..."></textarea>
+        <button class="comment-submit-button" onclick="setRemark2();">저장</button>
+        <button class="comment-cancel-button" onclick="$('#popLayer').hide();">취소</button>
+		-->
+
 	<!--grid1 -->
 	<script type="text/javascript">
+		jQuery.fn.center = function () {
+		    this.css("position","absolute");
+		    this.css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 4) + $(window).scrollTop()) + "px");
+		    this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 4) + $(window).scrollLeft()) + "px");
+		    return this;
+		}
 		var selGrid1Row = 0;
 		var firstBlur = 0;
 		var selRowId = ""; // 더블클릭으로 선택한 행 id
-		var editableCells = ['item1', 'item3', 'item4', 'item5', 'remark1', 'remark2', 'comments']
+		var editableCells = ['item1', 'item3', 'item4', 'item5', 'remark1', 'comments']
 		//html -> japGrid 로 변환 및 그리드 설정 정의
 		$('#list1').jqGrid({ 
 			url            : "/dcListGrid100.do", // 서버주소
@@ -116,7 +138,7 @@
 			}, // 보낼 파라미터
 			mtype    : 'POST', // 전송 타입
 			datatype : "json", // 받는 데이터 형태
-			colNames : ['일자', '사용자계정', '최종수정일', '문서타입', '문서코드', '문서명', '최종문서체크', '담당자', '실장', '과장','문서형식','비고','코멘트'], // 컬럼명
+			colNames : ['일자', '사용자계정', '최종수정일', '문서타입', '문서코드', '문서명', '최종문서체크', '담당자', '실장', '과장','문서형식','비고', '비고이미지','코멘트'], // 컬럼명
 			colModel : [
 							{
 								name: 'sys_date', index: 'sys_date', width: '60', align: "center",hidden: true //일자
@@ -154,13 +176,19 @@
 								name: 'remark1', index: 'remark1', width: '60', align: "center", editable : false //문서형식
 							},
 							{
-								name: 'remark2',  width: 60,
-				                sortable: false, resizable: false,
-				                search: false,
-				                formatter: function() {
-				                    return "<button onclick='OpenDialog()' style='margin-left:12px'>Pop Up Dlg</button>";
-				                }
-				            },
+								name: 'remark2', index: 'remark2', width: '60', align: "center", editable : false,hidden: true //문서형식
+							},
+							 {
+					            name: 'remark2Image', width: 60,
+					            sortable: false, resizable: false,
+					            search: false, align: "center",
+					            formatter: function (cellvalue, options, rowObject) {
+					                return "<img src='/images/icons/bigo.png.png' onclick=showPopup("+options.rowId+"); alt='문서 이미지' style='width: 16px; height: 16px; cursor: pointer;' class='modal-trigger' data-rowid='" + options.rowId + "' />";
+					            }
+					        },
+
+
+
 							{
 								name: 'comments', index: 'comments', width: '60', align: "center", hidden: true, editable : false //코멘트
 							}
@@ -229,10 +257,13 @@
 					function(postData){} 
 				}).trigger("reloadGrid");
 			},
+			
+			
 			//셀이 편집된 후 실행되는 함수를 정의
 			afterEditCell: function(id,name,val,iRow,iCol){
 			}
 		});
+		
 
 		/**
 		그리드1,2 조회('조회'버튼)
@@ -279,7 +310,8 @@
 				setDeleteData(params); // ajax 삭제 함수 호출
 			}
 		});
-
+		
+		
 		/**
 		    선택한 그리드 데이터 삭제
 		*/
@@ -333,6 +365,54 @@
 		    });
 		});
 		
+		// 이미지 클릭 이벤트에 코멘트 입력 폼 생성
+		$(document).on('click', '.modal-trigger', function(event) {
+		    event.stopPropagation(); // 이미지 클릭 시 부모 이벤트 전파 차단
+		    var rowId = $(this).data('rowid'); // 클릭한 이미지의 data-rowid 값 가져오기
+
+		    var imageOffset = $(this).offset();
+		    var imageWidth = $(this).width();
+		    var imageHeight = $(this).height();
+		    var formLeft = imageOffset.left + imageWidth + 10; // 오른쪽으로 10px 간격
+		    var formTop = imageOffset.top;
+
+		    // 기존에 열린 폼이 있다면 닫기
+		    /* $('.custom-comment-form').remove();
+
+		    // 코멘트 입력 폼 생성 및 위치 조정
+		    var formContent = `
+		        <div class="custom-comment-form" style="position: absolute; left: ${formLeft}px; top: ${formTop}px;">
+		            <textarea class="comment-textarea" rows="4" cols="40" placeholder="코멘트를 입력하세요..."></textarea>
+		            <button class="comment-submit-button">저장</button>
+		            <button class="comment-cancel-button">취소</button>
+		        </div>
+		    `;
+
+		    // 클릭한 위치에 코멘트 입력 폼 추가
+		    $('body').append(formContent); */
+		});
+
+		// 코멘트 입력 취소 버튼 클릭 이벤트
+		$(document).on('click', '.comment-cancel-button', function() {
+		    $('.custom-comment-form').remove(); // 폼 닫기
+		});
+
+		// 코멘트 입력 저장 버튼 클릭 이벤트
+		$(document).on('click', '.comment-submit-button', function() {
+		    var comment = $('.comment-textarea').val(); // 입력된 코멘트 가져오기
+		 // 수정된 데이터 가져오기
+		    var editedData = $("#list1").getChangedCells('all');
+		    console.log("그리드1 수정된 데이터 >>> " + JSON.stringify(editedData));
+		    
+		    $.each(data, function( key, value ){
+	    		var rowid = value.id; // 수정된 행 rowid
+	    		var code = $('#list1').getRowData(rowid).code; // 키값 세팅[DB 업데이트 기준컬럼]
+	    		value.code = code;
+	    	});
+		    
+		    $('.custom-comment-form').remove(); // 폼 닫기
+		});
+
 		/**
 			그리드1의 데이터 조회
 		*/
@@ -358,7 +438,7 @@
 			}).trigger("reloadGrid");
 		}
 		
-		
+
 		<!--grid2 -->
 		var selGrid2Row = 0;
 		var firstBlur = 0;
@@ -637,6 +717,8 @@
 	        });
 	    });
 	    
+	    
+	    
 	    /**
 	    	그리드1에서 행추가/수정 후 '저정' 버튼 클릭 시
 	    	그리드1의 데이터 등록/수정을 한다.
@@ -671,38 +753,97 @@
 	    });
 	    
 	    
+
 	    /**
     	그리드2에서 행추가/수정 후 '저정' 버튼 클릭 시
     	그리드2의 데이터 등록/수정을 한다.
-    */
-    $(".btn-sec.save").click(function(){
-    	var data = $('#list2').getChangedCells('all'); // 수정된 셀 데이터 // $('#list2').getChangedCells('all');
-    	console.log("그리드 내 수정된 데이터 >>>" +JSON.stringify(data));
-    	
-    	$.each(data, function( key, value ){
-    		var rowid = value.id; // 수정된 행 rowid
-    		var code_no = $('#list2').getRowData(rowid).code_no; // 키값 세팅[DB 업데이트 기준컬럼]
-    		value.code_no = code_no;
+	    */
+	    $(".btn-sec.save").click(function(){
+	    	var data = $('#list2').getChangedCells('all'); // 수정된 셀 데이터 // $('#list2').getChangedCells('all');
+	    	console.log("그리드 내 수정된 데이터 >>>" +JSON.stringify(data));
+	    	
+	    	$.each(data, function( key, value ){
+	    		var rowid = value.id; // 수정된 행 rowid
+	    		var code_no = $('#list2').getRowData(rowid).code_no; // 키값 세팅[DB 업데이트 기준컬럼]
+	    		value.code_no = code_no;
+	    	});
+	    	
+	    	$.ajax({
+	    	    url    : "/saveGrid2.do",                    // 전송 URL
+	    	    type   : 'POST',                // GET or POST 방식
+	    	    traditional : true,
+	    	    dataType : 'JSON',
+	    	    data : {"data" : JSON.stringify(data), "code_no" : "H_201901_190618165846"}, //  ***** $('#list2').getRowData(selRowId).code_no <<< 와 같이 들어가야 하지만 키값 세팅이 정의되지 않아서 일단 하드코딩(쿼리에서 하드코딩) :: 화면 또는 서버단에서 키값을 세팅해줘야함. 
+	    	    success : function(data){
+	    	        if(data.result == 'true'){
+	                    alert('데이터를 저장/수정 하였습니다.');
+	                    getGridList("false"); // 그리드2 데이터 조회
+	    	        }
+	    	    },
+	    	    error : function(jqXHR, textStatus, errorThrown){
+	    	        console.log("jqXHR : " +jqXHR +"textStatus : " + textStatus + "errorThrown : " + errorThrown);
+	    	        alert('오류가 발생했습니다. 확인 후 다시 시도해주세요');
+	    	    }
+	    	}); 
+	    });
+
+		// 팝업창 보이기
+	    showPopup = function(rowid) {
+	    	console.log("rowid >>>" + rowid);
+	    	var remart2Val = $('#list1').getRowData(rowid).remark2;
+	    	selRowId = rowid;
+	    	$('#remart2Area').val(remart2Val);; // 팝업의 textarea 값에 선택한 그리드 행의 '비고' 값을 세팅한다. UPDATA 대상값
+	    	$("#popLayer").show();
+	    	$("#popLayer").center();
+	    }
+		
+	    setRemark2 = function() {
+	    	alert('저장하기 선택한 행의 키값 >>>' + selGrid1Row + "\n..." + '저장하기 선택한 행의 키값 >>>' + $('#list1').getRowData(selRowId).remark2);
+	    	
+	    	
+	    	$.ajax({
+	            type: "post",
+	            url : "/dcListDelete.do", // 저장하는 contorller
+	            //서버로 보낼 데이터 객체, params 객체에 저장된 값을 전달
+	            data: {
+	            	  code    : selGrid1Row // 키값
+	            	, remark2   : $('#list1').getRowData(selRowId).remark2
+	            },
+	            dataType : "json",
+	            error: function(data){
+	                console.log('error');
+	                alert("오류가 발생했습니다.");
+	            },
+	            success: function(data){
+	            	//console.log("data >>>" + JSON.stringify(data));
+	                if(data.result == '1'){
+	                    alert('데이터를 삭제 하였습니다.');
+	                    if(params.isAll = 'true'){
+	                    	getGridList(); // 그리드1 조회
+	                    	getGridList2(); // 그리드2 조회
+	                    }else{
+	                    	getGridList2();  // 그리드2 조회
+	                    }
+	                } else {
+	                    alert('삭제중 오류가 발생하였습니다.');
+	                }
+	            }
+	        })
+	    	
+	    }
+	    
+	    $('html').click(function(e) {
+	    	console.log('html e.target  >>>' + e.target + "\ne.target name >>>" + e.target.name);
+    	   if (!$(e.target).parents("#popLayer").length && !$(e.target).is('#popLayer') && typeof e.target.name == 'undefined'){
+    	     var isShow = $('#popLayer').is(':visible'); // 팝업창 shoew 여부
+    	     if(isShow){
+    	    	 console.log('popLayer hide');
+	    	     $("#popLayer").hide();
+    	     }else{
+    	    	 console.log('팝업창 없음');
+    	     }
+    	   }
     	});
-    	
-    	$.ajax({
-    	    url    : "/saveGrid2.do",                    // 전송 URL
-    	    type   : 'POST',                // GET or POST 방식
-    	    traditional : true,
-    	    dataType : 'JSON',
-    	    data : {"data" : JSON.stringify(data), "code_no" : "H_201901_190618165846"}, //  ***** $('#list2').getRowData(selRowId).code_no <<< 와 같이 들어가야 하지만 키값 세팅이 정의되지 않아서 일단 하드코딩(쿼리에서 하드코딩) :: 화면 또는 서버단에서 키값을 세팅해줘야함. 
-    	    success : function(data){
-    	        if(data.result == 'true'){
-                    alert('데이터를 저장/수정 하였습니다.');
-                    getGridList("false"); // 그리드2 데이터 조회
-    	        }
-    	    },
-    	    error : function(jqXHR, textStatus, errorThrown){
-    	        console.log("jqXHR : " +jqXHR +"textStatus : " + textStatus + "errorThrown : " + errorThrown);
-    	        alert('오류가 발생했습니다. 확인 후 다시 시도해주세요');
-    	    }
-    	}); 
-    });
 
 	    /**
 	    화면 로딩 후 그리드1의 데이터를 조회한다.(전체 조회 아님)
@@ -710,6 +851,10 @@
 	    window.onload = function(){
 	    	getGridList("true"); // 그리드1 데이터 조회
 	    }
+	    
+	    
 	</script>
+	
+	
 </body>
 </html>
