@@ -1,34 +1,26 @@
 // addListData() 함수 정의, list1 열 추가	
 function addListData() {
-	
 	// jqGrid에 데이터 추가
 	var grid = $('#list1');
-	
 	// 새로운 행의 ID 계산
 	var newRowId = grid.jqGrid('getGridParam', 'records') + 1; 
-	
 	// 빈 객체로 시작
 	var newData = { statusV: "I" , jundalPart : 0, changeQty: 0, danga: 0 };  // I 플래그로 설정
-	
 	// jqGrid에 빈 데이터로 행 추가
 	grid.jqGrid('addRowData', newRowId, newData);
-	
 	// 행을 편집 모드로 변경
 	grid.jqGrid('editRow', newRowId, true);
-	
 	// 새로운 행 선택
 	grid.setSelection(newRowId, true);
-	
 }	
 
-    var modifiedData = [];
+var modifiedData = [];
 
 // list1DataSave() 함수 정의
 function list1DataSave() {
 	var grid = $('#list1');
     var rowDataArray = grid.jqGrid('getRowData');
     
-	console.log('---------------')
 	console.log(rowDataArray);
 
     rowDataArray.forEach(function(rowData) {
@@ -64,17 +56,14 @@ function deleteListData() {
 	if (selectedRowId) {
 		// 선택된 행이 있다면 해당 행을 삭제
 		var rowData = grid.jqGrid('getRowData', selectedRowId);
-		
 		// 행의 statusV 값을 D로 설정
         rowData.statusV = "D";
         grid.jqGrid('setRowData', selectedRowId, rowData);
-        
         // 해당 행을 삭제하고 수정된 데이터로 업데이트
         grid.jqGrid('delRowData', selectedRowId);
 
 		console.log("Row deleted and flagged as 'D':", selectedRowId);
         console.log(rowData);
-		
 	} else {
 		console.log("No row selected for deletion.");
 	}
@@ -106,21 +95,17 @@ function deleteListData() {
 function saveExcel() {
 	var grid = $('#list1');
     var rowDataArray = [];
-
  // 모든 데이터의 row ID 가져오기
     var rowIds = grid.jqGrid('getDataIDs'); 
- 
+
     for (var i = 0; i < rowIds.length; i++) {
         var rowId = rowIds[i];
-        
      	// 특정 row의 데이터 가져오기
         var rowData = grid.jqGrid('getRowData', rowId); 
         rowDataArray.push(rowData);
     }
-
  	// JSON 데이터를 엑셀 시트로 변환
     var worksheet = XLSX.utils.json_to_sheet(rowDataArray); 
-
  	// 엑셀 워크북 생성
     var wb = XLSX.utils.book_new(); 
  	// 시트를 워크북에 추가
@@ -138,17 +123,15 @@ function saveExcel() {
     downloadLink.click();
 }
 
-
-
-
-// 빈 배열 선언. 조회된 데이터를 담을 용도로 사용할 것임.
-let data = [];
+	// 빈 배열 선언. 조회된 데이터를 담을 용도로 사용할 것임.
+	let data = [];
 
 // 조회 기능(클라이언트 측에서만 처리)
 function chooseSearch() {
     var selectedPart = $('#part').val();        // 선택된 파트 값 가져오기
     var selectedAccount = $('#acc').val();      // 선택된 거래처 값 가져오기
     var selectedManufacturer = $('#manu').val(); // 선택된 제조사 값 가져오기
+
 
     // 기존의 jqGrid 데이터를 가져옴
 	// rowDataArray 배열 선언. jqGrid에서 가져온 각 행의 데이터를 담을 용도로 사용.
@@ -162,7 +145,6 @@ function chooseSearch() {
 	    rowDataArray.push(rowData);
 	}
 	console.log(rowDataArray);
-	
 	
 	if(data.length==0){
 		data = [...rowDataArray];
@@ -194,7 +176,7 @@ function chooseSearch() {
 let data1 = [];
 
 // list1 검색기능
-function wantSearch1() {
+function wantSearchlisc500() {
 	// 입력한 검색어 가져오기
 	var keyword = $('input[name="search_name"]').val();
 	
@@ -224,7 +206,6 @@ function wantSearch1() {
 	for (var i = 0; i < data1.length; i++) {
 		var rowData = data1[i];
 		
-		// 각 열의 데이터 내용에서 검색어가 포함된 경우 filteredData 배열에 추가
 		// 각 열(column)의 데이터에서 검색어가 포함되어 있는지를 includes() 함수를 사용하여 확인
 		if (
 			rowData.testCode.includes(keyword) ||
@@ -272,7 +253,7 @@ let data3 = [];
 
 
 // list3 검색기능
-function wantSearch2() {
+function wantSearchLisc100() {
 	// 입력한 검색어 가져오기
 	var keyword3 = $('input[name="search_name1"]').val();
 	console.log(keyword3);
@@ -305,7 +286,6 @@ function wantSearch2() {
 		var rowData = data3[i];
 		console.log(rowData);
 		
-		// 각 열의 데이터 내용에서 검색어가 포함된 경우 filteredData 배열에 추가
 		// 각 열(column)의 데이터에서 검색어가 포함되어 있는지를 includes() 함수를 사용하여 확인
 		if (
 			rowData.testCode.includes(keyword3) ||
@@ -342,7 +322,7 @@ function showAllData3() {
     grid.jqGrid("clearGridData");
     grid.jqGrid("setGridParam", {
         datatype: "local",
-        data: data3 // 원본 데이터를 그대로 표시
+        data: data // 원본 데이터를 그대로 표시
     }).trigger("reloadGrid");
 }
 
@@ -356,7 +336,9 @@ function clearInput1() {
 }
 
 // clearInput3 클리어
-function clearInput3() {
+
+
+function clearInputLisc100() {
 	// 검색어를 입력한 input 요소 선택
 	var inputElement = $('input[name="search_name1"]');
 	
@@ -385,7 +367,6 @@ function saveListData2() {
 		// list3에서 해당 행의 데이터를 가져온다. 가져온 데이터는 'rowData' 변수에 저장된다.
 		var rowData = $('#list3').jqGrid('getRowData', rowId);
 		
-		// list2에 가져온 데이터를 추가한다.
 		// 'addRowData'함수는 새로운 행을 그리드에 추가하는 함수
 		// rowData의 내용이 새로운 행으로 추가된다.
 		$('#list2').jqGrid('addRowData', undefined, rowData);

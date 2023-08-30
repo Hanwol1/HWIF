@@ -18,7 +18,14 @@ public class lisc003DTO {
 	private String remark1;
 	private String remark2;
 	private String comments;
+	private String flag;
 	
+	public String getFlag() {
+		return flag;
+	}
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
 	public String getSysDate() {
 		return sysDate;
 	}

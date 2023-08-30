@@ -12,6 +12,7 @@ import egovframework.c.model.lisc001DTO;
 import egovframework.c.model.lisc002DTO;
 import egovframework.c.model.lisc003DTO;
 import egovframework.c.service.CService;
+import egovframework.d.model.lisq110DTO;
 @Service("CService")
 
 public class CServiseimpl implements CService{
@@ -51,5 +52,29 @@ public class CServiseimpl implements CService{
 	@Override
 	public List<lisc001DTO> searchval(String searchval) {
 		return cMapper.searchval(searchval);
+	}
+	@Override
+	public int add001Data(lisc001DTO dto) {
+		return cMapper.add001Data(dto);
+	}
+	@Override
+	public int add002Data(lisc002DTO dto) {
+		return cMapper.add002Data(dto);
+	}
+	@Override
+	public int add003Data(lisc003DTO dto) {
+		return cMapper.add003Data(dto);
+	}
+	@Override
+	public int update001Data(lisc001DTO dto) {
+		return cMapper.update001Data(dto);
+	}
+	@Override
+	public int update002Data(lisc002DTO dto) {
+		return cMapper.update002Data(dto);
+	}
+	@Override
+	public int update003Data(lisc003DTO dto) {
+		return cMapper.update003Data(dto);
 	}
 }

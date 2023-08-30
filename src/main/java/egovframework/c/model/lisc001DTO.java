@@ -12,6 +12,7 @@ public class lisc001DTO {
 	private String item1;
 	private String item2;
 	private String comments;  // 비고
+	private String flag;
 	
 	public String getSysDate() {
 		return sysDate;
@@ -60,5 +61,11 @@ public class lisc001DTO {
 	}
 	public void setComments(String comments) {
 		this.comments = comments;
+	}
+	public String getFlag() {
+		return flag;
 	}	
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
 }

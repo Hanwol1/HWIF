@@ -1,9 +1,8 @@
 package egovframework.a.model;
 
-public class lisc100DTO {
+public class Lisc100DTO {
 	private String testCode;  // 검사코드
 	private String gumsaName1; // 검사명
-	
 	
 	public String getTestCode() {
 		return testCode;

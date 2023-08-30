@@ -27,28 +27,52 @@
 				and password =	#{password}
 	</select>
 
-	<select id="lisc500" resultType="egovframework.a.model.lisc500DTO">
-		select TEST_CODE, TEST_NAME, JUNDAL_PART, TEST_GUBUN, KUKUK,
-				IN_DANUI, OUT_DANUI, CHANGE_QTY, BARCODE_IN_YN, BARCODE_DIV, BARCODE_STORE_YN,
-				STORE_DANUI, BARCODE_OUT_YN, EXP_DAY, EXP_OPEN_DAY, KEEP_NAME,
-				KEEP_OPEN_NAME, SUPPLIER_NAME, JEJO_CODE, BARCODE, DANGA, LOT_NO,
-				START_DATE, END_DATE, HOSPITAL_CODE
-				from lisc500
-				order by TEST_CODE, TEST_NAME;
+	<select id="lisc500" resultType="egovframework.a.model.Lisc500DTO">
+		select TEST_CODE, 
+			   TEST_NAME, 
+			   JUNDAL_PART, 
+			   TEST_GUBUN, 
+			   KUKUK,
+			   IN_DANUI, 
+			   OUT_DANUI, 
+			   CHANGE_QTY, 
+			   BARCODE_IN_YN, 
+			   BARCODE_DIV, 
+			   BARCODE_STORE_YN,
+			   STORE_DANUI, 
+			   BARCODE_OUT_YN, 
+			   EXP_DAY, 
+			   EXP_OPEN_DAY, 
+			   KEEP_NAME,
+			   KEEP_OPEN_NAME, 
+			   SUPPLIER_NAME, 
+			   JEJO_CODE, 
+			   BARCODE, 
+			   DANGA, 
+			   LOT_NO,
+			   START_DATE, 
+			   END_DATE, 
+			   HOSPITAL_CODE
+		  from lisc500
+	  order by TEST_CODE, 
+	           TEST_NAME;
 	</select>
 	
-	<select id="lisc100" resultType="egovframework.a.model.lisc100DTO">
-		select TEST_CODE, GUMSA_NAME1 
-				from lisc100
-				order by TEST_CODE, GUMSA_NAME1;
+	<select id="lisc100" resultType="egovframework.a.model.Lisc100DTO">
+		select TEST_CODE, 
+		       GUMSA_NAME1 
+		  from lisc100
+	  order by TEST_CODE, 
+	           GUMSA_NAME1;
 	</select>
 
-	<select id="lisc501" parameterType="String" resultType="egovframework.a.model.lisc501DTO">
+	<select id="lisc501" parameterType="String" resultType="egovframework.a.model.Lisc501DTO">
 		select lisc501.TEST_CODE, lisc100.GUMSA_NAME1 
-				from lisc501
-				left join lisc500 on lisc500.TEST_CODE = lisc501.INV_CODE
-				left join lisc100 on lisc100.TEST_CODE = lisc501.TEST_CODE
-				where lisc501.INV_CODE = #{listData};
+		  from lisc501
+	 left join lisc500 
+	        on lisc500.TEST_CODE = lisc501.INV_CODE
+	 left join lisc100 on lisc100.TEST_CODE = lisc501.TEST_CODE
+		 where lisc501.INV_CODE = #{listData};
 	</select>
 	
 	<insert id="lisc501SaveData" parameterType="egovframework.a.model.Lisc501updateDTO">
@@ -78,7 +102,7 @@
 	</delete>
 	
 	
-	<insert id ="lisc500addData" parameterType="egovframework.a.model.lisc500DTO">
+	<insert id ="lisc500addData" parameterType="egovframework.a.model.Lisc500DTO">
 		INSERT INTO lisc500 (
 				TEST_CODE, 
 				TEST_NAME, 
@@ -136,7 +160,7 @@
 	</insert>
 	
 	
-	<update id="lisc500updateData" parameterType="egovframework.a.model.lisc500DTO">
+	<update id="lisc500updateData" parameterType="egovframework.a.model.Lisc500DTO">
 		UPDATE lisc500
     	SET
     		TEST_CODE = #{testCode},
@@ -168,10 +192,10 @@
 	     	TEST_CODE = #{testCode} and	START_DATE = #{startDate};
 	</update>
 	
-	<delete id="lisc500delData" parameterType="egovframework.a.model.lisc500DTO">
-		DELETE FROM lisc500 WHERE
-				    TEST_CODE = #{testCode} 
-				 and START_DATE = #{startDate};
+	<delete id="lisc500delData" parameterType="egovframework.a.model.Lisc500DTO">
+		DELETE FROM lisc500 
+			  WHERE TEST_CODE = #{testCode} 
+				and START_DATE = #{startDate};
 	</delete>
 	
 	

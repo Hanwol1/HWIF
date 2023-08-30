@@ -1,14 +1,9 @@
 package egovframework.a.model;
 
-public class lisc500DTO {
+public class Lisc500DTO {
 	private String statusV;
 	
-	public String getStatusV() {
-		return statusV;
-	}
-	public void setStatusV(String statusV) {
-		this.statusV = statusV;
-	}
+	
 	private String testCode;        // 제품코드
 	private String testName;        // 제품명
 	private String jundalPart;      // 파트
@@ -37,6 +32,12 @@ public class lisc500DTO {
 	
 	 
 	
+	public String getStatusV() {
+		return statusV;
+	}
+	public void setStatusV(String statusV) {
+		this.statusV = statusV;
+	}
 	
 	
 	public String getTestCode() {

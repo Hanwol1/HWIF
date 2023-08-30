@@ -17,6 +17,7 @@ public class lisc002DTO {
 	private String remark1;
 	private String remark2;
 	private String comments;
+	private String flag;
 	
 	public String getSysDate() {
 		return sysDate;
@@ -96,5 +97,12 @@ public class lisc002DTO {
 	public void setComments(String comments) {
 		this.comments = comments;
 	}
+	public String getFlag() {
+		return flag;
+	}
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
+	
 	
 }

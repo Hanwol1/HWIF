@@ -11,8 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.json.simple.JSONObject;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,29 +21,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import egovframework.a.model.Lisc501updateDTO;
 import egovframework.a.model.UserADTO;
-import egovframework.a.model.lisc100DTO;
-import egovframework.a.model.lisc500DTO;
-import egovframework.a.model.lisc501DTO;
+import egovframework.a.model.Lisc100DTO;
+import egovframework.a.model.Lisc500DTO;
+import egovframework.a.model.Lisc501DTO;
 import egovframework.a.service.AService;
 import egovframework.util.Sha256;
 
-/*
- * 스프링의 MVC 패턴을 활용하여 사용자의 회원가입 요청을 처리하는 예시
- * 요청 파라미터를 받아 DTO 객체를 생성하고, 비밀번호를 해시화하여 서비스를 호출하여
- * 데이터베이스에 저장하는 절차를 담고 있는 코드
- */
-
-/*
- * 자바에서 어노테이션은 사전적의미로는 주석이라는 뜻을 가지고 있다. 
- * 자바의 어노테이션은 소스코드에 추가해서 사용할 수 있는 메타 데이터의 일종이다.
- */
 
 // 이 클래스가 스프링의 컨트롤러임을 나타내는 어노테이션이다.
 @Controller
 public class AController {
 	
 	// AService 라는 이름으로 등록된 빈(Bean)을 주입받기 위한 어노테이션.
-	// 'AService'는 해당 컨트롤러에서 사용할 서비스 클래스
 	@Resource(name="AService")
 	AService aService;
 	
@@ -67,18 +54,10 @@ public class AController {
 	
 	
 	// 회원가입 로직
-	// "/joinUserA.do" 경로로 POST 요청이 들어왔을 때 처리를 위한 메서드를 정의한다.
-	// 이 메서드는 JSON 형태의 데이터를 반환할 것이므로 @ResponseBody 어노테이션을 사용한다.
 	@RequestMapping(value = "/joinUserA.do", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject join(@RequestParam Map<String, Object> map, HttpSession session, HttpServletRequest request,
 			HttpServletResponse response, Model model) throws Exception {
-		System.out.println(map);
-		
-		/* 
-		 * 요청 파라미터로 맵 형태의 데이터를 받아오고, 세션과 요청/응답 객체, 그리고 모델을 사용할 수 있도록 매개변수로 선언한다. 
-		 * exGrid 메서드는 JSON 형태의 결과를 반환할 것이므로 JSONObject를 반환 타입으로 사용한다.
-		 * */
 		
 		JSONObject json = new JSONObject();
 		
@@ -89,9 +68,8 @@ public class AController {
 		String id = map.get("id").toString();
 		// 입력으로 받은 비밀번호를 SHA-256 해시로 암호화한다. 'Sha256.encrypt()' 메서드는 비밀번호를 해시화한 문자열을 반환한다.
 		String pw = Sha256.encrypt(map.get("password").toString());
-				// DTO 객체에 아이디와 암호화된 비밀번호를 설정한다.
 		
-				// dto에 id와 password 값을 넣는다.
+				// DTO 객체에 아이디와 암호화된 비밀번호를 설정한다.
 				dto.setId(id);
 				dto.setPassword(pw);
 			
@@ -115,17 +93,10 @@ public class AController {
 	}
 	
 	// 로그인 로직
-	// "/loginUserA.do" 경로로 POST 요청이 들어왔을 때 처리를 위한 메서드를 정의한다.
-	// 이 메서드는 JSON 형태의 데이터를 반환할 것이므로 @ResponseBody 어노테이션을 사용한다.
 	@RequestMapping(value = "/loginUserA.do", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject login(@RequestParam Map<String, Object> map, HttpSession session, HttpServletRequest request,
 			HttpServletResponse response, Model model) throws Exception {
-		
-		/* 
-		 * 요청 파라미터로 맵 형태의 데이터를 받아오고, 세션과 요청/응답 객체, 그리고 모델을 사용할 수 있도록 매개변수로 선언한다. 
-		 * login 메서드는 JSON 형태의 결과를 반환할 것이므로 JSONObject를 반환 타입으로 사용한다.
-		 * */
 		
 	    JSONObject json = new JSONObject();
 	    
@@ -165,14 +136,12 @@ public class AController {
 	public JSONObject reagentA(@RequestParam Map<String, Object> map, HttpSession session, HttpServletRequest request,
 			HttpServletResponse response, Model model) throws Exception {
 		
-		System.out.println("ㅎㅇㅎㅇㅎㅇ");
 		for(String key : map.keySet()) {
 			System.out.println(key + ":" + map.get(key));
 		}
 		JSONObject json = new JSONObject();
 		
-		
-		List<lisc500DTO> data = aService.lisc500();
+		List<Lisc500DTO> data = aService.lisc500();
 		List<Map> dataList = new ArrayList();
 		
 		for(int i=0;i<data.size();i++) {
@@ -220,12 +189,8 @@ public class AController {
 		JSONObject json = new JSONObject();
 		
 		String data = map.get("listData").toString();
-		
-		System.out.println(data);
-		
-		List<lisc501DTO> data2 = aService.lisc501(data);
-		System.out.println(data2);
-		
+				
+		List<Lisc501DTO> data2 = aService.lisc501(data);
 		List<Map> dataList2 = new ArrayList();
 		
 		for(int i=0;i<data2.size();i++) {
@@ -250,7 +215,7 @@ public class AController {
 			
 			JSONObject json = new JSONObject();
 			
-			List<lisc100DTO> data3 = aService.lisc100();
+			List<Lisc100DTO> data3 = aService.lisc100();
 			List<Map> dataList3 = new ArrayList();
 			
 			for(int i=0;i<data3.size();i++) {
@@ -258,9 +223,7 @@ public class AController {
 				map3.put("testCode", data3.get(i).getTestCode());
 				map3.put("gumsaName", data3.get(i).getGumsaName1());
 				
-				dataList3.add(map3);
-				
-//				System.out.println(map3);
+				dataList3.add(map3);				
 			}
 			json.put("rows", dataList3);
 			
@@ -296,8 +259,6 @@ public class AController {
 			JSONObject json = new JSONObject();
 			
 			for (Lisc501updateDTO item : data) {
-				System.out.println("Test Code: " + item.getTestCode());
-				System.out.println("Inv Code: " + item.getInvCode());
 	            
 				String testCode = item.getTestCode();
 	            String invCode = item.getInvCode();
@@ -312,12 +273,12 @@ public class AController {
 		
 		// jqGrid list1 Save and Update
 		@RequestMapping(value = "/reagentAsave.do", method = RequestMethod.POST)
-		public JSONObject saveData(@RequestBody List<lisc500DTO> modifiedData, HttpSession session,
+		public JSONObject saveData(@RequestBody List<Lisc500DTO> modifiedData, HttpSession session,
 		                        HttpServletRequest request, HttpServletResponse response, Model model) {
 			
 			JSONObject json = new JSONObject();
 		   
-		        for (lisc500DTO dto : modifiedData) {
+		        for (Lisc500DTO dto : modifiedData) {
 		            String statusV = dto.getStatusV();
 		     
 		            int result = 0;
@@ -346,19 +307,13 @@ public class AController {
 		
 		// jqGrid list1 Delete
 		@RequestMapping(value = "/reagentAdel.do", method = RequestMethod.POST)
-		public JSONObject delData(@RequestBody lisc500DTO dto) {
+		public JSONObject delData(@RequestBody Lisc500DTO dto) {
 			
 			JSONObject json = new JSONObject();
 			
-			System.out.println(77777);
-			
-//			for ( lisc500DTO dto : data ) {
 				int result = 0;
 				
-				System.out.println(dto.getTestCode());
-				
 				result = aService.lisc500delData(dto);
-//			}
 			
 			return json;
 		}

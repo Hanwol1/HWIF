@@ -1,13 +1,10 @@
 package egovframework.a.model;
 
-public class lisc501DTO {
+public class Lisc501DTO {
 	private String invCode;    // 제품코드
 	private String testCode;   // 검사코드
 	private String gumsaName1;  // 검사명
-	
 
-
-	
 	public String getInvCode() {
 		return invCode;
 	}

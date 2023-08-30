@@ -1,8 +1,7 @@
 // 초기 값을 0으로 설정하는 부분
 var selGrid1Row = 0;
 var firstBlur = 0;
-
-		
+	
 $('#list1').jqGrid(
 		{
 			url : "/reagentA.do", // 서버주소 
@@ -10,6 +9,9 @@ $('#list1').jqGrid(
 			postData : {
 				type : "listData",
 			}, // 보낼 파라미터`
+			
+			
+			
 			mtype : 'POST', // 전송 타입
 			datatype : "json", // 받는 데이터 형태 
 			colNames : ['flag', '제품코드', '제품명', '파트', '물품구분', '규격', '입고단위',
@@ -180,7 +182,6 @@ $('#list1').jqGrid(
 				width : '100',
 				align : "center"
 			} ], //서버에서 받은 데이터 설정
-			// 그리드의 각 열의 모델을 설정한다. 각 열의 너비와 정렬 방식 등이 지정되어 있다.
 			// 서버에서 받은 데이터 설정
 			jsonReader : { // 서버에서 받은 JSON 데이터를 어떻게 읽을 것인지 설정한다. 'root'는 실제 데이터가 들어있는 배열의 이름을 나타낸다.
 				repeatitems : false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
@@ -198,14 +199,12 @@ $('#list1').jqGrid(
 			cellsubmit: 'clientArray',
 		    /*cellEdit: true,*/
 			//더블클릭 이벤트... 더블클릭할 경우 에디트 모드로.
-			// 함수의 매개변수로 rowid, iRow, iCol, e가 전달되는데, 각각 클릭된 행의 ID, 행 인덱스, 열 인덱스 및 이벤트 객체입니다.
 			ondblClickRow: function (rowid, iRow, iCol, e) {
 			    console.log('ondblClickRow');
 
 				// 더블 클릭한 열의 정보 추출
-				// e.target은 클릭된 요소를 가리킴. $target은 jQuery 객체로 감쌈.
 	            var $target = $(e.target);
-				// closest('td')은 클릭된 요소에서 가장 가까운 'td'(테이블 셀)요소를 찾는다.
+				
 				// attr('aria-describedby')을 사용하여 td 요소의 'aria-describedby'속성 값을 가져온다.
 	            var colName = $target.closest('td').attr('aria-describedby'); // 더블클릭한 컬럼의 이름을 가져옴
 
@@ -217,11 +216,7 @@ $('#list1').jqGrid(
 					if(rowid<=totalLength){
 						$("#list1").jqGrid('setRowData', rowid, { statusV: "U" });	
 	                }
-	                // 모든 컬럼을 일단 비활성화
-	               /*  for (var i = 0; i < colModel.length; i++) {
-	                    $("#list1").jqGrid('setColProp', colModel[i].name, { editable: false });
-	                }
-	                 */
+	                
 	                // 클릭한 컬럼만 에디터 모드로 변경
 					// setColProp 함수는 특정 열의 속성을 설정
 					// editRow 함수는 특정 행을 편집 모드로 변경함
@@ -234,8 +229,7 @@ $('#list1').jqGrid(
                $("input", e.target).focus().blur(function() {
                 	console.log("firstBlur >>>" + firstBlur);
 					
-					// firstBlur 변수를 사용하여 처음 blur 이벤트가 발생했는지를 확인하고, 
-					// 해당 조건에 따라 행을 복원하거나 firstBlur 값을 업데이트 한다.
+					// firstBlur 변수를 사용하여 처음 blur 이벤트가 발생했는지를 확인하고, 해당 조건에 따라 행을 복원하거나 firstBlur 값을 업데이트 한다.
                 	if(firstBlur > 0){
                 		console.log("focus out 000000000000000000000000");
                 		$("#list1").jqGrid('restoreRow', iRow);
@@ -247,52 +241,6 @@ $('#list1').jqGrid(
                 	}
                 });
 			},
-			/*afterEditCell: function (rowid, cellname, value, iRow, iCol) {
-				//에디트가 종료되면, 셀의 에디트 가능 여부를 false 로 돌린다.
-			    $(this).setColProp(cellname, { editable: false });
-			
-				// 데이터 I와 U를 구분하여 처리
-				var grid = $(this);
-			    var rowData = grid.getRowData(rowid);
-			    
-				console.log("123");
-
-			    if (rowData.statusV === "U") {
-			        // 수정된 데이터 처리
-			        var editedData = {
-			            rowid: rowid,
-			            columnName: cellname,
-			            newValue: value
-			        };
-			        console.log("Edited Data:", editedData);
-			        // 여기에서 수정된 데이터를 서버로 보내는 로직을 추가할 수 있습니다.
-			    } else if (rowData.statusV === "I") {
-			        // 추가된 데이터 처리
-			        var addedData = {
-			            rowid: rowid,
-			            columnName: cellname,
-			            newValue: value
-			        };
-			        console.log("Added Data:", addedData);
-			        // 여기에서 추가된 데이터를 서버로 보내는 로직을 추가할 수 있습니다.
-			    }
-			},*/
-/*			afterSaveCell: function (rowid, name, val, iRow, iCol) {
-				// rowid: 행 ID, name: 열 이름, val: 새로운 값, iRow: 행 인덱스, iCol: 열 인덱스
-			    var grid = $(this);
-			
-			    if (grid.jqGrid('getRowData', rowid).statusV !== "U" && grid.getRowData(rowid).statusV !== "I") {
-			        grid.jqGrid('setRowData', rowid, { statusV: "U" });
-			    }
-			
-			    // 수정된 데이터 처리 (예: 콘솔에 출력)
-			    var editedData = {
-			        rowid: rowid,
-			        columnName: name,
-			        newValue: val
-			    };
-			    console.log("Edited Data:", editedData);
-			},*/
 			
 		    onSelectRow : function(rowid) { // 행이 선택될 때 실행될 함수를 설정한다.
 				
@@ -338,7 +286,7 @@ $('#list1').jqGrid(
 				align : "center",
 				hidden : false
 			} ], //서버에서 받은 데이터 설정
-			// 그리드의 각 열의 모델을 설정한다. 각 열의 너비와 정렬 방식 등이 지정되어 있다.
+			
 			// 서버에서 받은 데이터 설정
 			jsonReader : { // 서버에서 받은 JSON 데이터를 어떻게 읽을 것인지 설정한다. 'root'는 실제 데이터가 들어있는 배열의 이름을 나타낸다.
 				repeatitems : false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
@@ -363,7 +311,7 @@ $('#list1').jqGrid(
 			}
 
 		})
-		}
+	}
 
 		$('#list3').jqGrid({
 			url : "/reagentA3.do", // 서버주소 
@@ -387,8 +335,7 @@ $('#list1').jqGrid(
 				align : "center",
 				hidden : false
 			} ],
-			// formatter: 'checkbox'는 해당 열이 체크박스 형태로 표시됨을 나타내며, formatoptions: { disabled: false }는 체크박스를 활성화 상태로 표시하도록 설정한 것.
-			// 그리드의 각 열의 모델을 설정한다. 각 열의 너비와 정렬 방식 등이 지정되어 있다.
+			
 			// 서버에서 받은 데이터 설정
 			jsonReader : { // 서버에서 받은 JSON 데이터를 어떻게 읽을 것인지 설정한다. 'root'는 실제 데이터가 들어있는 배열의 이름을 나타낸다.
 				repeatitems : false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
@@ -405,7 +352,6 @@ $('#list1').jqGrid(
 			rownumbers : true, // 각 행의 번호를 표시할지 여부를 설정한다.    
 			gridview : true, // 그리드를 선표시할지 여부를 설정한다. true/false         
 			loadComplete : function(data) { // 데이터 로드가 완료되었을 때 실행될 함수를 설정한다. 
-// 				console.log(data);
 			}, // loadComplete END   
 			onSelectRow : function(rowid) { // 행이 선택될 때 실행될 함수를 설정한다.
 				console.log(rowid) // 현재 선택된 행의 ID를 콘솔에 출력하고 있다.

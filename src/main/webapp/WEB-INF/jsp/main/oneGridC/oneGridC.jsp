@@ -11,7 +11,7 @@
 	<!-- 위 -->
 	<div class="up">
 		<div class="up-btn">
-			<button class="btn" onclick="Grid1()"><img src="/images/search.png" class="icon">조회</button>
+			<button class="btn" id="reloadBtn"><img src="/images/search.png" class="icon">조회</button>
 			<button class="btn" id="saveBtn"><img src="/images/save.png" class="icon">저장</button>
 		</div>
 	</div>
@@ -97,18 +97,18 @@
 		$('#lisc001DTO').jqGrid({  // id
 		    url: "/oneGridC.do",	// 서버주소 
 		    reordercolNames:true,
-		    postData : { type:"A" }, // 보낼 파라미터
+		    postData : { type: 'update' }, // 보낼 파라미터
 		    mtype:'POST',	// 전송 타입
 		    datatype : "json",	// 받는 데이터 형태 
 		    colNames:['flag', '코드','코드명', '비고', 'ITEM1', 'ITEM2'],	//컬럼명
 		    colModel:
 		    [
 		    	{ name: 'flag', index: 'flag', hidden: true},
-		    	{ name: 'CODE_TYPE', index: 'CODE_TYPE', width: '40', align:"center"},
-		   	 	{ name: 'CODE_TYPE_NAME', index: 'CODE_TYPE_NAME', width: '40', align: "center", editable : true, edittype : "text"},
-			    { name: 'COMMENTS', index: 'COMMENTS', width: '10', align: 'center' },
-			    { name: 'ITEM1', index: 'ITEM1', width: '40', align:"center", hidden: true},
-			    { name: 'ITEM2', index: 'ITEM2', width: '40', align:"center", hidden: true}
+		    	{ name: 'codeType', index: 'codeType', width: '40', align:"center"},
+		   	 	{ name: 'codeTypeName', index: 'codeTypeName', width: '40', align: "center", editable : true, edittype : "text"},
+			    { name: 'comments', index: 'comments', width: '10', align: 'center' },
+			    { name: 'item1', index: 'item1', width: '40', align:"center", hidden: true},
+			    { name: 'item2', index: 'item2', width: '40', align:"center", hidden: true}
 			], //서버에서 받은 데이터 설정
 		    jsonReader: 
 		    {
@@ -126,10 +126,19 @@
 		  	rowNum:-1, 
 		  	cellEdit: true,
             cellsubmit: 'clientArray',
-            
+            beforeSubmitCell: function (rowid, celname, value, iRow, iCol) {
+                if (celname === 'codeTypeName' || celname === 'comments') {
+                    var rowData = $('#lisc001DTO').jqGrid('getRowData', rowid);
+                    if (rowData.flag !== 'I') {  // 'flag'가 'I'가 아닌 경우 (삽입을 나타냄)
+                        rowData.flag = 'U';  // 'flag'를 'U'로 설정하여 업데이트를 나타냄
+                        $('#lisc001DTO').jqGrid('setRowData', rowid, rowData);
+                    }
+                }
+                return value;
+            },
 		  	loadComplete: function(data)
 		  	{  
-		      console.log(data);
+		      	console.log(data);
 		      //jQuery('#lisc001DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
 		  	},	// loadComplete END   
 		  	
@@ -137,6 +146,7 @@
 		  	onCellSelect: function(rowid, iCol, cellcontent, e) {
 		  		$('#lisc001DTO').jqGrid('setSelection',rowid);
 		  		Grid2();
+		  		$("#lisc003DTO").jqGrid("clearGridData", true);
 		  	} 
 		})
 	}
@@ -145,12 +155,12 @@
 	
 	// Grid2
 	function Grid2(){
-		//$('#lisc001DTO').getRowData(rowid);
+		$('#lisc001DTO').getRowData(rowid);
      	//선택한 열의 데이터 가져오기  -  var selRowData = $("#lisc001DTO").getRowData(rowid);
      	var rowid, codetype, item1;
      	rowid  = $("#lisc001DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
-        codetype = $("#lisc001DTO").jqGrid('getRowData', rowid).CODE_TYPE;   // 선택한 열중에서 grid내의 정보를 가져온다.
-        item1 = $("#lisc001DTO").jqGrid('getRowData', rowid).ITEM1;
+        codetype = $("#lisc001DTO").jqGrid('getRowData', rowid).codeType;   // 선택한 열중에서 grid내의 정보를 가져온다.
+        item1 = $("#lisc001DTO").jqGrid('getRowData', rowid).item1;
         
         var item1Array = item1.split(";"); // ';'로 분리하여 배열로 저장
 		if (item1Array.length === 1 && item1Array[0] === "") {
@@ -163,7 +173,7 @@
 		        item1Array.push("");
 		    }
 		}
-        item1Array = [...item1Array, "flag", "lisc002code"];
+        item1Array = [...item1Array, "flag", "codeType"];
         console.log("item1Array: ", item1Array); // 배열 출력
         
         $("#myModal1 input#code").val(item1Array[0] || '');
@@ -185,19 +195,19 @@
     	    }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
     	    mtype:'POST',	// 전송 타입
     	    datatype : "json",	// 받는 데이터 형태 
-    	    colNames:item1Array,	//컬럼명 item1Array로 바꾸기
+    	    colNames:item1Array,	//컬럼명 item1Array로 바꾸기 // 보여지는 값
     	    colModel:
     	    [		
-    		    { name: item1Array[0], index: item1Array[0], width: '10', align:"center", hidden: item1Array[0] === "", editable : true, edittype : "text"},
-    		    { name: item1Array[1], index: item1Array[1], width: '10', align: "center", hidden: item1Array[1] === "", editable : true, edittype : "text"},
-    		    { name: item1Array[2], index: item1Array[2], width: '10', align: "center", hidden: item1Array[2] === "", editable : true, edittype : "text"},
-    		    { name: item1Array[3], index: item1Array[3], width: '10', align: "center", hidden: item1Array[3] === "", editable : true, edittype : "text"},
-    		    { name: item1Array[4], index: item1Array[4], width: '10', align: "center", hidden: item1Array[4] === "", editable : true, edittype : "text"},
-    		    { name: item1Array[5], index: item1Array[5], width: '10', align: "center", hidden: item1Array[5] === "", editable : true, edittype : "text"},
-    		    { name: item1Array[6], index: item1Array[6], width: '10', align: "center", hidden: item1Array[6] === "", editable : true, edittype : "text"},
-    		    { name: item1Array[7], index: item1Array[7], width: '10', align: "center", hidden: item1Array[7] === "", editable : true, edittype : "text"},
-    		    { name: "lisc002code", index: "lisc002code", hidden : true},
-    		    { name: 'flag', index: 'flag', hidden: true}
+    		    { name: 'code', index: 'code', width: '10', align:"center", hidden: item1Array[0] === ""},
+    		    { name: 'item1', index: 'item1', width: '10', align: "center", hidden: item1Array[1] === "", editable : true, edittype : "text"},
+    		    { name: 'item2', index: 'item2', width: '10', align: "center", hidden: item1Array[2] === "", editable : true, edittype : "text"},
+    		    { name: 'item3', index: 'item3', width: '10', align: "center", hidden: item1Array[3] === "", editable : true, edittype : "text"},
+    		    { name: 'item4', index: 'item4', width: '10', align: "center", hidden: item1Array[4] === "", editable : true, edittype : "text"},
+    		    { name: 'item5', index: 'item5', width: '10', align: "center", hidden: item1Array[5] === "", editable : true, edittype : "text"},
+    		    { name: 'remark1', index: 'remark1', width: '10', align: "center", hidden: item1Array[6] === "", editable : true, edittype : "text"},
+    		    { name: 'remark2', index: 'remark2', width: '10', align: "center", hidden: item1Array[7] === "", editable : true, edittype : "text"},
+    		    { name: 'flag', index: 'flag', hidden: true},
+    		    { name: 'codeType', index: 'codeType', hidden: true}
     		], //서버에서 받은 데이터 설정
     	    jsonReader: 
     	    {
@@ -215,6 +225,16 @@
     	  	rowNum:-1, 
     	  	cellEdit: true,
             cellsubmit: 'clientArray',
+            beforeSubmitCell: function(rowid, celname, value, iRow, iCol) {
+            	if (item1Array[iCol] !== 'flag' && item1Array[iCol] !== 'code') {
+                    var rowData = $('#lisc002DTO').jqGrid('getRowData', rowid);
+                    if (rowData.flag !== 'I') {  // 'flag'가 'I'가 아닌 경우 (삽입을 나타냄)
+	                    rowData.flag = 'U';
+	                    $('#lisc002DTO').jqGrid('setRowData', rowid, rowData);
+                    }
+                }
+                return value;
+            },
     	  	loadComplete: function(data)
     	  	{  
     	      console.log(data);
@@ -236,11 +256,11 @@
      	var rowid, code, item2;
      	rowid  = $("#lisc002DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
      	console.log($("#lisc002DTO").jqGrid('getRowData', rowid));
-        code = $("#lisc002DTO").jqGrid('getRowData', rowid).lisc002code;   // 선택한 열중에서 grid내의 정보를 가져온다.
+        code = $("#lisc002DTO").jqGrid('getRowData', rowid).code;   // 선택한 열중에서 grid내의 정보를 가져온다.
 		console.log("Rowid", rowid, "Grid3", code);
         // 컬럼 명 item2로 바꾸기 ---------------------------------------------------------------
 		rowitem2id  = $("#lisc001DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
-		item2 = $("#lisc001DTO").jqGrid('getRowData', rowitem2id).ITEM2;   // 001의 ITEM2 값을 가져옴
+		item2 = $("#lisc001DTO").jqGrid('getRowData', rowitem2id).item2;   // 001의 ITEM2 값을 가져옴
 		
 		var item2Array = item2.split(";"); // 일단 ;으로 분리
 		if (item2Array.length === 1 && item2Array[0] === "") {
@@ -253,7 +273,7 @@
 		        item2Array.push("");
 		    }
 		}
-		item2Array = [...item2Array, "flag"];
+		item2Array = [...item2Array, "flag", "code", "codeType"];
         console.log("item2Array: ", item2Array); // 배열 출력
         
         $("#myModal2 input#code").val(item2Array[0] || '');
@@ -279,15 +299,17 @@
     	    colNames:item2Array,	//컬럼명
     	    colModel:
     	    [
-       		   	{ name: item2Array[0], index: item2Array[0], width: '10', align:"center", hidden: item2Array[0] === "", editable : true, edittype : "text"},
-       		    { name: item2Array[1], index: item2Array[1], width: '10', align: "center", hidden: item2Array[1] === "", editable : true, edittype : "text"},
-       		    { name: item2Array[2], index: item2Array[2], width: '10', align: "center", hidden: item2Array[2] === "", editable : true, edittype : "text"},
-       		    { name: item2Array[3], index: item2Array[3], width: '10', align: "center", hidden: item2Array[3] === "", editable : true, edittype : "text"},
-       		    { name: item2Array[4], index: item2Array[4], width: '10', align: "center", hidden: item2Array[4] === "", editable : true, edittype : "text"},
-       		    { name: item2Array[5], index: item2Array[5], width: '10', align: "center", hidden: item2Array[5] === "", editable : true, edittype : "text"},
-       		    { name: item2Array[6], index: item2Array[6], width: '10', align: "center", hidden: item2Array[6] === "", editable : true, edittype : "text"},
-       		    { name: item2Array[7], index: item2Array[7], width: '10', align: "center", hidden: item2Array[7] === "", editable : true, edittype : "text"},
-       		 	{ name: 'flag', index: 'flag', hidden: true}
+       		   	{ name: 'code2', index: 'code2', width: '10', align:"center", hidden: item2Array[0] === ""},
+       		    { name: 'item1', index: 'item1', width: '10', align: "center", hidden: item2Array[1] === "", editable : true, edittype : "text"},
+       		    { name: 'item2', index: 'item2', width: '10', align: "center", hidden: item2Array[2] === "", editable : true, edittype : "text"},
+       		    { name: 'item3', index: 'item3', width: '10', align: "center", hidden: item2Array[3] === "", editable : true, edittype : "text"},
+       		    { name: 'item4', index: 'item4', width: '10', align: "center", hidden: item2Array[4] === "", editable : true, edittype : "text"},
+       		    { name: 'item5', index: 'item5', width: '10', align: "center", hidden: item2Array[5] === "", editable : true, edittype : "text"},
+       		    { name: 'remark1', index: 'remark1', width: '10', align: "center", hidden: item2Array[6] === "", editable : true, edittype : "text"},
+       		    { name: 'remark2', index: 'remark2', width: '10', align: "center", hidden: item2Array[7] === "", editable : true, edittype : "text"},
+       		 	{ name: 'flag', index: 'flag', hidden: true},
+       		 	{ name: 'code', index: 'code', hidden: true},
+       		 	{ name: 'codeType', index: 'codeType', hidden: true}
        		], //서버에서 받은 데이터 설정
     	    jsonReader: 
     	    {
@@ -305,6 +327,16 @@
     	  	rowNum:-1,
     	  	cellEdit: true,
             cellsubmit: 'clientArray',
+            beforeSubmitCell: function(rowid, celname, value, iRow, iCol) {
+            	if (item2Array[iCol] !== 'flag') {
+                    var rowData = $('#lisc003DTO').jqGrid('getRowData', rowid);
+                    if (rowData.flag !== 'I') {  // 'flag'가 'I'가 아닌 경우 (삽입을 나타냄)
+                    	rowData.flag = 'U';
+                    	$('#lisc003DTO').jqGrid('setRowData', rowid, rowData);
+                    }
+                }
+                return value;
+            },
     	  	loadComplete: function(data)
     	  	{  
     	      console.log(data);
@@ -312,8 +344,7 @@
 		})
 	}
 	
-	// btn --------------------------------------------------------------------------------------------------------
-	// search lisc001DTO
+	// search lisc001DTO --------------------------------------------------------------------------------------------------------
 	function searchGrid(){ 
 		var searchval = $('#search').val(); // 검색어 
        	//그리드1의 파라미터 설정 & 그리드1 재로드	
@@ -323,48 +354,99 @@
     	    reordercolNames:true,
     	    postData : { searchval: searchval, isSearch: "true" }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
     	    mtype:'POST',	// 전송 타입
-    	    datatype : "json",	// 받는 데이터 형태 
-    	    colNames:['코드','코드명', '비고'],	//컬럼명
-    	    colModel:
-    	    [
-    	    	{ name: 'CODE_TYPE', index: 'CODE_TYPE', width: '40', align:"center"},
-   		     	{ name: 'CODE_TYPE_NAME', index: 'CODE_TYPE_NAME', width: '40', align:"center"},
-   		     	{ name: 'COMMENTS', index: 'COMMENTS', width: '10', align: "center" }
-    		], //서버에서 받은 데이터 설정
-    	    jsonReader: 
-    	    {
-    		     repeatitems: false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
-    		     root:'rows', //서버의 결과 내용에서 데이터를 읽어오는 기준점
-    		     records:'records'  // 보여지는 데이터 갯수(레코드) totalRecord 
-    	    },
-    	    autowidth: true,
-    	  	rownumbers: true,         
-    	  	gridview : false,  // 선표시 true/false  
-    		shrinkToFit: true,
-    	    height: "auto",//테이블의 세로 크기, Grid의 높이         
-    	  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
-    	  	emptyrecords: "Nothing to display",  // 데이터없을떄
-    	  	rowNum:-1, 
-    	  	loadComplete: function(data)
-    	  	{  
-    	      console.log(data);
-    	      jQuery('#lisc001DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
-    	  	},	// loadComplete END   
-    	  	
-    	 	// Grid2
-		  	onSelectRow: function(rowid) {
+		    datatype : "json",	// 받는 데이터 형태 
+		    colNames:['flag', '코드','코드명', '비고', 'ITEM1', 'ITEM2'],	//컬럼명
+		    colModel:
+		    [
+		    	{ name: 'flag', index: 'flag', hidden: true},
+		    	{ name: 'codeType', index: 'codeType', width: '40', align:"center"},
+		   	 	{ name: 'codeTypeName', index: 'codeTypeName', width: '40', align: "center", editable : true, edittype : "text"},
+			    { name: 'comments', index: 'comments', width: '10', align: 'center' },
+			    { name: 'item1', index: 'item1', width: '40', align:"center", hidden: true},
+			    { name: 'item2', index: 'item2', width: '40', align:"center", hidden: true}
+			], //서버에서 받은 데이터 설정
+		    jsonReader: 
+		    {
+			     repeatitems: false, //서버에서 받은 data와 Grid 상의 column 순서를 맞출것인지?
+			     root:'rows', //서버의 결과 내용에서 데이터를 읽어오는 기준점
+			     records:'records'  // 보여지는 데이터 갯수(레코드) totalRecord 
+		    },
+		    autowidth: true,
+		  	rownumbers: true,         
+		  	gridview : false,  // 선표시 true/false  
+			shrinkToFit: true,
+		    height: "auto",//테이블의 세로 크기, Grid의 높이         
+		  	loadtext : "자료 조회중입니다. 잠시만 기다리세요..." ,   // 데이터 로드중일때      
+		  	emptyrecords: "Nothing to display",  // 데이터없을떄
+		  	rowNum:-1, 
+		  	cellEdit: true,
+            cellsubmit: 'clientArray',
+            beforeSubmitCell: function (rowid, celname, value, iRow, iCol) {
+                if (celname === 'codeTypeName' || celname === 'comments') {
+                    var rowData = $('#lisc001DTO').jqGrid('getRowData', rowid);
+                    if (rowData.flag !== 'I') {  // 'flag'가 'I'가 아닌 경우 (삽입을 나타냄)
+                        rowData.flag = 'U';  // 'flag'를 'U'로 설정하여 업데이트를 나타냄
+                        $('#lisc001DTO').jqGrid('setRowData', rowid, rowData);
+                    }
+                }
+                return value;
+            },
+		  	loadComplete: function(data)
+		  	{  
+		      console.log(data);
+		      //jQuery('#lisc001DTO').jqGrid('setSelection','1');  // jqgrid의 로드가 완료되면 1번째 row를 선택
+		  	},	// loadComplete END   
+		  	
+			// Grid2
+		  	onCellSelect: function(rowid, iCol, cellcontent, e) {
+		  		$('#lisc001DTO').jqGrid('setSelection',rowid);
 		  		Grid2();
-		  	}
-    	  	
+		  	} 
 		});	
     }
 	$("#search").change(function(){ searchGrid(); }) // searchGrid 함수 호출
 	$("#btn_search").on("click",function(){ searchGrid(); }) // searchGrid 함수 호출
 		
 
+	//Btn------------------------------------------------------------------------------------------------------
+	// reloadBtn(조회)
+	$("#reloadBtn").click(function(){
+		Grid1();
+        $("#lisc002DTO").jqGrid("clearGridData", true);
+        $("#lisc003DTO").jqGrid("clearGridData", true);
+	})
 	
+	// saveBtn(저장)
+	$("#saveBtn").click(function(){
+		// lisc002DTO 데이터 전송
+		var lisc001Data = $("#lisc001DTO").getRowData();
+		var lisc002Data = $("#lisc002DTO").getRowData();
+		var lisc003Data = $("#lisc003DTO").getRowData();
+		
+		var data = {"lisc001Data": lisc001Data, "lisc002Data": lisc002Data, "lisc003Data": lisc003Data};
+
+		console.log("front data----");
+		console.log();
+		
+		console.log("003 데이터 : ", lisc003Data);
+		//console.log(JSON.stringify({"lisc001Data": lisc001Data, "lisc002Data": lisc002Data, "lisc003Data": lisc003Data}));
+		
+		$.ajax({
+		    type : 'post',           // 타입 (get, post, put 등등)
+		    url : '/saveBtn.do',           // 요청할 서버url
+		    contentType: 'application/json; charset=UTF-8' , // 클라이언트에서 JSON 형식으로 보내기
+		    dataType : 'json',       // 데이터 타입 (html, xml, json, text 등등)
+		    data : JSON.stringify(data),// JSON.stringify({"lisc001Data": lisc001Data, "lisc002Data": lisc002Data, "lisc003Data": lisc003Data}),
+		    success : function(result) { // 결과 성공 콜백함수
+		        console.log(result);
+		    },
+		    error : function(error) { // 결과 에러 콜백함수
+		        console.log(error)
+		    }
+		});
+	})
 	
-	// addrow, deleterow 	
+	// addrow, deleterow----------------------------------------001 	
 	function addRow(gridId) {
 	    var newRowData = {};
 	    var grid = $(gridId);
@@ -378,38 +460,47 @@
 	    if (selectedRowId) { grid.jqGrid('delRowData', selectedRowId);
 	    } else { alert('Please select a row to delete.'); }
 	}
-	$("#saveBtn").click(function(){
-		console.log($("#lisc001DTO").getRowData());
-		console.log($("#lisc002DTO").getRowData());
-	})
 	$("#btn_add_row").click(function(){ 
-		const newRowData = { /* Data for new row */ };
 		addRow('#lisc001DTO');
 	});
-	const btnDeleteRow = document.getElementById('btn_delete_row');
-	btnDeleteRow.addEventListener('click', function(){ deleterow('#lisc001DTO'); });
-
-    $("#btn_add_row2").click(function(){
-		addRow('#lisc002DTO');
-			
+	$("#btn_delete_row").click(function(){deleterow('#lisc001DTO');});
+	// ---------------------------------------------------------002
+    $("#btn_add_row2").click(function(){ 
+    	var newRowData = {};
+	    var grid = $("#lisc001DTO");
+	    var newRowId = $("#lisc002DTO").jqGrid("getGridParam", "reccount") + 1;
+	    var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
+	    var RowData = grid.jqGrid('getRowData', selectedRowId);
+	    
+	    newRowData.flag = 'I';
+	    newRowData.codeType = RowData.codeType;
+	    $("#lisc002DTO").jqGrid("addRowData", newRowId, newRowData, "first");
     });
-  	const btnDeleteRow2 = document.getElementById('btn_delete_row2');
-	btnDeleteRow2.addEventListener('click', function(){ deleterow('#lisc002DTO'); });
-    
-    $("#btn_add_row3").click(function(){ addRow('#lisc003DTO'); });
-	const btnDeleteRow3 = document.getElementById('btn_delete_row3');
-	btnDeleteRow3.addEventListener('click', function(){ deleterow('#lisc003DTO'); });
+    $("#btn_delete_row2").click(function(){deleterow('#lisc002DTO');});
+    //----------------------------------------------------------003
+    $("#btn_add_row3").click(function(){ 
+    	var newRowData = {};
+	    var grid = $("#lisc002DTO");
+	    var selectedRowId = grid.jqGrid('getGridParam', 'selrow'); // 그리드2의 rowid를 가져옴
+	    var RowData = grid.jqGrid('getRowData', selectedRowId);
+	    var newRowId = $("#lisc003DTO").jqGrid("getGridParam", "reccount") + 1;
+	    
+	    newRowData.flag = 'I';
+	    newRowData.codeType = RowData.codeType;  // 새로운 row의 codeType은 그리드2의 codeType
+	    newRowData.code = RowData.code;  // 새로운 row의 code는 그리드2의 code
+	    $("#lisc003DTO").jqGrid("addRowData", newRowId, newRowData, "first");
+    });
+    $("#btn_delete_row3").click(function(){deleterow('#lisc003DTO');});
 	
-	
-	//clear
+	//clear-----------------------------------------------------
 	$("#clear").on("click", function() {
         // #search input 상자의 내용을 지움
         $("#search").val("");
         // #lisc001DTO 그리드를 초기화하고 데이터 리로드
-        console.log('a');
         Grid1();
+        $("#lisc002DTO").jqGrid("clearGridData", true);
+        $("#lisc003DTO").jqGrid("clearGridData", true);
     });
-	
 	
 	// modal
 	const modal1 = document.getElementById('myModal1');
@@ -418,8 +509,6 @@
 		handleClose(modal1);
 		handleClose(modal2);
 	    modal.style.display = 'block'; /* 모달 창을 보이도록 설정합니다. */
-	    
-	// item 값 불러오기
 	};
 	function handleClose(modal) {
 	    modal.style.display = 'none'; /* 모달 창을 숨깁니다. */
@@ -428,8 +517,7 @@
 		handleClose(modal1);
 		handleClose(modal2);
 	})
-
-
+	
 	</script>
 </body>
 </html>

@@ -53,9 +53,65 @@
 		order by CODE_TYPE
 	</select>
 	
-
-	
-	
+	<!-- lisc002 saveBtn -->
+	<update id="update001Data" parameterType="egovframework.c.model.lisc001DTO">
+		UPDATE lisc001
+		SET
+			CODE_TYPE_NAME = #{codeTypeName},
+			COMMENTS = #{comments}
+		WHERE 
+			CODE_TYPE = #{codeType};
+	</update>
+	<update id="update002Data" parameterType="egovframework.c.model.lisc002DTO">
+		UPDATE lisc002
+		SET
+			ITEM1 = #{item1},
+			ITEM2 = #{item2},
+			ITEM3 = #{item3},
+			ITEM4 = #{item4},
+			ITEM5 = #{item5},
+			REMARK1 = #{remark1},
+			REMARK2 = #{remark2}
+		WHERE 
+			CODE_TYPE = #{codeType} AND CODE = #{code};
+	</update>
+	<update id="update003Data" parameterType="egovframework.c.model.lisc003DTO">
+		UPDATE lisc003
+		SET
+			ITEM1 = #{item1},
+			ITEM2 = #{item2},
+			ITEM3 = #{item3},
+			ITEM4 = #{item4},
+			ITEM5 = #{item5},
+			REMARK1 = #{remark1},
+			REMARK2 = #{remark2}
+		WHERE 
+			CODE_TYPE = #{codeType} AND CODE = #{code} AND CODE2 = #{code2};
+	</update>
+	<insert id="add001Data" parameterType="egovframework.c.model.lisc001DTO">
+		INSERT INTO lisc001 (
+			CODE_TYPE, CODE_TYPE_NAME, COMMENTS
+		)
+		VALUES (
+			#{codeType}, #{codeTypeName}, #{comments}
+		)
+	</insert>
+	<insert id="add002Data" parameterType="egovframework.c.model.lisc002DTO">
+		INSERT INTO lisc002 (
+			CODE_TYPE, CODE, ITEM1, ITEM2, ITEM3, ITEM4, ITEM5, REMARK1, REMARK2
+		)
+		VALUES (
+			#{codeType}, #{code}, #{item1} , #{item2}, #{item3}, #{item4}, #{item5}, #{remark1}, #{remark2}
+		)
+	</insert>
+	<insert id="add003Data" parameterType="egovframework.c.model.lisc003DTO">
+		INSERT INTO lisc003 (
+			CODE_TYPE, CODE, CODE2, ITEM1, ITEM2, ITEM3, ITEM4, ITEM5, REMARK1, REMARK2
+		)
+		VALUES (
+			#{codeType}, #{code}, #{code2}, #{item1}, #{item2}, #{item3}, #{item4}, #{item5}, #{remark1}, #{remark2}
+		)
+	</insert>
 	
 	
 	

@@ -7,7 +7,6 @@ public class Lisc501updateDTO {
 	private String invCode;    // 제품코드
 	private String testCode;   // 검사코드
 	
-	
 	public String getSysDate() {
 		return sysDate;
 	}
