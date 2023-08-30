@@ -4,6 +4,7 @@ package egovframework.e.mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import egovframework.e.model.UserEDTO;
@@ -41,6 +42,8 @@ public interface EMapper {
 	int insertGrid2Row(Map<String, Object> params);
 
 	int updateGrid2Rows(Map<String, Object> params);
+	
+	int updateComment(@Param("code") String code, @Param("remark2")String remark2);
 
 	
 

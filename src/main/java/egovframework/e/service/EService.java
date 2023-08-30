@@ -36,4 +36,6 @@ public interface EService {
 
 	int updateGrid2Rows(Map<String, Object> updateMap);
 
+	int updateComment(String code, String remark2);
+
 }

@@ -105,8 +105,7 @@
 			<textarea rows="4" cols="50" id="remart2Area"></textarea>
 		</div>
 		<div style="text-align:right;margin-top:5px;">				
-			<input style="margin-right: 5px;" type="button" id="Save" value="Save" onclick="setRemark2();" >
-			<input id="Cancel" type="button" value="Cancel" onclick="$('#popLayer').hide();">
+<!-- 			<input style="margin-right: 5px;" type="button" id="Save" value="Save" onclick="setRemark2();" > -->
 		</div>
 	</div>
 		
@@ -127,7 +126,7 @@
 		var selGrid1Row = 0;
 		var firstBlur = 0;
 		var selRowId = ""; // 더블클릭으로 선택한 행 id
-		var editableCells = ['item1', 'item3', 'item4', 'item5', 'remark1', 'comments']
+		var editableCells = ['item1', 'item3', 'item4', 'item5', 'remark1', 'remark2', 'comments']
 		//html -> japGrid 로 변환 및 그리드 설정 정의
 		$('#list1').jqGrid({ 
 			url            : "/dcListGrid100.do", // 서버주소
@@ -153,7 +152,7 @@
 								name: 'code_type', index: 'code_type', width: '60', align: 'center', hidden: true //문서타입
 							},
 							{
-								name: 'code', index: 'code', width: '60', align: "center",hidden: false, editable : false //문서코드
+								name: 'code', index: 'code', width: '60', align: "center",hidden: false//문서코드
 							},
 							{
 								name: 'item1', index: 'item1', width: '60', align: "center", editable : false //문서명
@@ -176,7 +175,7 @@
 								name: 'remark1', index: 'remark1', width: '60', align: "center", editable : false //문서형식
 							},
 							{
-								name: 'remark2', index: 'remark2', width: '60', align: "center", editable : false,hidden: true //문서형식
+								name: 'remark2', index: 'remark2', width: '60', align: "center", editable : false,hidden: true //비고
 							},
 							 {
 					            name: 'remark2Image', width: 60,
@@ -354,6 +353,46 @@
 			getGridList();
 		});
 		
+		
+		$(document).ready(function() {
+		    const list1 = $("#list1");
+		    const searchInput = $("#searchInput");
+
+		    // 초기 데이터를 originalData에 저장해 둡니다.
+		    const originalData = list1.jqGrid("getGridParam", "data");
+
+		    searchInput.on("input", function() {
+		        const searchText = $(this).val().toLowerCase(); // 입력한 검색어를 소문자로 변환하여 저장
+
+		        // 필터링된 데이터를 저장할 배열
+		        const filteredData = [];
+
+		        // 검색어에 해당하는 데이터를 filteredData에 추가
+		        $.each(originalData, function(index, rowData) {
+		            if (rowData.item1.toLowerCase().includes(searchText)) {
+		                filteredData.push(rowData);
+		            }
+		        });
+
+		        // 그리드 데이터를 초기화하고, 필터링된 데이터로 채웁니다.
+		        list1.jqGrid("clearGridData");
+		        list1.jqGrid("setGridParam", { data: filteredData });
+		        list1.trigger("reloadGrid");
+		    });
+
+		    // 초기 화면 로딩 시 검색어가 있는 경우 필터링 수행
+		    const initialSearchText = searchInput.val().toLowerCase();
+		    if (initialSearchText) {
+		        searchInput.trigger("input");
+		    }
+		});
+
+
+
+
+
+
+		
 		/**
 		그리드 지우기 버튼 클릭(grid1)
 		*/
@@ -392,11 +431,7 @@
 		    $('body').append(formContent); */
 		});
 
-		// 코멘트 입력 취소 버튼 클릭 이벤트
-		$(document).on('click', '.comment-cancel-button', function() {
-		    $('.custom-comment-form').remove(); // 폼 닫기
-		});
-
+	
 		// 코멘트 입력 저장 버튼 클릭 이벤트
 		$(document).on('click', '.comment-submit-button', function() {
 		    var comment = $('.comment-textarea').val(); // 입력된 코멘트 가져오기
@@ -410,20 +445,37 @@
 	    		value.code = code;
 	    	});
 		    
-		    $('.custom-comment-form').remove(); // 폼 닫기
-		});
+		    $.ajax({
+	    	    url    : "/saveComment.do",      // 전송 URL
+	    	    type   : 'POST',                // GET or POST 방식
+	    	    traditional : true,
+	    	    dataType : 'JSON',
+	    	    data : {"data" : JSON.stringify(data), "code" : "H_202308"}, //  ***** $('#list1').getRowData(selRowId).code <<< 와 같이 들어가야 하지만 키값 세팅이 정의되지 않아서 일단 하드코딩(쿼리에서 하드코딩) :: 화면 또는 서버단에서 키값을 세팅해줘야함. 
+	    	    success : function(data){
+	    	        if(data.result == 'true'){
+	                    alert('코멘트 작성이 완료되었습니다');
+	                    getGridList("false"); // 그리드1 데이터 조회
+	    	        }
+	    	    },
+	    	    error : function(jqXHR, textStatus, errorThrown){
+	    	        console.log("jqXHR : " +jqXHR +"textStatus : " + textStatus + "errorThrown : " + errorThrown);
+	    	        alert('오류가 발생했습니다. 확인 후 다시 시도해주세요');
+	    	    }
+	    	}); 
+	    });
 
 		/**
 			그리드1의 데이터 조회
 		*/
 		function getGridList(isFirst){ // isFirst : 함수호출시 전달될값, 첫번째 검색인지 여부를 나타냄
-			isFirst = (typeof isFirst == "undefined") ? 'false' : isFirst; // 첫번째 검색 여부 변수세팅(undefined는 false로 세팅해서 전체검색 하도록함)
+			//isFirst = (typeof isFirst == "undefined") ? 'false' : isFirst; // 첫번째 검색 여부 변수세팅(undefined는 false로 세팅해서 전체검색 하도록함)
+			isFirst = "true";
 			var params = {}
 
 			params.isSearch    = "true"; // 검색여부를 true로 세팅
 			params.isFirst     = isFirst; // 첫검색 여부
 			params.searchInput = $('#searchInput').val(); // 검색어 
-			console.log(JSON.stringify(params));
+			console.log("getGridList params >>>" + JSON.stringify(params));
 
 			$("#list1").clearGridData(); //그리드1 데이터 초기화
 			
@@ -724,15 +776,18 @@
 	    	그리드1의 데이터 등록/수정을 한다.
 	    */
 	    $(".btn-sec.save").click(function(){
-	    	var data = $('#list1').getChangedCells('all'); // 수정된 셀 데이터 // $('#list1').getChangedCells('all');
+// 	    	var data = $('#list1').getChangedCells('all'); // 수정된 셀 데이터 // $('#list1').getChangedCells('all');
+	    	var data = $("#list1").getRowData();
 	    	console.log("그리드 내 수정된 데이터 >>>" +JSON.stringify(data));
 	    	
-	    	$.each(data, function( key, value ){
-	    		var rowid = value.id; // 수정된 행 rowid
-	    		var code = $('#list1').getRowData(rowid).code; // 키값 세팅[DB 업데이트 기준컬럼]
-	    		value.code = code;
-	    	});
-	    	
+	    	// 수정된 로우만 가져왔을 때
+// 	    	$.each(data, function( key, value ){
+// 	    		var rowid = value.id; // 수정된 행 rowid
+// 	    		var code = $('#list1').getRowData(rowid).code; // 키값 세팅[DB 업데이트 기준컬럼]
+// 	    		alert("key >>>" + key + "\tvalue >>>" + value + "\tcode >>>" + code);
+// 	    		value.code = code;
+// 	    	});
+
 	    	$.ajax({
 	    	    url    : "/saveGrid1.do",                    // 전송 URL
 	    	    type   : 'POST',                // GET or POST 방식
@@ -741,7 +796,7 @@
 	    	    data : {"data" : JSON.stringify(data), "code" : "H_202308"}, //  ***** $('#list1').getRowData(selRowId).code <<< 와 같이 들어가야 하지만 키값 세팅이 정의되지 않아서 일단 하드코딩(쿼리에서 하드코딩) :: 화면 또는 서버단에서 키값을 세팅해줘야함. 
 	    	    success : function(data){
 	    	        if(data.result == 'true'){
-	                    alert('데이터를 저장/수정 하였습니다.');
+	                    alert('데이터를 저장/수정 하였습니다.111');
 	                    getGridList("false"); // 그리드1 데이터 조회
 	    	        }
 	    	    },
@@ -776,7 +831,7 @@
 	    	    data : {"data" : JSON.stringify(data), "code_no" : "H_201901_190618165846"}, //  ***** $('#list2').getRowData(selRowId).code_no <<< 와 같이 들어가야 하지만 키값 세팅이 정의되지 않아서 일단 하드코딩(쿼리에서 하드코딩) :: 화면 또는 서버단에서 키값을 세팅해줘야함. 
 	    	    success : function(data){
 	    	        if(data.result == 'true'){
-	                    alert('데이터를 저장/수정 하였습니다.');
+	                    alert('데이터를 저장/수정 하였습니다.222');
 	                    getGridList("false"); // 그리드2 데이터 조회
 	    	        }
 	    	    },
@@ -797,42 +852,48 @@
 	    	$("#popLayer").center();
 	    }
 		
+		$('#remart2Area').keydown(function(e){
+			if(e.keyCode==13){
+				var replaceVal = $('#remart2Area').val().replace(/(?:\r\n|\r|\n)/g, '');
+
+				$('#remart2Area').val(replaceVal);
+				$("#popLayer").hide();
+				$("#list1").setCell(selRowId, "remark2", replaceVal);
+		    	
+			}
+    	})
+		
+		/**
+			코멘트(비고) 저장버튼 - 미사용
+		*/
 	    setRemark2 = function() {
-	    	alert('저장하기 선택한 행의 키값 >>>' + selGrid1Row + "\n..." + '저장하기 선택한 행의 키값 >>>' + $('#list1').getRowData(selRowId).remark2);
-	    	
-	    	
 	    	$.ajax({
 	            type: "post",
-	            url : "/dcListDelete.do", // 저장하는 contorller
-	            //서버로 보낼 데이터 객체, params 객체에 저장된 값을 전달
+	            url : "/saveComment.do", // 저장하는 contorller
 	            data: {
-	            	  code    : selGrid1Row // 키값
-	            	, remark2   : $('#list1').getRowData(selRowId).remark2
+	            	  code     : selGrid1Row // 키값
+	            	, remark2  : $('#remart2Area').val()
 	            },
 	            dataType : "json",
 	            error: function(data){
 	                console.log('error');
-	                alert("오류가 발생했습니다.");
+	                alert("수정중 오류가 발생했습니다.");
 	            },
 	            success: function(data){
 	            	//console.log("data >>>" + JSON.stringify(data));
-	                if(data.result == '1'){
-	                    alert('데이터를 삭제 하였습니다.');
-	                    if(params.isAll = 'true'){
-	                    	getGridList(); // 그리드1 조회
-	                    	getGridList2(); // 그리드2 조회
-	                    }else{
-	                    	getGridList2();  // 그리드2 조회
-	                    }
+	                if(data.result > 0){
+	                    alert('코멘트 작성을 완료하였습니다');
+	                    $("#popLayer").hide();	
+	                    getGridList(); // 그리드1 조회
 	                } else {
-	                    alert('삭제중 오류가 발생하였습니다.');
+	                    alert('수정중 오류가 발생하였습니다.');
 	                }
 	            }
 	        })
 	    	
 	    }
 	    
-	    $('html').click(function(e) {
+	    $('.down-bar .container .grid1').click(function(e) {
 	    	console.log('html e.target  >>>' + e.target + "\ne.target name >>>" + e.target.name);
     	   if (!$(e.target).parents("#popLayer").length && !$(e.target).is('#popLayer') && typeof e.target.name == 'undefined'){
     	     var isShow = $('#popLayer').is(':visible'); // 팝업창 shoew 여부

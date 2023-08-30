@@ -120,11 +120,11 @@ public class EController {
 		    	grid1DTO grid1DTO = new grid1DTO(); //데이터베이스 조회에 사용할 DTO 객체 생성
 		    	
 		    	//검색어가 비어있지 않다면 DTO 객체에 할당
-		    	if(!"".equals(map.get("searchInput "))) {
+		    	if(!"".equals(map.get("searchInput"))) {
 		    		grid1DTO.setItem1((String)map.get("searchInput"));
 		    	}
 		    	
-		    	System.out.println("grid1DTO >>>" + grid1DTO);
+		    	System.out.println("grid1DTO >>>" + grid1DTO + "\tsearchInput >>>" + grid1DTO.getItem1());
 		    	
 		    	//데이터베이스 조회결과를 담을 리스트객체 선언
 		    	List<grid1DTO> data = null;
@@ -322,11 +322,11 @@ public class EController {
 			try {
 				JSONParser jsonParse = new JSONParser();
 				String newCode = map.get("code").toString();
-				newCode = newCode.replaceAll("&quot;", "\"");
+				newCode = newCode.replaceAll("&quot;", "\"").replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&").replaceAll("\r", "<br>").replaceAll("<p>", "\n").replaceAll("&apos", "'"); // xss 관련 처리;
 				
 				String jsonData = map.get("data").toString();
 				jsonParse = new JSONParser();
-				jsonData = jsonData.replaceAll("&quot;", "\"");
+				jsonData = jsonData.replaceAll("&quot;", "\"").replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&").replaceAll("\r", "<br>").replaceAll("<p>", "\n").replaceAll("&apos", "'"); // xss 관련 처리;
 				System.out.println("jsonData >>>" + jsonData);
 	            JSONArray jsonArray = (JSONArray) jsonParse.parse(jsonData);
 	            System.out.println("jsonObj >>>" + jsonArray.size()); //
@@ -334,6 +334,7 @@ public class EController {
 	            for(Object data : jsonArray) {
 	            	Map paramData = (HashMap)data; 
 	            	Object code = paramData.get("code");
+	            	System.out.println("code >>>" + code);
 	            	if("".equals(code)) { // 등록
 	            		resultIdx = eService.insertGrid1Row(paramData);
 	            	}else { // 수정
@@ -352,43 +353,70 @@ public class EController {
 		}
 		
 		//그리드2 셀입력 수정&입력
-				@RequestMapping(value = "/saveGrid2.do", method = RequestMethod.POST , produces = "application/json")
-				@ResponseBody
-				public JSONObject saveGrid2( @RequestParam Map<String, Object> map) {
-					int resultIdx = 0;
-					JSONObject result = new JSONObject();
-					
-					try {
-						JSONParser jsonParse = new JSONParser();
-						String newCode_no = map.get("code_no").toString();
-						newCode_no = newCode_no.replaceAll("&quot;", "\"");
-						
-						String jsonData = map.get("data").toString();
-						jsonParse = new JSONParser();
-						jsonData = jsonData.replaceAll("&quot;", "\"");
-						System.out.println("jsonData >>>" + jsonData);
-			            JSONArray jsonArray = (JSONArray) jsonParse.parse(jsonData);
-			            System.out.println("jsonObj >>>" + jsonArray.size()); //
-			            
-			            for(Object data : jsonArray) {
-			            	Map paramData = (HashMap)data; 
-			            	Object code_no = paramData.get("code_no");
-			            	if("".equals(code_no)) { // 등록
-			            		resultIdx = eService.insertGrid2Row(paramData);
-			            	}else { // 수정
-			            		resultIdx = eService.updateGrid2Rows(paramData);
-			            	}
-			            }
-			            
-					}catch(Exception e) {
-						e.printStackTrace();
-						result.put("result", "false");
-					}
+		@RequestMapping(value = "/saveGrid2.do", method = RequestMethod.POST , produces = "application/json")
+		@ResponseBody
+		public JSONObject saveGrid2( @RequestParam Map<String, Object> map) {
+			int resultIdx = 0;
+			JSONObject result = new JSONObject();
+			
+			try {
+				JSONParser jsonParse = new JSONParser();
+				String newCode_no = map.get("code_no").toString();
+				newCode_no = newCode_no.replaceAll("&quot;", "\"");
+				
+				String jsonData = map.get("data").toString();
+				jsonParse = new JSONParser();
+				jsonData = jsonData.replaceAll("&quot;", "\"");
+				System.out.println("jsonData >>>" + jsonData);
+	            JSONArray jsonArray = (JSONArray) jsonParse.parse(jsonData);
+	            System.out.println("jsonObj >>>" + jsonArray.size()); //
+	            
+	            for(Object data : jsonArray) {
+	            	Map paramData = (HashMap)data; 
+	            	Object code_no = paramData.get("code_no");
+	            	if("".equals(code_no)) { // 등록
+	            		resultIdx = eService.insertGrid2Row(paramData);
+	            	}else { // 수정
+	            		resultIdx = eService.updateGrid2Rows(paramData);
+	            	}
+	            }
+	            
+			}catch(Exception e) {
+				e.printStackTrace();
+				result.put("result", "false");
+			}
 
-					result.put("result", "true");
-					    
-					return result;
-				}
+			result.put("result", "true");
+			    
+			return result;
+		}
+		
+		
+		//그리드1 코멘트 입력 & 저장
+		@RequestMapping(value = "/saveComment.do", method = RequestMethod.POST , produces = "application/json")
+		@ResponseBody
+		public JSONObject saveComment( @RequestParam Map<String, Object> map) {
+			int resultIdx = 0;
+			JSONObject result = new JSONObject();
+			System.out.println("map >>>" + map);
+			
+			try {
+				JSONParser jsonParse = new JSONParser();
+				String remark2 = map.get("remark2").toString();
+				remark2 = remark2.replaceAll("&quot;", "\"").replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&").replaceAll("\r", "<br>").replaceAll("<p>", "\n").replaceAll("&apos", "'"); // xss 관련 처리
+				System.out.println("remark2 >>>" + remark2);
+				
+        		resultIdx = eService.updateComment((String)map.get("code") , remark2);
+	            
+			}catch(Exception e) {
+				e.printStackTrace();
+				result.put("result", 0);
+			}
+
+			result.put("result", resultIdx);
+			    
+			return result;
+		}
 
 
 	

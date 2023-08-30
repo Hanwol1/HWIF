@@ -25,7 +25,6 @@
 	</insert>
 	
 	
-	
 	<select id="grid1" parameterType="egovframework.e.model.grid1DTO" resultType="egovframework.e.model.grid1DTO">
     SELECT a.*
 	    FROM `HWIF`.`LISC002` a
@@ -38,6 +37,9 @@
     SELECT *
 		FROM HWIF.LISC002 A
 	  WHERE A.CODE IN ('H_201901','L-200-02','L-200-03','L-200-04','Z-200-01','L-100-01','L-200-01')
+	    <if test="item1 != null and !item1.equals('')">
+	    and a.item1 like CONCAT('%',#{item1},'%') 
+	  </if>
 	ORDER BY FIELD(code, 'H_201901', 'L-100-01', 'L-200-01','L-200-02','L-200-03','L-200-04','Z-200-01')  
 	</select>
 	
@@ -196,9 +198,12 @@
 	         </if>         
 	    WHERE code_no = #{code_no}
 	</update>
+	
+	<update id="updateComment" parameterType="java.util.Map">
+	  UPDATE `HWIF`.`lisc002`
+	       SET upd_date = sysdate()
+	         , remark2 = #{remark2}
+	    WHERE code = #{code}
+	</update>
 
-	
-	
-	
-	
 </mapper>

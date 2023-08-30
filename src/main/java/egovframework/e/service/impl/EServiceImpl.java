@@ -174,6 +174,7 @@ public class EServiceImpl implements EService {
 		@Override
 		public int updateGrid1Row(Map<String, Object> param) {
 			try {
+				System.out.println("updateGrid1Row param >>>" + param);
 				int result = eMapper.updateGrid1Row(param);
 				return result;
 			} catch (Exception e) {
@@ -199,6 +200,17 @@ public class EServiceImpl implements EService {
 		public int updateGrid2Rows(Map<String, Object> param) {
 			try {
 				int result = eMapper.updateGrid2Rows(param);
+				return result;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
+		}
+		
+		@Override
+		public int updateComment(String code, String remark2) {
+			try {
+				int result = eMapper.updateComment(code, remark2);
 				return result;
 			} catch (Exception e) {
 				e.printStackTrace();
