@@ -26,7 +26,4 @@ public class liscAllDTO {
 		this.lisc003Data = lisc003Data;
 	}
 	
-	
-	
-	
 }

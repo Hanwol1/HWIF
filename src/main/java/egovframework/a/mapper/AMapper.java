@@ -2,16 +2,16 @@ package egovframework.a.mapper;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
 // org.egovframe.rte.psl.dataaccess.mapper 패키지에서 Mapper 어노테이션을 가져온다.
 // 이 어노테이션은 스프링의 @Repository 어노테이션과 유사한 역할을 한다. 즉, 매퍼를 스프링 빈으로 등록하기 위해 사용한다.
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-// userADTO 클래스를 가져온다. 이 클래스는 사용자 데이터의 정보를 담는 DTO이다.
-import egovframework.a.model.UserADTO;
 import egovframework.a.model.Lisc100DTO;
 import egovframework.a.model.Lisc500DTO;
 import egovframework.a.model.Lisc501DTO;
+import egovframework.a.model.Lisc501updateDTO;
+// userADTO 클래스를 가져온다. 이 클래스는 사용자 데이터의 정보를 담는 DTO이다.
+import egovframework.a.model.UserADTO;
 
 // AMapper 라는 이름으로 스프링 빈으로 등록하기 위한 어노테이션이다.
 @Mapper("AMapper")
@@ -27,8 +27,8 @@ public interface AMapper {
 	List<Lisc500DTO> lisc500();
 	List<Lisc100DTO> lisc100();
 	List<Lisc501DTO> lisc501(String data);
-	int lisc501SaveData(String testCode, String invCode);
-	int lisc501DeleteData(String testCode, String invCode);
+	int lisc501SaveData(Lisc501updateDTO item);
+	int lisc501DeleteData(Lisc501updateDTO item);
 	int lisc500addData(Lisc500DTO dto);
 	int lisc500updateData(Lisc500DTO dto);
 	int lisc500delData(Lisc500DTO dto);

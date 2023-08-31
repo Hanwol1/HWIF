@@ -14,7 +14,6 @@ function addListData() {
 	grid.setSelection(newRowId, true);
 }	
 
-var modifiedData = [];
 
 // list1DataSave() 함수 정의
 function list1DataSave() {
@@ -22,6 +21,8 @@ function list1DataSave() {
     var rowDataArray = grid.jqGrid('getRowData');
     
 	console.log(rowDataArray);
+	
+	var modifiedData = [];
 
     rowDataArray.forEach(function(rowData) {
         if (rowData.statusV === "I" || rowData.statusV === "U") {
@@ -47,6 +48,7 @@ function list1DataSave() {
         }
     });
 }
+
 
 // deleteListData() 함수 정의, list1 열 삭제
 function deleteListData() {
@@ -87,10 +89,6 @@ function deleteListData() {
 }
 
 
-
-
-
-
 // list1 EXCEL 파일
 function saveExcel() {
 	var grid = $('#list1');
@@ -123,15 +121,15 @@ function saveExcel() {
     downloadLink.click();
 }
 
-	// 빈 배열 선언. 조회된 데이터를 담을 용도로 사용할 것임.
-	let data = [];
-
+	
 // 조회 기능(클라이언트 측에서만 처리)
 function chooseSearch() {
     var selectedPart = $('#part').val();        // 선택된 파트 값 가져오기
     var selectedAccount = $('#acc').val();      // 선택된 거래처 값 가져오기
     var selectedManufacturer = $('#manu').val(); // 선택된 제조사 값 가져오기
 
+	// 빈 배열 선언. 조회된 데이터를 담을 용도로 사용할 것임.
+	let data = [];
 
     // 기존의 jqGrid 데이터를 가져옴
 	// rowDataArray 배열 선언. jqGrid에서 가져온 각 행의 데이터를 담을 용도로 사용.
@@ -172,183 +170,88 @@ function chooseSearch() {
 }
 
 
-// 빈 배열 선언. 조회된 데이터를 담을 용도로 사용할 것임.
-let data1 = [];
-
-// list1 검색기능
-function wantSearchlisc500() {
-	// 입력한 검색어 가져오기
-	var keyword = $('input[name="search_name"]').val();
-	
-	// 키워드가 없을 때
-	if (!keyword) {
-		showAllData1('#list1');
-		return;  // 검색 로직 종요
-	} 
-	
-	// jqGrid의 ID를 사용하여 그리드 요소를 선택
-	var grid = $('#list1');
-	
-	// 모든 행의 ID를 가져온다
-	var rowIds = grid.jqGrid('getDataIDs');
-	
-	var filteredData = [];
-	
-	// 만약 data1 배열이 비어있다면, 원본 데이터를 data1 배열에 저장
-	if (data1.length === 0 ) {
-		for (var i = 0; i < rowIds.length; i++) {
-			var rowData = grid.jqGrid('getRowData', rowIds[i]);
-			data1.push(rowData);
-		}
-	}
-	
-	// data 배열의 각 원소(각 행의 데이터)에 대해 검색어를 확인하여 필터링
-	for (var i = 0; i < data1.length; i++) {
-		var rowData = data1[i];
-		
-		// 각 열(column)의 데이터에서 검색어가 포함되어 있는지를 includes() 함수를 사용하여 확인
-		if (
-			rowData.testCode.includes(keyword) ||
-			rowData.testName.includes(keyword) ||
-			rowData.jundalPart.includes(keyword) ||
-			rowData.testGubun.includes(keyword) ||
-			rowData.kukuk.includes(keyword) ||
-			rowData.inDanui.includes(keyword) ||
-			rowData.outDanui.includes(keyword) ||
-			rowData.changeQty.includes(keyword) ||
-			rowData.barcodeInYn.includes(keyword) ||
-			rowData.barcodeDiv.includes(keyword) ||
-			rowData.barcodeStoreYn.includes(keyword) ||
-			rowData.storeDanui.includes(keyword) ||
-			rowData.barcodeOutYn.includes(keyword) ||
-			rowData.expDay.includes(keyword) ||
-			rowData.expOpenDay.includes(keyword) ||
-			rowData.keepName.includes(keyword) ||
-			rowData.KeepOpenName.includes(keyword) ||
-			rowData.supplierName.includes(keyword) ||
-			rowData.jejoCode.includes(keyword) ||
-			rowData.barcode.includes(keyword) ||
-			rowData.danga.includes(keyword) ||
-			rowData.lotNo.includes(keyword) ||
-			rowData.startDate.includes(keyword) ||
-			rowData.endDate.includes(keyword) ||
-			rowData.hospitalCode.includes(keyword)
-		) {
-			filteredData.push(rowData);
-		}
-	}
-	// grid에 표시되는 내용을 모두 지우고 비어있는 상태로 만든다. 새로운 데이터를 추가하지 전에 내용을 비우는 작업을 한다.
-	grid.jqGrid("clearGridData");
-	// jqGrid의 setGridParam 메서드를 사용하여 데이터를 업데이트
-	grid.jqGrid("setGridParam", {
-		datatype: "local",
-		data: filteredData
-		// grid의 내용을 새로고침하고 현재 데이터로 다시 grid를 그려준다.
+// 검색 기능
+const searchGrid = function(value, grid) {
+	$("#" + grid).jqGrid("setGridParam", {
+		datatype: "json", 
+		page: 1
 	}).trigger("reloadGrid");
-}
-
-
-// 빈 배열 선언. 조회된 데이터를 담을 용도로 사용할 것임.
-let data3 = [];
-
-
-// list3 검색기능
-function wantSearchLisc100() {
-	// 입력한 검색어 가져오기
-	var keyword3 = $('input[name="search_name1"]').val();
-	console.log(keyword3);
 	
-	// 키워드가 없을 때 
-	if (!keyword3) {
-		showAllData3('#list3');
-		return;  // 검색 로직 종료
-	} 
-	
-	
-	// jqGrid의 ID를 사용하여 그리드 요소를 선택
-	var grid = $('#list3');
-	
-	// 모든 행의 ID를 가져온다
-	var rowIds = grid.jqGrid('getDataIDs');
-	
-	var filteredData = [];
-	
-	// 만약 data3 배열이 비어있다면, 원본 데이터를 data3 배열에 저장
-	if (data3.length === 0 ) {
-		for (var i = 0; i < rowIds.length; i++) {
-			var rowData = grid.jqGrid('getRowData', rowIds[i]);
-			data3.push(rowData);
+	$("#" + grid).jqGrid("setGridParam", {
+		beforeProcessing: function(data) {
+			if (value === "") {
+				return;
+			}
+			
+			var filteredData = [];
+			
+			for (var i = 0; i < data.rows.length; i++) {
+				var rowData = data.rows[i];
+				var matched = false;
+				
+				for (var key in rowData) {
+					var cellValue = rowData[key];
+					
+					if (cellValue && cellValue.toString().replace(/\s+/g, "").toLowerCase().includes(value)) {
+						matched = true;
+						break;
+					}
+				}
+				
+				if (matched) {
+					filteredData.push(rowData);
+				}
+			}
+			data.rows = filteredData;
 		}
-	}
+	});	
+};
+
+// lisc500 검색
+$("#lisc500Item").on("input", function() {
+	var inputValue = $(this).val().replace(/\s+/g, "").toLowerCase();
 	
-	// data 배열의 각 원소(각 행의 데이터)에 대해 검색어를 확인하여 필터링
-	for (var i = 0; i < data3.length; i++) {
-		var rowData = data3[i];
-		console.log(rowData);
-		
-		// 각 열(column)의 데이터에서 검색어가 포함되어 있는지를 includes() 함수를 사용하여 확인
-		if (
-			rowData.testCode.includes(keyword3) ||
-			rowData.gumsaName.includes(keyword3)
-		) {
-			filteredData.push(rowData);
-		}
-	}
-	// grid에 표시되는 내용을 모두 지우고 비어있는 상태로 만든다. 새로운 데이터를 추가하지 전에 내용을 비우는 작업을 한다.
-	grid.jqGrid("clearGridData");
-	// jqGrid의 setGridParam 메서드를 사용하여 데이터를 업데이트
-	grid.jqGrid("setGridParam", {
-		datatype: "local",
-		data: filteredData
-		// grid의 내용을 새로고침하고 현재 데이터로 다시 grid를 그려준다.
-	}).trigger("reloadGrid");
-}
+	searchGrid(inputValue, "list1");
+});
 
-
-// list1 전체 데이터를 그리드에 보여주는 함수
-function showAllData1() {
-    var grid = $('#list1');
-    grid.jqGrid("clearGridData");
-    grid.jqGrid("setGridParam", {
-        datatype: "local",
-        data: data1 // 원본 데이터를 그대로 표시
-    }).trigger("reloadGrid");
-}
-
-
-// list3 전체 데이터를 그리드에 보여주는 함수
-function showAllData3() {
-    var grid = $('#list3');
-    grid.jqGrid("clearGridData");
-    grid.jqGrid("setGridParam", {
-        datatype: "local",
-        data: data // 원본 데이터를 그대로 표시
-    }).trigger("reloadGrid");
-}
-
-// clearInput1 클리어
-function clearInput1() {
-	// 검색어를 입력한 input 요소 선택
-	var inputElement = $('input[name="search_name"]');
+// lisc100 검색
+$("#lisc100Item").on("input", function() {
+	var inputValue = $(this).val().replace(/\s+/g, "").toLowerCase();
 	
-	// 입력한 내용을 지움
-	inputElement.val('');
-}
+	searchGrid(inputValue, "list3");
+});
 
-// clearInput3 클리어
-
-
-function clearInputLisc100() {
-	// 검색어를 입력한 input 요소 선택
-	var inputElement = $('input[name="search_name1"]');
+// lisc500 검색 버튼
+$("#searchLisc500Btn").on("click", function() {
+	var inputValue = $("#lisc500Item").val().replace(/\s+/g, "").toLowerCase();
 	
-	// 입력한 내용을 지움
-	inputElement.val('');
-}
+	searchGrid(inputValue, "list1");
+});
+
+// lisc100 검색 버튼
+$("#searchLisc100Btn").on("click", function() {
+	var inputValue = $("#lisc100Item").val().replace(/\s+/g, "").toLowerCase();
+	
+	searchGrid(inputValue, "list3");
+});
 
 
-// saveListData2() 함수 정의
-function saveListData2() {
+// lisc500 Clear 버튼
+$("#clearLisc500Btn").on("click", function() {
+	$("#lisc500Item").val("");
+	
+	searchGrid("", "list1");
+});
+
+// lisc100 Clear 버튼
+$("#clearLisc100Btn").on("click", function() {
+	$("#lisc100Item").val("");
+	
+	searchGrid("", "list3");
+});
+
+// saveListDataLisc501() 함수 정의
+function saveListDataLisc501() {
 
 	// list3에서 체크된 행의 ID(인덱스) 배열을 가져온다.
 	var selectedRows = $('#list3').jqGrid('getGridParam', 'selarrrow');
@@ -385,23 +288,23 @@ function saveListData2() {
 	$.ajax({
 		type: 'POST',
 		url: '/reagentA2Data.do',
-		data: JSON.stringify(listData),
-		dataType: "json",
 		contentType: 'application/json', // 데이터 타입 설정
-        success: function(response) {
-            console.log('Data sent successfully:', response);
+		dataType: "json",
+		data: JSON.stringify(listData),
+        success: function(result) {
+            console.log('Data sent successfully:', result);
             // 성공 시 처리할 로직 추가
         },
         error: function(error) {
-            console.error('Error sending data:', error);
+            console.log('Error sending data:', error);
             // 에러 시 처리할 로직 추가
     	}
 	});
 }
 
 
-// deleteListData2() 함수 정의, list2,3 내용 삭제
-function deleteListData2() {
+// deleteListDataLisc501() 함수 정의, list2,3 내용 삭제
+function deleteListDataLisc501() {
 	// list2 에서 체크된 행의 ID(인덱스) 배열을 가져온다.
 	var selectedRows = $('#list2').jqGrid('getGridParam', 'selarrrow');
 	

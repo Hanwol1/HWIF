@@ -16,8 +16,9 @@ public interface CMapper {
 	UserCDTO loginID(UserCDTO dto); // 로그인 id 조회 후 개수 반환
 	List<lisc001DTO> lisc001list();
 	List<lisc002DTO> lisc002list();
-	List<lisc002DTO> codetype(String type);
-	List<lisc003DTO> code(String type);
+	List<lisc002DTO> codetype(String codetype);
+	List<lisc003DTO> code(String code);
+	List<lisc003DTO> codetype2(String type2);
 	List<lisc001DTO> searchval(String searchval);
 	int addData(lisc002DTO dto);
 	int update002Data(lisc002DTO dto);
@@ -26,4 +27,7 @@ public interface CMapper {
 	int add001Data(lisc001DTO dto);
 	int add002Data(lisc002DTO dto);
 	int add003Data(lisc003DTO dto);
+	int delete001Data(lisc001DTO dto);
+	int delete002Data(lisc002DTO dto);
+	int delete003Data(lisc003DTO dto);
 }

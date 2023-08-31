@@ -67,10 +67,10 @@
 		<div class="divDown">
 			<div class="divDownLeft">
 				<div class="divDownLeftUpButton">
-					<input type="text" name="search_name" class="optionSearch"
+					<input type="text" name="search_name" class="optionSearch" id="lisc500Item"
 						placeholder="Enter text to search"></input>
-					<button class="btn-pir" onclick="wantSearchlisc500()">검 색</button>
-					<button class="btn-pir" onclick="clearInput1()">클리어</button>
+					<button class="btn-pir" id="searchLisc500Btn">검 색</button>
+					<button class="btn-pir" id="clearLisc500Btn">클리어</button>
 				</div>
 				<div class="divDownLeftList" style="">
 					<table id="list1"></table>
@@ -86,10 +86,10 @@
 						</div>
 					</div>
 					<div class="divDownRightUpButton">
-						<button class="btn-thr" onclick="saveListData2()">
+						<button class="btn-thr" onclick="saveListDataLisc501()">
 							<img src="/images/icons/up.png" class="img1">등 록
 						</button>
-						<button class="btn-thr" onclick="deleteListData2()">
+						<button class="btn-thr" onclick="deleteListDataLisc501()">
 							<img src="/images/icons/down.png" class="img1">제 외
 						</button>
 					</div>
@@ -97,10 +97,10 @@
 
 				<div class="divDownRightDown">
 					<div class="divDownRightDownButton">
-						<input type="text" name="search_name1" class="optionSearchRight"
+						<input type="text" name="search_name1" class="optionSearchRight" id="lisc100Item"
 							placeholder="Enter text to search"></input>
-						<button class="btn-pir" onclick="wantSearchLisc100()">검 색</button>
-						<button class="btn-pir" onclick="clearInputLisc100()">클리어</button>
+						<button class="btn-pir" id="searchLisc100Btn">검 색</button>
+						<button class="btn-pir" id="clearLisc100Btn">클리어</button>
 					</div>
 					<div class="divDownRightDownList">
 						<table id="list3"></table>

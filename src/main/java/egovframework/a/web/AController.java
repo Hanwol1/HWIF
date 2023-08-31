@@ -233,39 +233,40 @@ public class AController {
 		
 		// jqGrid list2
 		@RequestMapping(value = "/reagentA2Data.do", method = RequestMethod.POST)
+		@ResponseBody
 		public JSONObject receiveData(@RequestBody List<Lisc501updateDTO> data) {
 			
 			JSONObject json = new JSONObject();
 			
 			for (Lisc501updateDTO item : data) {
-				System.out.println("Test Code: " + item.getTestCode());
-				System.out.println("Inv Code: " + item.getInvCode());
-	            
-				String testCode = item.getTestCode();
-	            String invCode = item.getInvCode();
-	               
+
 	            int result = 0;
 	            
-	            result = aService.lisc501SaveData(testCode, invCode);
-	        } 
+	            result = aService.lisc501SaveData(item);
+	            
+	            if (result < 1) {
+	            	json.put("result", "error");
+	            	return json;
+	            }
+	        }
+			
+			json.put("result", "success");
 			return json;
 		}
 		
 		
 		// jqGrid list2 Delete
 		@RequestMapping(value = "/reagentA2DataDelete.do", method = RequestMethod.POST)
+		@ResponseBody
 		public JSONObject receiveData1(@RequestBody List<Lisc501updateDTO> data) {
 			
 			JSONObject json = new JSONObject();
 			
 			for (Lisc501updateDTO item : data) {
 	            
-				String testCode = item.getTestCode();
-	            String invCode = item.getInvCode();
-	               
 	            int result = 0;
 	            
-	            result = aService.lisc501DeleteData(testCode, invCode);
+	            result = aService.lisc501DeleteData(item);
 	        } 
 			return json;
 		}
@@ -273,6 +274,7 @@ public class AController {
 		
 		// jqGrid list1 Save and Update
 		@RequestMapping(value = "/reagentAsave.do", method = RequestMethod.POST)
+		@ResponseBody
 		public JSONObject saveData(@RequestBody List<Lisc500DTO> modifiedData, HttpSession session,
 		                        HttpServletRequest request, HttpServletResponse response, Model model) {
 			
@@ -307,6 +309,7 @@ public class AController {
 		
 		// jqGrid list1 Delete
 		@RequestMapping(value = "/reagentAdel.do", method = RequestMethod.POST)
+		@ResponseBody
 		public JSONObject delData(@RequestBody Lisc500DTO dto) {
 			
 			JSONObject json = new JSONObject();

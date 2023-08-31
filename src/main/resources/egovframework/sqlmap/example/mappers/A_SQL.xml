@@ -14,17 +14,17 @@
 	<!-- 데이터베이스에 같은 userId가 있는지 체크하는 쿼리문 -->
 	<select id="findOne" parameterType='String' resultType="int">
 		select  count(id)
-				from user
-				where id = #{id}
+		   from user
+		  where id = #{id}
 	</select>
 
 	<select id="loginA"
 		parameterType='egovframework.a.model.UserADTO'
 		resultType="egovframework.a.model.UserADTO">
 		select id, password
-				from user
-				where id = #{id} 
-				and password =	#{password}
+			from user
+			where id = #{id} 
+			and password =	#{password}
 	</select>
 
 	<select id="lisc500" resultType="egovframework.a.model.Lisc500DTO">
@@ -96,9 +96,9 @@
 	
 	<delete id="lisc501DeleteData" parameterType="egovframework.a.model.Lisc501updateDTO">
 	    DELETE FROM lisc501
-				    WHERE INV_CODE = #{invCode}
-				      AND TEST_CODE = #{testCode}
-				    LIMIT 1
+			  WHERE INV_CODE = #{invCode}
+				AND TEST_CODE = #{testCode}
+		      LIMIT 1
 	</delete>
 	
 	

@@ -264,7 +264,7 @@ $('#list1').jqGrid(
 
 		
 
-		var grid2 = function(data) {$('#list2').jqGrid({
+		const grid2 = function(data) {$('#list2').jqGrid({
 			url : "/reagentA2.do", // 서버주소 
 			reordercolNames : true,
 			postData : {

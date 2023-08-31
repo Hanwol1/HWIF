@@ -42,12 +42,16 @@ public class CServiseimpl implements CService{
 		return cMapper.lisc002list();
 	}
 	@Override
-	public List<lisc002DTO> codetype(String type) {
-		return cMapper.codetype(type);
+	public List<lisc002DTO> codetype(String codetype) {
+		return cMapper.codetype(codetype);
 	}
 	@Override
-	public List<lisc003DTO> code(String type) {
-		return cMapper.code(type);
+	public List<lisc003DTO> code(String code) {
+		return cMapper.code(code);
+	}
+	@Override
+	public List<lisc003DTO> codetype2(String codetype) {
+		return cMapper.code(codetype);
 	}
 	@Override
 	public List<lisc001DTO> searchval(String searchval) {
@@ -76,5 +80,17 @@ public class CServiseimpl implements CService{
 	@Override
 	public int update003Data(lisc003DTO dto) {
 		return cMapper.update003Data(dto);
+	}
+	@Override
+	public int delete001Data(lisc001DTO dto) {
+		return 0;
+	}
+	@Override
+	public int delete002Data(lisc002DTO dto) {
+		return 0;
+	}
+	@Override
+	public int delete003Data(lisc003DTO dto) {
+		return 0;
 	}
 }

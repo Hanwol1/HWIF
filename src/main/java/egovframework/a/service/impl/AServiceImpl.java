@@ -10,11 +10,12 @@ import org.springframework.stereotype.Service;
 
 // AMapper 클래스를 가져온다. 이 클래스는 데이터베이스와의 상호작용을 담당하는 매퍼(Mapper)이다.
 import egovframework.a.mapper.AMapper;
-// userADTO 클래스를 가져온다. 이 클래스는 사용자 데이터의 정보를 담는 DTO(Data Transfer Object)이다.
-import egovframework.a.model.UserADTO;
 import egovframework.a.model.Lisc100DTO;
 import egovframework.a.model.Lisc500DTO;
 import egovframework.a.model.Lisc501DTO;
+import egovframework.a.model.Lisc501updateDTO;
+// userADTO 클래스를 가져온다. 이 클래스는 사용자 데이터의 정보를 담는 DTO(Data Transfer Object)이다.
+import egovframework.a.model.UserADTO;
 // AService 인터페이스를 가져온다. 이 인터페이스는 서비스 계층의 역할을 정의한 것이다.
 import egovframework.a.service.AService;
 
@@ -69,15 +70,15 @@ public class AServiceImpl implements AService{
 		}
 		
 		@Override
-	    public int lisc501SaveData(String testCode, String invCode) {
+	    public int lisc501SaveData(Lisc501updateDTO item) {
 	        // 예시: Mapper를 통해 데이터베이스에 저장
-			return aMapper.lisc501SaveData(testCode, invCode);
+			return aMapper.lisc501SaveData(item);
 	    }
 		
 		@Override
-	    public int lisc501DeleteData(String testCode, String invCode) {
+	    public int lisc501DeleteData(Lisc501updateDTO item) {
 	        // 예시: Mapper를 통해 데이터베이스에 저장
-			return aMapper.lisc501DeleteData(testCode, invCode);
+			return aMapper.lisc501DeleteData(item);
 	    }
 		
 		@Override

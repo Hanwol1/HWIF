@@ -257,6 +257,7 @@
      	rowid  = $("#lisc002DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
      	console.log($("#lisc002DTO").jqGrid('getRowData', rowid));
         code = $("#lisc002DTO").jqGrid('getRowData', rowid).code;   // 선택한 열중에서 grid내의 정보를 가져온다.
+        codetype2 = $("#lisc002DTO").jqGrid('getRowData', rowid).codeType;
 		console.log("Rowid", rowid, "Grid3", code);
         // 컬럼 명 item2로 바꾸기 ---------------------------------------------------------------
 		rowitem2id  = $("#lisc001DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
@@ -292,7 +293,8 @@
     	    reordercolNames:true,
     	    postData : { 
     	    	item2 : JSON.stringify(item2Array),
-    	    	type: code
+    	    	type: code,
+    	    	type2: codetype2
     	    }, // 보낼 파라미터. 로그인 했던것처럼 파라미터값 가져오기
     	    mtype:'POST',	// 전송 타입
     	    datatype : "json",	// 받는 데이터 형태 
@@ -426,8 +428,8 @@
 		var data = {"lisc001Data": lisc001Data, "lisc002Data": lisc002Data, "lisc003Data": lisc003Data};
 
 		console.log("front data----");
-		console.log();
-		
+		console.log("001 데이터 : ", lisc001Data);
+		console.log("002 데이터 : ", lisc002Data);
 		console.log("003 데이터 : ", lisc003Data);
 		//console.log(JSON.stringify({"lisc001Data": lisc001Data, "lisc002Data": lisc002Data, "lisc003Data": lisc003Data}));
 		
@@ -444,6 +446,17 @@
 		        console.log(error)
 		    }
 		});
+		
+		// 그리드1 플래그 제거
+	    for (const data of lisc001Data) {
+	    	data.flag = '';
+	    }
+	    for (const data of lisc002Data) {
+	    	data.flag = '';
+	    }
+	    for (const data of lisc003Data) {
+	    	data.flag = '';
+	    }
 	})
 	
 	// addrow, deleterow----------------------------------------001 	
@@ -463,7 +476,15 @@
 	$("#btn_add_row").click(function(){ 
 		addRow('#lisc001DTO');
 	});
-	$("#btn_delete_row").click(function(){deleterow('#lisc001DTO');});
+	$("#btn_delete_row").click(function(){
+		var grid = $('#lisc001DTO');
+	    var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
+	    var rowData = grid.jqGrid('getRowData', selectedRowId);
+	    rowData.comments = 'D';
+	    rowData.flag = 'D';
+		console.log("001 데이터 : ", rowData);
+		grid.jqGrid('setRowData', selectedRowId, rowData);
+	});
 	// ---------------------------------------------------------002
     $("#btn_add_row2").click(function(){ 
     	var newRowData = {};
@@ -476,7 +497,15 @@
 	    newRowData.codeType = RowData.codeType;
 	    $("#lisc002DTO").jqGrid("addRowData", newRowId, newRowData, "first");
     });
-    $("#btn_delete_row2").click(function(){deleterow('#lisc002DTO');});
+    $("#btn_delete_row2").click(function(){
+    	/* var grid = $('#lisc002DTO');
+	    var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
+	    var rowData = grid.jqGrid('getRowData', selectedRowId);
+	    rowData.comments = 'D';
+	    rowData.flag = 'D';
+		console.log("002 데이터 : ", rowData);
+		grid.jqGrid('setRowData', selectedRowId, rowData); */
+    });
     //----------------------------------------------------------003
     $("#btn_add_row3").click(function(){ 
     	var newRowData = {};
@@ -490,9 +519,17 @@
 	    newRowData.code = RowData.code;  // 새로운 row의 code는 그리드2의 code
 	    $("#lisc003DTO").jqGrid("addRowData", newRowId, newRowData, "first");
     });
-    $("#btn_delete_row3").click(function(){deleterow('#lisc003DTO');});
+    $("#btn_delete_row3").click(function(){
+    	/* var grid = $('#lisc003DTO');
+	    var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
+	    var rowData = grid.jqGrid('getRowData', selectedRowId);
+	    rowData.comments = 'D';
+	    rowData.flag = 'D';
+		console.log("003 데이터 : ", rowData);
+		grid.jqGrid('setRowData', selectedRowId, rowData); */
+    });
 	
-	//clear-----------------------------------------------------
+	//---------------------------------------------------------clear
 	$("#clear").on("click", function() {
         // #search input 상자의 내용을 지움
         $("#search").val("");
@@ -502,7 +539,7 @@
         $("#lisc003DTO").jqGrid("clearGridData", true);
     });
 	
-	// modal
+	// --------------------------------------------------------modal
 	const modal1 = document.getElementById('myModal1');
 	const modal2 = document.getElementById('myModal2');
 	function handleOpen (modal) {
@@ -517,6 +554,15 @@
 		handleClose(modal1);
 		handleClose(modal2);
 	})
+	
+	
+	//---------------------------------------------------------coulmnBtn1
+	$("#coulmnBtn1").on("click", function() {
+		handleClose(modal1);
+    });
+	$("#coulmnBtn2").on("click", function() {
+		handleClose(modal2);
+    });
 	
 	</script>
 </body>

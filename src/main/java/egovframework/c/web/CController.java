@@ -188,7 +188,7 @@ public class CController {
 
 	@RequestMapping(value = "/oneGridC003.do", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject lisc003DTO(@RequestParam String item2, String type, HttpSession session,
+	public JSONObject lisc003DTO(@RequestParam String item2, String type, String type2, HttpSession session,
 			HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		System.out.println("-----------");
 		System.out.println(type);
@@ -241,7 +241,7 @@ public class CController {
 			//System.out.println("001 dto.getCodeType() : " + dto.getCodeType());
 			//System.out.println("001 dto.CodeTypeName() : " + dto.getCodeTypeName());
 	        String flag = dto.getFlag();
-	        //System.out.println("001 flag : " + flag);
+	        System.out.println("001 flag : " + flag);
 	        int result = 0;
 	        switch (flag) {
 	            case "U":
@@ -249,6 +249,9 @@ public class CController {
 	                break;
 	            case "I":
 	            	result = cService.add001Data(dto);
+	                break;
+	            case "D":
+	            	result = cService.delete001Data(dto);
 	                break;
                 default:
                 	continue;
@@ -259,7 +262,7 @@ public class CController {
 	        }
 	    }
 		 // ------------------------------------------------------------------------002
-		 for (lisc002DTO dto : lisc002Data) {		        
+		for (lisc002DTO dto : lisc002Data) {		        
 	        String flag = dto.getFlag();
 	        int result = 0;
 	        switch (flag) {
@@ -278,9 +281,9 @@ public class CController {
 	        }
 	    }
 		// ------------------------------------------------------------------------003
-		 for (lisc003DTO dto : lisc003Data) {	
+		for (lisc003DTO dto : lisc003Data) {	
 			String flag = dto.getFlag();
-			System.out.println("003flag : " + flag);
+			//System.out.println("003flag : " + flag);
 	        int result = 0;
 	        switch (flag) {
 	            case "U":
@@ -297,7 +300,7 @@ public class CController {
 	            return json;
 	        }
 	    }
-		 
+		
 	    json.put("result", "success");
 		 return json; 
 	 }
