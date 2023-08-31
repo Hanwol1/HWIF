@@ -1,6 +1,7 @@
 package egovframework.c.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
@@ -16,9 +17,8 @@ public interface CMapper {
 	UserCDTO loginID(UserCDTO dto); // 로그인 id 조회 후 개수 반환
 	List<lisc001DTO> lisc001list();
 	List<lisc002DTO> lisc002list();
-	List<lisc002DTO> codetype(String codetype);
-	List<lisc003DTO> code(String code);
-	List<lisc003DTO> codetype2(String type2);
+	List<lisc002DTO> codetype(String type);
+	List<lisc003DTO> code(Map<String, String> params);
 	List<lisc001DTO> searchval(String searchval);
 	int addData(lisc002DTO dto);
 	int update002Data(lisc002DTO dto);

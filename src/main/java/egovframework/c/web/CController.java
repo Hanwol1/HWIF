@@ -1,5 +1,6 @@
 package egovframework.c.web;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,6 +176,7 @@ public class CController {
 				row.put("remark1", item.getRemark1());
 				row.put("remark2", item.getRemark2());
 				row.put("codeType", item.getCodeType());
+				row.put("Del", item.getComments());
 				System.out.println(row);
 				// 필요한 다른 필드 추가
 				rowsArray.add(row);
@@ -191,7 +193,7 @@ public class CController {
 	public JSONObject lisc003DTO(@RequestParam String item2, String type, String type2, HttpSession session,
 			HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		System.out.println("-----------");
-		System.out.println(type);
+		System.out.println(type + type2);
 		String item2Array[] = item2.substring(1, item2.length() - 1).split("&quot;,");
 		for (int i = 0; i < item2Array.length; i++) {
 			item2Array[i] = item2Array[i].replace("&quot;", "");
@@ -199,7 +201,11 @@ public class CController {
 
 		JSONObject json = new JSONObject();
 		try {
-			List<lisc003DTO> data = cService.code(type);
+			Map<String, String> params = new HashMap<>();
+	        params.put("type", type);
+	        params.put("type2", type2);
+	        
+			List<lisc003DTO> data = cService.code(params);
 			System.out.println(data);
 			JSONArray rowsArray = new JSONArray();
 			for (lisc003DTO item : data) {
@@ -214,6 +220,7 @@ public class CController {
 				row.put("remark2", item.getRemark2());
 				row.put("code", item.getCode());
 				row.put("codeType", item.getCodeType());
+				row.put("Del", item.getComments());
 				// 필요한 다른 필드 추가
 				rowsArray.add(row);
 			}
@@ -241,7 +248,7 @@ public class CController {
 			//System.out.println("001 dto.getCodeType() : " + dto.getCodeType());
 			//System.out.println("001 dto.CodeTypeName() : " + dto.getCodeTypeName());
 	        String flag = dto.getFlag();
-	        System.out.println("001 flag : " + flag);
+	        //System.out.println("001 flag : " + flag);
 	        int result = 0;
 	        switch (flag) {
 	            case "U":
@@ -251,6 +258,7 @@ public class CController {
 	            	result = cService.add001Data(dto);
 	                break;
 	            case "D":
+	            	System.out.println("001---");
 	            	result = cService.delete001Data(dto);
 	                break;
                 default:
@@ -264,6 +272,7 @@ public class CController {
 		 // ------------------------------------------------------------------------002
 		for (lisc002DTO dto : lisc002Data) {		        
 	        String flag = dto.getFlag();
+	        System.out.println("002 flag : " + flag);
 	        int result = 0;
 	        switch (flag) {
 	            case "U":
@@ -271,6 +280,9 @@ public class CController {
 	                break;
 	            case "I":
 	            	result = cService.add002Data(dto);
+	                break;
+	            case "D":
+	            	result = cService.delete002Data(dto);
 	                break;
                 default:
                 	continue;
@@ -283,7 +295,7 @@ public class CController {
 		// ------------------------------------------------------------------------003
 		for (lisc003DTO dto : lisc003Data) {	
 			String flag = dto.getFlag();
-			//System.out.println("003flag : " + flag);
+			System.out.println("003flag : " + flag);
 	        int result = 0;
 	        switch (flag) {
 	            case "U":
@@ -291,6 +303,9 @@ public class CController {
 	                break;
 	            case "I":
 	            	result = cService.add003Data(dto);
+	                break;
+	            case "D":
+	            	result = cService.delete003Data(dto);
 	                break;
                 default:
                 	continue;

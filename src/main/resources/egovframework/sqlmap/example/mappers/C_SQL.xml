@@ -39,7 +39,7 @@
 		where CODE_TYPE = #{type}
 		order by CODE
 	</select>
-	<select id="code" parameterType="String" resultType="egovframework.c.model.lisc003DTO">
+	<select id="code" parameterType="map" resultType="egovframework.c.model.lisc003DTO">
 		select * from lisc003
 		where CODE = #{type} AND CODE_TYPE = #{type2}
 		order by CODE2
@@ -118,8 +118,16 @@
 		WHERE
 			CODE_TYPE = #{codeType} AND CODE_TYPE_NAME = #{codeTypeName}
 	</delete>
-	<delete id="delete002Data" parameterType="egovframework.c.model.lisc002DTO"></delete>
-	<delete id="delete003Data" parameterType="egovframework.c.model.lisc003DTO"></delete>
+	<delete id="delete002Data" parameterType="egovframework.c.model.lisc002DTO">
+		DELETE FROM lisc002
+		WHERE
+			CODE_TYPE = #{codeType} AND CODE = #{code} AND ITEM1 = #{item1} AND ITEM2 = #{item2}
+	</delete>
+	<delete id="delete003Data" parameterType="egovframework.c.model.lisc003DTO">
+		DELETE FROM lisc003
+		WHERE
+			CODE = #{code} AND CODE2 = #{code2} AND ITEM1 = #{item1} AND ITEM2 = #{item2}
+	</delete>
 	
 	
 </mapper>

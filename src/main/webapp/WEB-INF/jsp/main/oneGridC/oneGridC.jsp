@@ -173,7 +173,7 @@
 		        item1Array.push("");
 		    }
 		}
-        item1Array = [...item1Array, "flag", "codeType"];
+        item1Array = [...item1Array, "flag", "codeType", "Del"];
         console.log("item1Array: ", item1Array); // 배열 출력
         
         $("#myModal1 input#code").val(item1Array[0] || '');
@@ -198,16 +198,17 @@
     	    colNames:item1Array,	//컬럼명 item1Array로 바꾸기 // 보여지는 값
     	    colModel:
     	    [		
-    		    { name: 'code', index: 'code', width: '10', align:"center", hidden: item1Array[0] === ""},
-    		    { name: 'item1', index: 'item1', width: '10', align: "center", hidden: item1Array[1] === "", editable : true, edittype : "text"},
-    		    { name: 'item2', index: 'item2', width: '10', align: "center", hidden: item1Array[2] === "", editable : true, edittype : "text"},
-    		    { name: 'item3', index: 'item3', width: '10', align: "center", hidden: item1Array[3] === "", editable : true, edittype : "text"},
-    		    { name: 'item4', index: 'item4', width: '10', align: "center", hidden: item1Array[4] === "", editable : true, edittype : "text"},
-    		    { name: 'item5', index: 'item5', width: '10', align: "center", hidden: item1Array[5] === "", editable : true, edittype : "text"},
-    		    { name: 'remark1', index: 'remark1', width: '10', align: "center", hidden: item1Array[6] === "", editable : true, edittype : "text"},
-    		    { name: 'remark2', index: 'remark2', width: '10', align: "center", hidden: item1Array[7] === "", editable : true, edittype : "text"},
+    		    { name: 'code', index: 'code', width: '12', align:"center", hidden: item1Array[0] === ""},
+    		    { name: 'item1', index: 'item1', width: '12', align: "center", hidden: item1Array[1] === "", editable : true, edittype : "text"},
+    		    { name: 'item2', index: 'item2', width: '12', align: "center", hidden: item1Array[2] === "", editable : true, edittype : "text"},
+    		    { name: 'item3', index: 'item3', width: '12', align: "center", hidden: item1Array[3] === "", editable : true, edittype : "text"},
+    		    { name: 'item4', index: 'item4', width: '12', align: "center", hidden: item1Array[4] === "", editable : true, edittype : "text"},
+    		    { name: 'item5', index: 'item5', width: '12', align: "center", hidden: item1Array[5] === "", editable : true, edittype : "text"},
+    		    { name: 'remark1', index: 'remark1', width: '12', align: "center", hidden: item1Array[6] === "", editable : true, edittype : "text"},
+    		    { name: 'remark2', index: 'remark2', width: '12', align: "center", hidden: item1Array[7] === "", editable : true, edittype : "text"},
     		    { name: 'flag', index: 'flag', hidden: true},
-    		    { name: 'codeType', index: 'codeType', hidden: true}
+    		    { name: 'codeType', index: 'codeType', hidden: true},
+    		    { name: 'Del', index: 'Del', width: '4', align: 'center'}
     		], //서버에서 받은 데이터 설정
     	    jsonReader: 
     	    {
@@ -255,10 +256,9 @@
      	//선택한 열의 데이터 가져오기  -  var selRowData = $("#lisc001DTO").getRowData(rowid);
      	var rowid, code, item2;
      	rowid  = $("#lisc002DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
-     	console.log($("#lisc002DTO").jqGrid('getRowData', rowid));
         code = $("#lisc002DTO").jqGrid('getRowData', rowid).code;   // 선택한 열중에서 grid내의 정보를 가져온다.
         codetype2 = $("#lisc002DTO").jqGrid('getRowData', rowid).codeType;
-		console.log("Rowid", rowid, "Grid3", code);
+     	console.log($("#lisc002DTO").jqGrid('getRowData', rowid));
         // 컬럼 명 item2로 바꾸기 ---------------------------------------------------------------
 		rowitem2id  = $("#lisc001DTO").jqGrid('getGridParam', 'selrow' );  // 선택한 열의 아이디값
 		item2 = $("#lisc001DTO").jqGrid('getRowData', rowitem2id).item2;   // 001의 ITEM2 값을 가져옴
@@ -274,7 +274,7 @@
 		        item2Array.push("");
 		    }
 		}
-		item2Array = [...item2Array, "flag", "code", "codeType"];
+		item2Array = [...item2Array, "flag", "code", "codeType", "Del"];
         console.log("item2Array: ", item2Array); // 배열 출력
         
         $("#myModal2 input#code").val(item2Array[0] || '');
@@ -301,17 +301,18 @@
     	    colNames:item2Array,	//컬럼명
     	    colModel:
     	    [
-       		   	{ name: 'code2', index: 'code2', width: '10', align:"center", hidden: item2Array[0] === ""},
-       		    { name: 'item1', index: 'item1', width: '10', align: "center", hidden: item2Array[1] === "", editable : true, edittype : "text"},
-       		    { name: 'item2', index: 'item2', width: '10', align: "center", hidden: item2Array[2] === "", editable : true, edittype : "text"},
-       		    { name: 'item3', index: 'item3', width: '10', align: "center", hidden: item2Array[3] === "", editable : true, edittype : "text"},
-       		    { name: 'item4', index: 'item4', width: '10', align: "center", hidden: item2Array[4] === "", editable : true, edittype : "text"},
-       		    { name: 'item5', index: 'item5', width: '10', align: "center", hidden: item2Array[5] === "", editable : true, edittype : "text"},
-       		    { name: 'remark1', index: 'remark1', width: '10', align: "center", hidden: item2Array[6] === "", editable : true, edittype : "text"},
-       		    { name: 'remark2', index: 'remark2', width: '10', align: "center", hidden: item2Array[7] === "", editable : true, edittype : "text"},
+       		   	{ name: 'code2', index: 'code2', width: '12', align:"center", hidden: item2Array[0] === ""},
+       		    { name: 'item1', index: 'item1', width: '12', align: "center", hidden: item2Array[1] === "", editable : true, edittype : "text"},
+       		    { name: 'item2', index: 'item2', width: '12', align: "center", hidden: item2Array[2] === "", editable : true, edittype : "text"},
+       		    { name: 'item3', index: 'item3', width: '12', align: "center", hidden: item2Array[3] === "", editable : true, edittype : "text"},
+       		    { name: 'item4', index: 'item4', width: '12', align: "center", hidden: item2Array[4] === "", editable : true, edittype : "text"},
+       		    { name: 'item5', index: 'item5', width: '12', align: "center", hidden: item2Array[5] === "", editable : true, edittype : "text"},
+       		    { name: 'remark1', index: 'remark1', width: '12', align: "center", hidden: item2Array[6] === "", editable : true, edittype : "text"},
+       		    { name: 'remark2', index: 'remark2', width: '12', align: "center", hidden: item2Array[7] === "", editable : true, edittype : "text"},
        		 	{ name: 'flag', index: 'flag', hidden: true},
        		 	{ name: 'code', index: 'code', hidden: true},
-       		 	{ name: 'codeType', index: 'codeType', hidden: true}
+       		 	{ name: 'codeType', index: 'codeType', hidden: true},
+       		 	{ name: 'Del', index: 'Del', width: '4', align: 'center'}
        		], //서버에서 받은 데이터 설정
     	    jsonReader: 
     	    {
@@ -498,13 +499,13 @@
 	    $("#lisc002DTO").jqGrid("addRowData", newRowId, newRowData, "first");
     });
     $("#btn_delete_row2").click(function(){
-    	/* var grid = $('#lisc002DTO');
+    	var grid = $('#lisc002DTO');
 	    var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
 	    var rowData = grid.jqGrid('getRowData', selectedRowId);
-	    rowData.comments = 'D';
+	    rowData.Del = 'D';
 	    rowData.flag = 'D';
 		console.log("002 데이터 : ", rowData);
-		grid.jqGrid('setRowData', selectedRowId, rowData); */
+		grid.jqGrid('setRowData', selectedRowId, rowData);
     });
     //----------------------------------------------------------003
     $("#btn_add_row3").click(function(){ 
@@ -513,20 +514,20 @@
 	    var selectedRowId = grid.jqGrid('getGridParam', 'selrow'); // 그리드2의 rowid를 가져옴
 	    var RowData = grid.jqGrid('getRowData', selectedRowId);
 	    var newRowId = $("#lisc003DTO").jqGrid("getGridParam", "reccount") + 1;
-	    
+	    console.log("003 데이터 : ", newRowData);
 	    newRowData.flag = 'I';
 	    newRowData.codeType = RowData.codeType;  // 새로운 row의 codeType은 그리드2의 codeType
 	    newRowData.code = RowData.code;  // 새로운 row의 code는 그리드2의 code
 	    $("#lisc003DTO").jqGrid("addRowData", newRowId, newRowData, "first");
     });
     $("#btn_delete_row3").click(function(){
-    	/* var grid = $('#lisc003DTO');
+    	var grid = $('#lisc003DTO');
 	    var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
 	    var rowData = grid.jqGrid('getRowData', selectedRowId);
-	    rowData.comments = 'D';
+	    rowData.Del = 'D';
 	    rowData.flag = 'D';
 		console.log("003 데이터 : ", rowData);
-		grid.jqGrid('setRowData', selectedRowId, rowData); */
+		grid.jqGrid('setRowData', selectedRowId, rowData);
     });
 	
 	//---------------------------------------------------------clear

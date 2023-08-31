@@ -1,6 +1,7 @@
 package egovframework.c.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -42,16 +43,12 @@ public class CServiseimpl implements CService{
 		return cMapper.lisc002list();
 	}
 	@Override
-	public List<lisc002DTO> codetype(String codetype) {
-		return cMapper.codetype(codetype);
+	public List<lisc002DTO> codetype(String type) {
+		return cMapper.codetype(type);
 	}
 	@Override
-	public List<lisc003DTO> code(String code) {
-		return cMapper.code(code);
-	}
-	@Override
-	public List<lisc003DTO> codetype2(String codetype) {
-		return cMapper.code(codetype);
+	public List<lisc003DTO> code(Map<String, String> params) {
+		return cMapper.code(params);
 	}
 	@Override
 	public List<lisc001DTO> searchval(String searchval) {
@@ -83,14 +80,14 @@ public class CServiseimpl implements CService{
 	}
 	@Override
 	public int delete001Data(lisc001DTO dto) {
-		return 0;
+		return cMapper.delete001Data(dto);
 	}
 	@Override
 	public int delete002Data(lisc002DTO dto) {
-		return 0;
+		return cMapper.delete002Data(dto);
 	}
 	@Override
 	public int delete003Data(lisc003DTO dto) {
-		return 0;
+		return cMapper.delete003Data(dto);
 	}
 }
