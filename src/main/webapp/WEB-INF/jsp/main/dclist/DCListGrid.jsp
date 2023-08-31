@@ -26,9 +26,9 @@
 			</button>
 			<input type="checkbox" id="includeExpired" /> <label
 				for="includeExpired">사용종료 포함</label>
-			<button class="btn-sec close" style="float: right">
+			<!-- <button class="btn-sec close" style="float: right">
 				<span class="img9"></span> 닫 기
-			</button>
+			</button> -->
 		</div>
 	</div>
 
@@ -60,8 +60,7 @@
 		<!-- 탭 및 검색바(찾기,지우기,사용등록/종료) 그리드2 -->
 		<div class="container" style="width: 49%;">
 			<div class="tabs">
-				<div class="tab">문서목록</div>
-				<div class="tab">파일등록</div>
+				<div class="tab">문서목록</div>				
 			</div>
 
 			<div class="search-container-r">
@@ -137,11 +136,11 @@
 			}, // 보낼 파라미터
 			mtype    : 'POST', // 전송 타입
 			datatype : "json", // 받는 데이터 형태
-			colNames : ['일자', '사용자계정', '최종수정일', '문서타입', '문서코드', '문서명', '최종문서체크', '담당자', '실장', '과장','문서형식','비고', '비고이미지','코멘트'], // 컬럼명
+			colNames : ['일자', '사용자계정', '최종수정일', '문서타입', '문서코드', '문서명', '최종문서만', '담당자', '실장', '과장','문서형식','비고', '비고','코멘트'], // 컬럼명
 			colModel : [
 							{
 								name: 'sys_date', index: 'sys_date', width: '60', align: "center",hidden: true //일자
-							},
+							},						
 							{
 								name: 'user_id', index: 'user_id', width: '60', align: 'center', hidden: true //사용자계정
 							},
@@ -160,7 +159,7 @@
 							{
 								name: 'item2', index: 'item2', width: '50', align: "center", //최종문서 체크박스
 								formatter: "checkbox", formatoptions: { disabled: false },editable : true, edittype: 'checkbox', 
-								editoptions: { value: "true:false", defaultValue :"true"} 
+								editoptions: { value: "true:false", defaultValue :"true"}
 							},
 							{
 								name: 'item3', index: 'item3', width: '60', align: "center", editable : false //담당자
@@ -256,13 +255,16 @@
 					function(postData){} 
 				}).trigger("reloadGrid");
 			},
-			
-			
 			//셀이 편집된 후 실행되는 함수를 정의
 			afterEditCell: function(id,name,val,iRow,iCol){
+				console.log("셀 수정 id >>>" + id + "\nname >>>" + name + "\nval >>>" + val + "\niRow >>>" + iRow +"\niCol >>>" + iCol);
+
+				$("#list1").blur(function(){ // 그리드가 행을 벗어났을 때 input와 같이 태그로 나오는 것을 방지함.
+			        $("#list1").jqGrid("saveCell",iRow,iCol);
+					$('#list1').jqGrid('setCell', iRow, 'mod_yn', 'Y');
+			    });
 			}
 		});
-		
 
 		/**
 		그리드1,2 조회('조회'버튼)
@@ -354,45 +356,14 @@
 		});
 		
 		
-		$(document).ready(function() {
-		    const list1 = $("#list1");
-		    const searchInput = $("#searchInput");
-
-		    // 초기 데이터를 originalData에 저장해 둡니다.
-		    const originalData = list1.jqGrid("getGridParam", "data");
-
-		    searchInput.on("input", function() {
-		        const searchText = $(this).val().toLowerCase(); // 입력한 검색어를 소문자로 변환하여 저장
-
-		        // 필터링된 데이터를 저장할 배열
-		        const filteredData = [];
-
-		        // 검색어에 해당하는 데이터를 filteredData에 추가
-		        $.each(originalData, function(index, rowData) {
-		            if (rowData.item1.toLowerCase().includes(searchText)) {
-		                filteredData.push(rowData);
-		            }
-		        });
-
-		        // 그리드 데이터를 초기화하고, 필터링된 데이터로 채웁니다.
-		        list1.jqGrid("clearGridData");
-		        list1.jqGrid("setGridParam", { data: filteredData });
-		        list1.trigger("reloadGrid");
-		    });
-
-		    // 초기 화면 로딩 시 검색어가 있는 경우 필터링 수행
-		    const initialSearchText = searchInput.val().toLowerCase();
-		    if (initialSearchText) {
-		        searchInput.trigger("input");
-		    }
-		});
+		 // 그리드1 검색필터링
+	    $("#searchInput").on("input", function() {
+	        var inputValue = $(this).val().replace(/\s+/g, "").toLowerCase();
+	        
+	        getGridList(inputValue, "list1");
+	    });
 
 
-
-
-
-
-		
 		/**
 		그리드 지우기 버튼 클릭(grid1)
 		*/
@@ -623,6 +594,13 @@
 			getGridList2();
 		});
 		
+		 // 그리드2 검색필터링
+	    $("#searchInput2").on("input", function() {
+	        var inputValue = $(this).val().replace(/\s+/g, "").toLowerCase();
+	        
+	        getGridList2(inputValue, "list2");
+	    });
+		
 		/**
 		그리드 지우기 버튼 클릭(grid2)
 		*/
@@ -779,15 +757,18 @@
 // 	    	var data = $('#list1').getChangedCells('all'); // 수정된 셀 데이터 // $('#list1').getChangedCells('all');
 	    	var data = $("#list1").getRowData();
 	    	console.log("그리드 내 수정된 데이터 >>>" +JSON.stringify(data));
-	    	
-	    	// 수정된 로우만 가져왔을 때
-// 	    	$.each(data, function( key, value ){
-// 	    		var rowid = value.id; // 수정된 행 rowid
-// 	    		var code = $('#list1').getRowData(rowid).code; // 키값 세팅[DB 업데이트 기준컬럼]
-// 	    		alert("key >>>" + key + "\tvalue >>>" + value + "\tcode >>>" + code);
-// 	    		value.code = code;
-// 	    	});
 
+	    	var gridModObj = []; // 그리드의 수정된 행만 담을 배열
+	    	// 수정된 행만 세팅
+	    	$.each(data, function(idx, obj){
+	    		console.log('idx >>>' + idx);
+	    		if(obj.mod_yn == 'Y'){
+	    			gridModObj.push(obj);
+	    		}
+	    	});
+
+	    	console.log("그리드 수정한 데이터 length >>>" + gridModObj.length + "\ngridModObj >>>" + JSON.stringify(gridModObj));
+	    	
 	    	$.ajax({
 	    	    url    : "/saveGrid1.do",                    // 전송 URL
 	    	    type   : 'POST',                // GET or POST 방식
@@ -804,7 +785,7 @@
 	    	        console.log("jqXHR : " +jqXHR +"textStatus : " + textStatus + "errorThrown : " + errorThrown);
 	    	        alert('오류가 발생했습니다. 확인 후 다시 시도해주세요');
 	    	    }
-	    	}); 
+	    	});
 	    });
 	    
 	    
@@ -814,6 +795,7 @@
     	그리드2의 데이터 등록/수정을 한다.
 	    */
 	    $(".btn-sec.save").click(function(){
+	    /* $(".btn-sec.saveGrid2").click(function(){  */
 	    	var data = $('#list2').getChangedCells('all'); // 수정된 셀 데이터 // $('#list2').getChangedCells('all');
 	    	console.log("그리드 내 수정된 데이터 >>>" +JSON.stringify(data));
 	    	
@@ -859,8 +841,8 @@
 				$('#remart2Area').val(replaceVal);
 				$("#popLayer").hide();
 				$("#list1").setCell(selRowId, "remark2", replaceVal);
-		    	
-			}
+		    		
+			}	
     	})
 		
 		/**
@@ -894,7 +876,7 @@
 	    }
 	    
 	    $('.down-bar .container .grid1').click(function(e) {
-	    	console.log('html e.target  >>>' + e.target + "\ne.target name >>>" + e.target.name);
+// 	    	console.log('html e.target  >>>' + e.target + "\ne.target name >>>" + e.target.name);
     	   if (!$(e.target).parents("#popLayer").length && !$(e.target).is('#popLayer') && typeof e.target.name == 'undefined'){
     	     var isShow = $('#popLayer').is(':visible'); // 팝업창 shoew 여부
     	     if(isShow){
