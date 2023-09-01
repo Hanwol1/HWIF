@@ -605,11 +605,11 @@ const searchInGrid = function(value, grid) {
 	            
 	            // rowData의 모든 value 값과 inputValue 비교
 	            for (var key in rowData) {
-               var cellValue = rowData[key];
-               if (cellValue && cellValue.toString().replace(/\s+/g, "").toLowerCase().includes(value)) {
-                   matched = true;
-                   break; // 일치하는 컬럼이 하나라도 있으면 검색 중단
-               }
+					var cellValue = rowData[key];
+					if (cellValue && cellValue.toString().replace(/\s+/g, "").toLowerCase().includes(value)) {
+					    matched = true;
+					    break; // 일치하는 컬럼이 하나라도 있으면 검색 중단
+					}
 	            }
 	
 	            if (matched) {

@@ -59,7 +59,9 @@
 		UPDATE lisc001
 		SET
 			CODE_TYPE_NAME = #{codeTypeName},
-			COMMENTS = #{comments}
+			COMMENTS = #{comments},
+			ITEM1 = #{item1},
+			ITEM2 = #{item2}
 		WHERE 
 			CODE_TYPE = #{codeType};
 	</update>

@@ -428,10 +428,9 @@
 		
 		var data = {"lisc001Data": lisc001Data, "lisc002Data": lisc002Data, "lisc003Data": lisc003Data};
 
-		console.log("front data----");
 		console.log("001 데이터 : ", lisc001Data);
-		console.log("002 데이터 : ", lisc002Data);
-		console.log("003 데이터 : ", lisc003Data);
+		//console.log("002 데이터 : ", lisc002Data);
+		//console.log("003 데이터 : ", lisc003Data);
 		//console.log(JSON.stringify({"lisc001Data": lisc001Data, "lisc002Data": lisc002Data, "lisc003Data": lisc003Data}));
 		
 		$.ajax({
@@ -560,9 +559,49 @@
 	//---------------------------------------------------------coulmnBtn1
 	$("#coulmnBtn1").on("click", function() {
 		handleClose(modal1);
+		var code = $("#myModal1 #code").val();
+        var item1 = $("#myModal1 #item1").val();
+        var item2 = $("#myModal1 #item2").val();
+        var item3 = $("#myModal1 #item3").val();
+        var item4 = $("#myModal1 #item4").val();
+        var item5 = $("#myModal1 #item5").val();
+        var remark1 = $("#myModal1 #remark1").val();
+        var remark2 = $("#myModal1 #remark2").val();
+        
+        var modal1String = code + ";" + item1 + ";" + item2 + ";" + item3 + ";" + item4 + ";" + item5 + ";" + remark1 + ";" + remark2;
+        console.log("modal1String : ", modal1String);
+        
+        var grid = $('#lisc001DTO');
+	    var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
+	    var rowData = grid.jqGrid('getRowData', selectedRowId);
+	    rowData.flag = 'U';
+	    rowData.item1 = modal1String;
+	    grid.jqGrid('setRowData', selectedRowId, rowData);
+	    console.log("item1 : ", rowData.item1);
+	    console.log("001 데이터 : ", rowData);
     });
 	$("#coulmnBtn2").on("click", function() {
 		handleClose(modal2);
+		var code = $("#myModal2 #code").val();
+        var item1 = $("#myModal2 #item1").val();
+        var item2 = $("#myModal2 #item2").val();
+        var item3 = $("#myModal2 #item3").val();
+        var item4 = $("#myModal2 #item4").val();
+        var item5 = $("#myModal2 #item5").val();
+        var remark1 = $("#myModal2 #remark1").val();
+        var remark2 = $("#myModal2 #remark2").val();
+        
+        var modal2String = code + ";" + item1 + ";" + item2 + ";" + item3 + ";" + item4 + ";" + item5 + ";" + remark1 + ";" + remark2;
+        console.log("modal2String : ", modal2String);
+        
+        var grid = $('#lisc001DTO');
+	    var selectedRowId = grid.jqGrid('getGridParam', 'selrow');
+	    var rowData = grid.jqGrid('getRowData', selectedRowId);
+	    rowData.flag = 'U';
+	    rowData.item2 = modal2String;
+	    grid.jqGrid('setRowData', selectedRowId, rowData);
+	    console.log("item2 : ", rowData.item2);
+	    console.log("002 데이터 : ", rowData);
     });
 	
 	</script>

@@ -242,13 +242,13 @@ public class CController {
 		 List<lisc002DTO> lisc002Data = data.getLisc002Data();
 		 List<lisc003DTO> lisc003Data = data.getLisc003Data();
 		 System.out.println("-----------------saveBTN");
-		 System.out.println(lisc001Data);
+		 System.out.println(lisc001Data.get(0).getFlag());
+		 //System.out.println(lisc001Data);
 		 // ------------------------------------------------------------------------001 
 		 for (lisc001DTO dto : lisc001Data) {
 			//System.out.println("001 dto.getCodeType() : " + dto.getCodeType());
 			//System.out.println("001 dto.CodeTypeName() : " + dto.getCodeTypeName());
 	        String flag = dto.getFlag();
-	        //System.out.println("001 flag : " + flag);
 	        int result = 0;
 	        switch (flag) {
 	            case "U":
