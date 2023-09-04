@@ -4,6 +4,7 @@ package egovframework.e.mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import egovframework.e.model.UserEDTO;
@@ -25,7 +26,26 @@ public interface EMapper {
 	public List<grid2DTO> grid2(grid2DTO grid2DTO);
 
 	public int setDcListInfoDelete(Map<String, Object> params);
+	
+	int setDcListFileDelete(Map<String, Object> params);
 
-	public int setDcListFileDelete(Map<String, Object> params);
+    int updateGrid2Row(Map<String, Object> updateMap);
+
+	void clearDcListFileEndDate(Map<String, Object> deleteMap);
+
+	int deleteGrid2Row(Map<String, Object> params);
+	
+	int insertGrid1Row(Map<String, Object> params);
+
+	int updateGrid1Row(Map<String, Object> params);
+	
+	int insertGrid2Row(Map<String, Object> params);
+
+	int updateGrid2Rows(Map<String, Object> params);
+	
+	int updateComment(@Param("code") String code, @Param("remark2")String remark2);
+
+	
+
 
 }

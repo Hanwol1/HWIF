@@ -24,6 +24,7 @@
 		)
 	</insert>
 	
+	
 	<select id="grid1" parameterType="egovframework.e.model.grid1DTO" resultType="egovframework.e.model.grid1DTO">
     SELECT a.*
 	    FROM `HWIF`.`LISC002` a
@@ -36,6 +37,9 @@
     SELECT *
 		FROM HWIF.LISC002 A
 	  WHERE A.CODE IN ('H_201901','L-200-02','L-200-03','L-200-04','Z-200-01','L-100-01','L-200-01')
+	    <if test="item1 != null and !item1.equals('')">
+	    and a.item1 like CONCAT('%',#{item1},'%') 
+	  </if>
 	ORDER BY FIELD(code, 'H_201901', 'L-100-01', 'L-200-01','L-200-02','L-200-03','L-200-04','Z-200-01')  
 	</select>
 	
@@ -49,6 +53,9 @@
 		  <if test="code != null and !code.equals('')">
 		  and b.code = #{code} 
 		  </if>
+		  <if test="includeExpired.equals('false')"> <!-- 사용종료를 체크 안했을 때 -->
+		  and b.file_enddt is null
+		  </if>
 	  </where>
 	</select>
 	
@@ -57,14 +64,146 @@
         WHERE code = #{code}
 	</delete>
 
-	<delete id="setDcListFileDelete" parameterType="java.util.Map" >
-      DELETE FROM `HWIF`.`LISC960`
-        WHERE code = #{code}
-        <if test="codeNo != null and !codeNo.equals('')">
-          AND codeNo = #{codeNo}
-        </if>
-	</delete>
+	<update id="updateGrid2Row" parameterType="java.util.Map">
+		<!-- 사용등록시 등록일 컬럼값을 현재날짜로 & 종료일자가 존재하면 null값으로 변경해주는 쿼리 -->
+	    UPDATE `HWIF`.`LISC960`
+	    SET file_date = sysdate() -- 등록일 현재날짜
+	      , file_enddt = null       -- 종료일은 null
+	    WHERE code = #{code}
+	    AND code_no = #{codeNo} <!-- 수정: 파라미터명을 codeNo로 변경 -->
+	</update>
+
+	<update id="clearDcListFileEndDate" parameterType="java.util.Map">
+	    <!-- 사용종료일 컬럼값을 비우는 쿼리 <사용안함> -->
+	    UPDATE `HWIF`.`LISC960`
+	    SET file_enddt = null
+	    WHERE code = #{code}
+	    <if test="code_no != null"> 
+	        AND code_no = #{code_no} 
+	    </if>
+	</update>
 	
+	<update id="deleteGrid2Row" parameterType="java.util.Map">
+		<!-- 사용종료시 종료일 컬럼값을 현재날짜로 변경해주는 쿼리 -->
+	    UPDATE `HWIF`.`LISC960`
+	    SET file_enddt = sysdate() -- 등록일 현재날짜	
+	    WHERE code = #{code}
+	    AND code_no = #{codeNo} <!-- 수정: 파라미터명을 codeNo로 변경 -->
+	</update>
+
+	<insert id="insertGrid1Row" parameterType="java.util.Map">
+		INSERT INTO hwif.lisc002
+		     ( sys_date
+		     , user_id
+		     , code_type
+		     , code
+		     , item1
+		     , item2
+		     , item3
+		     , item4
+		     , item5
+		     , remark1
+		     , remark2
+		     , comments)
+		VALUES
+		     ( sysdate()
+		     , #{userId}
+		     , 'codeType'
+		     , #{code}
+		     , #{item1}
+		     , #{item2}
+		     , #{item3}
+		     , #{item4}
+		     , #{item5}
+		     , #{remark1}
+		     , #{remark2}
+		     , #{comments}
+		     )
+	</insert>
+
+	<update id="updateGrid1Row" parameterType="java.util.Map">
+		<!-- 사용종료시 종료일 컬럼값을 현재날짜로 변경해주는 쿼리 -->
+	    UPDATE `HWIF`.`lisc002`
+	       SET upd_date = sysdate()
+	       	<if test="item1 != null ">
+	         , item1 = #{item1}
+	         </if>
+	         <if test="item2 != null ">
+	         , item2 = #{item2}
+	         </if>
+	         <if test="item3 != null ">
+	         , item3 = #{item3}
+	         </if>
+	         <if test="item4 != null ">
+	         , item4 = #{item4}
+	         </if>
+	         <if test="item5 != null ">
+	         , item5 = #{item5}
+	         </if>
+	         <if test="remark1 != null ">
+	         , remark1 = #{remark1}
+	         </if>
+	         <if test="remark2 != null ">
+	         , remark2 = #{remark2}
+	         </if>
+	         <if test="comments != null ">
+	         , comments = #{comments}
+	         </if>
+	    WHERE code = #{code}
+	</update>
 	
+	<insert id="insertGrid2Row" parameterType="java.util.Map">
+		INSERT INTO hwif.lisc960
+		     ( sys_date
+		     , user_id
+		     , code_type
+		     , code
+		     , file_name
+		     , file_user
+		     , id1
+		     , id2
+		     , id3
+
+		VALUES
+		     ( sysdate()
+		     , #{userId}
+		     , 'codeType'
+		     , #{code}
+		     , #{file_name}
+		     , #{file_user}
+		     , #{id1}
+		     , #{id2}
+		     , #{id3}	
+		     )
+	</insert>
 	
+	<update id="updateGrid2Rows" parameterType="java.util.Map">
+		<!-- 사용종료시 종료일 컬럼값을 현재날짜로 변경해주는 쿼리 -->
+	    UPDATE `HWIF`.`lisc960`
+	       SET upd_date = sysdate()
+	       	<if test="file_name != null ">
+	         , file_name = #{file_name}
+	         </if>
+	         <if test="file_user != null ">
+	         , file_user = #{file_user}
+	         </if>
+	         <if test="id1 != null ">
+	         , id1 = #{id1}
+	         </if>
+	         <if test="id2 != null ">
+	         , id2 = #{id2}
+	         </if>
+	         <if test="id3 != null ">
+	         , id3 = #{id3}
+	         </if>         
+	    WHERE code_no = #{code_no}
+	</update>
+	
+	<update id="updateComment" parameterType="java.util.Map">
+	  UPDATE `HWIF`.`lisc002`
+	       SET upd_date = sysdate()
+	         , remark2 = #{remark2}
+	    WHERE code = #{code}
+	</update>
+
 </mapper>

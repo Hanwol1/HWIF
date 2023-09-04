@@ -22,4 +22,20 @@ public interface EService {
 	
 	int setDcListDelete(Map<String, Object> params);
 
+	int updateGrid2Row(Map<String, Object> updateMap);
+
+	void clearDcListFileEndDate(Map<String, Object> updateMap);
+
+	int deleteGrid2Row(Map<String, Object> updateMap);
+	
+	int insertGrid1Row(Map<String, Object> insertMap);
+
+	int updateGrid1Row(Map<String, Object> updateMap);
+
+	int insertGrid2Row(Map<String, Object> insertMap);
+
+	int updateGrid2Rows(Map<String, Object> updateMap);
+
+	int updateComment(String code, String remark2);
+
 }
